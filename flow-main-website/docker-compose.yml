@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: flow-app-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: localpassword
+      POSTGRES_DB: flowdevdb
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5432:5432"
+      - "5555:5555"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flow-app-web
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:localpassword@db:5432/flowdevdb?schema=public
+    depends_on:
+      - db
+    volumes:
+      - ./:/app:delegated
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  pgdata:
