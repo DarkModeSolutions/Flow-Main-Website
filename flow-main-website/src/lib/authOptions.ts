@@ -12,6 +12,7 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        signInType: { label: "Sign In Type", type: "text" },
       },
       async authorize(credentials) {
         try {
@@ -19,21 +20,46 @@ export const authOptions: AuthOptions = {
             throw new Error("Email and password required");
           }
 
-          const user = await prisma.user.findUnique({
-            where: {
-              email: credentials.email,
-            },
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              password: true,
-              phone: true,
-            },
-          });
+          let user;
+
+          if (credentials.signInType === "admin") {
+            user = await prisma.user.findUnique({
+              where: { email: credentials.email, isAdmin: true },
+              omit: {
+                createdAt: true,
+                updatedAt: true,
+              },
+            });
+          } else {
+            user = await prisma.user.findUnique({
+              where: {
+                email: credentials.email,
+              },
+              select: {
+                id: true,
+                email: true,
+                name: true,
+                phone: true,
+                password: true,
+                isAdmin: true,
+              },
+            });
+          }
+
+          if (credentials.signInType === "admin" && !user) {
+            await prisma.logs.create({
+              data: {
+                action: "Admin_Login_Attempt",
+                log: `Failed admin login attempt for email: ${credentials.email} - User not found or not admin`,
+              },
+            });
+            throw new Error("No admin user found.");
+          }
 
           if (!user) {
-            throw new Error("No user found");
+            throw new Error(
+              `No user found. ${credentials.signInType === "admin" ? "No admin user found." : ""}`
+            );
           }
 
           if (!user.password) {
@@ -61,11 +87,21 @@ export const authOptions: AuthOptions = {
             throw new Error("Invalid password.");
           }
 
+          if (credentials.signInType === "admin" && isPasswordValid) {
+            await prisma.logs.create({
+              data: {
+                action: "Admin_Login_Success",
+                log: `Admin user ${user.email} logged in successfully`,
+              },
+            });
+          }
+
           return {
             id: user.id,
             email: user.email,
             name: user.name,
             phone: user.phone,
+            isAdmin: user.isAdmin, // Default to false
           };
         } catch (error) {
           throw new Error(
@@ -85,7 +121,7 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     // Since NextAuth expects a string, we'll use the admin path for admin-specific routes
-    signIn: "/auth/sign-in",
+    signIn: "/auth/login",
   },
   callbacks: {
     async jwt({ token, user, trigger }) {
@@ -95,6 +131,7 @@ export const authOptions: AuthOptions = {
         token.email = user.email;
         token.name = user.name;
         token.phone = user.phone;
+        token.isAdmin = user.isAdmin; // Default to false
       }
 
       // If session is being updated, fetch fresh user data from database
@@ -106,6 +143,7 @@ export const authOptions: AuthOptions = {
             email: true,
             name: true,
             phone: true,
+            isAdmin: true,
           },
         });
 
@@ -114,6 +152,7 @@ export const authOptions: AuthOptions = {
           token.email = freshUser.email;
           token.name = freshUser.name;
           token.phone = freshUser.phone;
+          token.isAdmin = freshUser.isAdmin; // Default to false
         }
       }
 
@@ -126,6 +165,7 @@ export const authOptions: AuthOptions = {
         session.user.email = token.email as string;
         session.user.name = token.name as string;
         session.user.phone = token.phone as string;
+        session.user.isAdmin = token.isAdmin as boolean; // Default to false
       }
       return session;
     },

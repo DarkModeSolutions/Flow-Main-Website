@@ -137,6 +137,15 @@ nextjs-portal * {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  --font-man: var(--font-manrope);
+  --font-man-xlight: 200;
+  --font-man-light: 300;
+  --font-man-regular: 400;
+  --font-man-medium: 500;
+  --font-man-semibold: 600;
+  --font-man-bold: 700;
+  --font-man-extrabold: 800;
 }
 
 @layer base {
@@ -145,9 +154,31 @@ nextjs-portal * {
     outline: 2px solid transparent;
     outline-offset: 2px;
     scroll-behavior: smooth;
+    color: white;
   }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-man);
+    font-weight: var(--font-man-regular);
   }
+}
+
+.manrope-xlight {
+  font-weight: var(--font-man-xlight);
+}
+.manrope-light {
+  font-weight: var(--font-man-light);
+}
+.manrope-medium {
+  font-weight: var(--font-man-medium);
+}
+.manrope-semibold {
+  font-weight: var(--font-man-semibold);
+}
+.manrope-bold {
+  font-weight: var(--font-man-bold);
+}
+.manrope-extrabold {
+  font-weight: var(--font-man-extrabold);
 }
