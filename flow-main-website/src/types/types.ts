@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Products } from "@prisma/client";
 
 // Get Payloads from DB
 // export type ProductRequestWithIncludes = Prisma.ProductsGetPayload<{
@@ -14,6 +14,8 @@ export type UserDetailsWithIncludes = Prisma.UserGetPayload<{
     password: true;
   };
 }>;
+
+export type ProductDetailsWithIncludes = Products;
 
 // Custom Types
 
