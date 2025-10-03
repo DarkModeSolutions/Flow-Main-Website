@@ -164,6 +164,10 @@ nextjs-portal * {
   }
 }
 
+.manrope {
+  font-family: var(--font-man);
+}
+
 .manrope-xlight {
   font-weight: var(--font-man-xlight);
 }

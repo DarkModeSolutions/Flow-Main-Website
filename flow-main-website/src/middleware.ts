@@ -51,6 +51,7 @@ export async function middleware(req: NextRequest) {
 
   if (needsAuth) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    console.log("Middleware token:", token);
 
     if (!token) {
       if (pathname.startsWith("/api/")) {

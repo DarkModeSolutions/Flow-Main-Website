@@ -8,7 +8,7 @@ const ProductCard = ({ img, name }: { img: string | null; name: string }) => {
   return (
     <div>
       {prodImage !== null ? (
-        <Image src={prodImage} alt={name} />
+        <Image src={prodImage} alt={name} fill />
       ) : (
         <div>
           No Image Available

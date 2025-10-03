@@ -3,7 +3,7 @@
 import ProductCard from "@/components/admin/ProductCard";
 import useGetAllProducts from "@/hooks/useGetAllProducts";
 import { ProductDetailsWithIncludes } from "@/types/types";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const AdminHomePage = () => {

@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 
 const AdminProductPage = () => {
   const params = useParams();
-  const productId = params.eventId as string;
+  const productId = params.productId as string;
 
   const router = useRouter();
 

@@ -36,3 +36,11 @@ export type RegisterResult =
   | { success: "tagged"; tag: "set-password" }
   | { success: false; error: string }
   | null;
+
+// Custom Context Types
+
+export type ProductContextType = {
+  products: ProductDetailsWithIncludes[] | null;
+  error: unknown;
+  loading: boolean;
+};
