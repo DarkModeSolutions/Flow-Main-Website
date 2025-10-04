@@ -5,6 +5,7 @@ import FlowButton from "@/components/FlowButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetProductById from "@/hooks/useGetProductById";
 import { ProductDetailsWithIncludes } from "@/types/types";
+import { images } from "@/utils/constants";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -38,11 +39,11 @@ const ProductPage = () => {
     }
   }, [error, getProductById, productId]);
 
-  if (error || product === null) {
+  if (error) {
     return <ErrorComponent error={error} />;
   }
 
-  if (loading) {
+  if (loading || product === null) {
     return (
       <div className="w-full h-screen flex flex-col items-center space-y-3 p-4">
         <div className="h-[30vh] w-full">
@@ -72,9 +73,15 @@ const ProductPage = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center space-y-3 p-4">
-      <div className="h-[30vh] w-full">
+      <div className="h-[30vh] w-full relative">
         {product.imageUrl ? (
-          <Image src={product.imageUrl} alt={product.name} fill className="" />
+          <Image
+            src={images[product.imageUrl as keyof typeof images]}
+            alt={product.name}
+            fill
+            sizes=""
+            className="object-cover h-full w-full" // ✅ Use className instead of style
+          />
         ) : (
           <p>No Image Available</p>
         )}
