@@ -37,10 +37,22 @@ export type RegisterResult =
   | { success: false; error: string }
   | null;
 
+export type Cart = {
+  productId: string;
+  quantity: number;
+};
+
 // Custom Context Types
 
 export type ProductContextType = {
   products: ProductDetailsWithIncludes[] | null;
   error: unknown;
   loading: boolean;
+  addToCart: ({ productId, quantity }: Cart) => number;
+  removeFromCart: (productId: string) => void;
+  cart: Cart[] | [];
+  getCartItemQuantity: (productId: string) => number;
+  incrementCartItem: (productId: string) => number;
+  decrementCartItem: (productId: string) => number;
+  clearCart: () => void;
 };

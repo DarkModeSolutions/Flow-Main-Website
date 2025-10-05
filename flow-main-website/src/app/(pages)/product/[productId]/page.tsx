@@ -3,23 +3,47 @@
 import ErrorComponent from "@/components/ErrorComponent";
 import FlowButton from "@/components/FlowButton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useProductContext } from "@/contexts/ProductContext";
 import useGetProductById from "@/hooks/useGetProductById";
 import { ProductDetailsWithIncludes } from "@/types/types";
-import { images } from "@/utils/constants";
+import { images, videos } from "@/utils/constants";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const ProductPage = () => {
   const params = useParams();
   const productId = params.productId as string;
 
+  // const cartFromLocalStorage = localStorage.getItem("cart");
+  // console.log("Cart from Local Storage: ", cartFromLocalStorage);
+
+  const vids = videos;
+
   const [product, setProduct] = useState<ProductDetailsWithIncludes | null>(
     null
   );
-  const [quantity, setQuantity] = useState<number>(1);
+  const [showVid, setShowVid] = useState<boolean>(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const { error, getProductById, loading } = useGetProductById();
+
+  const {
+    cart,
+    addToCart,
+    getCartItemQuantity,
+    incrementCartItem,
+    decrementCartItem,
+  } = useProductContext();
+
+  const [quantityInCart, setQuantityInCart] = useState<number>(
+    getCartItemQuantity(productId) || 0
+  );
+
+  // Update quantity when cart changes or component mounts
+  useEffect(() => {
+    setQuantityInCart(getCartItemQuantity(productId));
+  }, [cart, productId, getCartItemQuantity]);
 
   useEffect(() => {
     async function fetchProduct(productId: string) {
@@ -32,12 +56,39 @@ const ProductPage = () => {
       }
 
       setProduct(prod);
+
+      console.log("Fetched Product: ", prod);
     }
 
     if (productId) {
       fetchProduct(productId);
     }
   }, [error, getProductById, productId]);
+
+  const handleVideoEnd = () => {
+    setShowVid(false);
+  };
+
+  // Handle Add to Cart with video
+  const handleAddToCart = () => {
+    const newQuantity = addToCart({
+      productId: product!.id,
+      quantity: 1,
+    });
+    setQuantityInCart(newQuantity);
+
+    // Show video after adding to cart
+    if (product!.imageUrl && vids[product!.imageUrl as keyof typeof vids]) {
+      setShowVid(true);
+
+      // Play video after a short delay to ensure it's rendered
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play();
+        }
+      }, 100);
+    }
+  };
 
   if (error) {
     return <ErrorComponent error={error} />;
@@ -74,13 +125,32 @@ const ProductPage = () => {
   return (
     <div className="w-full min-h-screen flex flex-col items-center space-y-3 p-4">
       <div className="h-[30vh] w-full relative">
-        {product.imageUrl ? (
+        {showVid &&
+        product.imageUrl &&
+        vids[product.imageUrl as keyof typeof vids] ? (
+          // Show video when showVid is true
+          <video
+            ref={videoRef}
+            className="w-full h-full object-contain"
+            onEnded={handleVideoEnd}
+            muted
+            playsInline
+          >
+            <source
+              src={vids[product.imageUrl as keyof typeof vids]}
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
+        ) : product.imageUrl ? (
+          // Show image by default or after video ends
           <Image
             src={images[product.imageUrl as keyof typeof images]}
             alt={product.name}
             fill
-            sizes=""
-            className="object-cover h-full w-full" // ✅ Use className instead of style
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-contain h-full w-full"
+            priority={true}
           />
         ) : (
           <p>No Image Available</p>
@@ -110,22 +180,49 @@ const ProductPage = () => {
           </p>
         </div>
         <div className="flex-1 flex flex-col space-y-2">
-          <div className="w-full flex justify-between items-center">
-            <div className="w-[25%]  order-first">
-              <FlowButton onClickHandler={() => setQuantity(quantity + 1)}>
-                <span>+</span>
-              </FlowButton>
+          {product.stock > 0 ? (
+            quantityInCart > 0 ? (
+              // Show quantity controls when item is in cart
+              <div className="w-full flex justify-between items-center">
+                <div className="w-[25%] order-first">
+                  <FlowButton
+                    onClickHandler={() => {
+                      const newQuantity = incrementCartItem(product.id);
+                      setQuantityInCart(newQuantity);
+                    }}
+                  >
+                    <span>+</span>
+                  </FlowButton>
+                </div>
+                <div className="w-[25%] order-last">
+                  <FlowButton
+                    onClickHandler={() => {
+                      const newQuantity = decrementCartItem(product.id);
+                      setQuantityInCart(newQuantity);
+                    }}
+                  >
+                    <span>-</span>
+                  </FlowButton>
+                </div>
+                <div className="flex-1 flex justify-center items-center order-2">
+                  <span>{quantityInCart}</span>
+                </div>
+              </div>
+            ) : (
+              // Show "Add to Cart" button when item not in cart
+              <div className="w-full flex justify-center items-center">
+                <FlowButton onClickHandler={handleAddToCart}>
+                  Add to Cart
+                </FlowButton>
+              </div>
+            )
+          ) : (
+            <div className="w-full flex justify-center items-center">
+              <span className="text-red-500">Out of Stock</span>
             </div>
-            <div className="w-[25%] order-last">
-              <FlowButton
-                onClickHandler={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                <span>-</span>
-              </FlowButton>
-            </div>
-            <div className="flex-1 flex justify-center items-center order-2">
-              <span>{quantity}</span>
-            </div>
+          )}
+          <div className="w-full flex justify-center items-center">
+            <FlowButton>Buy Now</FlowButton>
           </div>
         </div>
       </div>

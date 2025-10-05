@@ -6,6 +6,7 @@ import { IoPersonSharp } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const PageHeader = () => {
   const router = useRouter();
@@ -27,7 +28,9 @@ const PageHeader = () => {
         />
       </div>
       <div className="flex items-center gap-10 text-2xl">
-        <IoCartOutline className="text-white" />
+        <Link href={"/cart"}>
+          <IoCartOutline className="text-white" />
+        </Link>
         <IoPersonSharp className="text-white" />
         <GiHamburgerMenu className="text-white" />
       </div>
