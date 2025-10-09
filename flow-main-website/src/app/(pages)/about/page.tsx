@@ -8,26 +8,26 @@ import { TbSalt } from "react-icons/tb";
 const AboutPage = () => {
   const flowCharacteristics = [
     {
-      icon: <MdOutlineScience />,
+      icon: <MdOutlineScience size={40} />,
       desc: "Scientific Formula",
     },
     {
-      icon: <GiWaterDrop />,
-      desc: "Essential Vitamins",
+      icon: <GiWaterDrop size={40} />,
+      desc: "13 Essential Vitamins and 5 Electrolytes",
     },
     {
-      icon: <SlEnergy />,
+      icon: <SlEnergy size={40} />,
       desc: "Refresh Mind and Body",
     },
     {
-      icon: <TbSalt />,
+      icon: <TbSalt size={40} />,
       desc: "Essential Salts",
     },
   ];
 
   return (
-    <div className="pt-4 w-full h-screen flex flex-col items-center gap-8">
-      <div className="flex flex-col items-center gap-2.5">
+    <div className="pt-4 w-full h-screen flex flex-col gap-8">
+      <div className="flex flex-col gap-2.5">
         <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
           About FLOW Hydration
         </h2>
@@ -38,11 +38,14 @@ const AboutPage = () => {
           Scientifically crafted, Flow aims to provide you with exactly what is
           right for your body to remain in peak performance throughout the day.
         </p>
-        <div className="flex justify-evenly">
+        <div className="flex justify-around gap-8 mt-4">
           {flowCharacteristics.map((characteristic, index) => (
-            <div key={index} className="flex flex-col items-center text-white">
-              <div className="text-sm">{characteristic.icon}</div>
-              <div className="text-xs">{characteristic.desc}</div>
+            <div
+              key={index}
+              className="mt-3 flex flex-col items-center text-white"
+            >
+              <div className="text-sm mb-2">{characteristic.icon}</div>
+              <div className="text-sm">{characteristic.desc}</div>
             </div>
           ))}
         </div>

@@ -60,7 +60,7 @@ export async function middleware(req: NextRequest) {
           { status: 401, headers: { "Content-Type": "application/json" } }
         );
       }
-      return NextResponse.redirect(new URL("/auth/sign-in", req.url));
+      return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
     // Check admin access for admin routes
@@ -73,7 +73,7 @@ export async function middleware(req: NextRequest) {
             { status: 403, headers: { "Content-Type": "application/json" } }
           );
         }
-        return NextResponse.redirect(new URL("/auth/sign-in", req.url));
+        return NextResponse.redirect(new URL("/auth/login", req.url));
       }
     }
   }

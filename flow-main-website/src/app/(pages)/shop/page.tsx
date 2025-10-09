@@ -19,11 +19,11 @@ const ShopPage = () => {
     return <ErrorComponent error={error} />;
   }
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col pt-4 gap-8">
       <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl mb-5">
         Shop
       </h2>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-20">
         {loading && (
           <>
             {Array.from({ length: 6 }).map((_, index) => (
@@ -37,41 +37,12 @@ const ShopPage = () => {
             ))}
           </>
         )}
-        {/* {!loading && products && products.length > 0 ? (
-          products.map((product, index) => (
-            <div
-              onClick={() => router.push(`/product/${product.id}`)}
-              key={index}
-              className="w-[30%] aspect-square flex flex-col"
-            >
-              <div className="w-full h-[60%]">
-                {product.imageUrl &&
-                product.imageUrl in images &&
-                images[product.imageUrl as keyof typeof images] ? (
-                  <Image
-                    src={images[product.imageUrl as keyof typeof images]}
-                    alt={product.name}
-                    fill
-                    className="object-cover" // ✅ Use className instead of style
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    <p>No Image Available</p>
-                  </div>
-                )}
-              </div>
-              <p className="w-full flex-1">{product.name}</p>
-            </div>
-          ))
-        ) : (
-          <p className="text-2xl">No Products Listed</p>
-        )} */}
         {!loading && products && products.length > 0
           ? products.map((product) => (
               <div
                 onClick={() => router.push(`/product/${product.id}`)}
                 key={product.id} // ✅ Use product.id instead of index
-                className="w-full aspect-square flex flex-col cursor-pointer hover:opacity-80 transition-opacity"
+                className="w-full h-[300px] flex flex-col cursor-pointer hover:opacity-80 transition-opacity"
               >
                 <div className="w-full flex-1 relative rounded-lg overflow-hidden bg-gray-100">
                   {product.imageUrl &&
@@ -90,11 +61,13 @@ const ShopPage = () => {
                     </div>
                   )}
                 </div>
-                <div className="p-2">
-                  <p className="font-semibold text-sm truncate">
+                <div className="p-2 mt-4">
+                  <p className="font-semibold text-sm truncate text-center">
                     {product.name}
                   </p>
-                  <p className="text-gray-600 text-xs">${product.price}</p>
+                  <p className="text-gray-600 text-xs text-center">
+                    ${product.price}
+                  </p>
                 </div>
               </div>
             ))
