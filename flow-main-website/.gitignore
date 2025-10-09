@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+
+data-only-clean.sql
+data-only.sql
+full-dump.sql
+
+google-client.json

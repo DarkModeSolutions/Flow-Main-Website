@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:15
+    container_name: flow-app-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: localpassword
+      POSTGRES_DB: flowdevdb
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5432:5432"
+      - "5555:5555"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flow-app-web
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:localpassword@db:5432/flowdevdb?schema=public
+    depends_on:
+      - db
+    develop:
+      watch:
+        # Sync all source code
+        - action: sync
+          path: ./
+          target: /app
+          ignore:
+            - node_modules/
+            - .git/
+            - .next/
+            - .env
+            - package.json
+            - package-lock.json
+            - prisma/schema.prisma
+            - next.config.js
+            - tailwind.config.js
+            - tsconfig.json
+            - docker-compose.yml
+            - Dockerfile
+        # Rebuild for critical files
+        - action: rebuild
+          path: ./.env
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./prisma/schema.prisma
+        - action: rebuild
+          path: ./next.config.js
+        - action: rebuild
+          path: ./tailwind.config.js
+        - action: rebuild
+          path: ./tsconfig.json
+
+volumes:
+  pgdata:
