@@ -15,15 +15,11 @@ const ProductPage = () => {
   const params = useParams();
   const productId = params.productId as string;
 
-  // const cartFromLocalStorage = localStorage.getItem("cart");
-  // console.log("Cart from Local Storage: ", cartFromLocalStorage);
-
-  const vids = videos;
-
   const [product, setProduct] = useState<ProductDetailsWithIncludes | null>(
     null
   );
   const [showVid, setShowVid] = useState<boolean>(false);
+  const [videoPlayedOnce, setVideoPlayedOnce] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { error, getProductById, loading } = useGetProductById();
@@ -45,6 +41,7 @@ const ProductPage = () => {
     setQuantityInCart(getCartItemQuantity(productId));
   }, [cart, productId, getCartItemQuantity]);
 
+  // Separate useEffect for fetching product (removed videoPlayedOnce from dependencies)
   useEffect(() => {
     async function fetchProduct(productId: string) {
       const prod = await getProductById(productId);
@@ -56,38 +53,45 @@ const ProductPage = () => {
       }
 
       setProduct(prod);
-
       console.log("Fetched Product: ", prod);
     }
 
     if (productId) {
       fetchProduct(productId);
     }
-  }, [error, getProductById, productId]);
+  }, [error, getProductById, productId]); // Removed videoPlayedOnce
+
+  // Separate useEffect for handling video start (only when product changes)
+  useEffect(() => {
+    if (
+      product &&
+      product.imageUrl &&
+      videos[product.imageUrl as keyof typeof videos] &&
+      !videoPlayedOnce
+    ) {
+      setShowVid(true);
+
+      // Play video after a short delay to ensure it's rendered
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().catch(console.error);
+        }
+      }, 100);
+    }
+  }, [product, videoPlayedOnce]); // Only depend on product and videoPlayedOnce
 
   const handleVideoEnd = () => {
     setShowVid(false);
+    setVideoPlayedOnce(true); // Mark video as played
   };
 
-  // Handle Add to Cart with video
+  // Handle Add to Cart (no longer triggers video)
   const handleAddToCart = () => {
     const newQuantity = addToCart({
       productId: product!.id,
       quantity: 1,
     });
     setQuantityInCart(newQuantity);
-
-    // Show video after adding to cart
-    if (product!.imageUrl && vids[product!.imageUrl as keyof typeof vids]) {
-      setShowVid(true);
-
-      // Play video after a short delay to ensure it's rendered
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.play();
-        }
-      }, 100);
-    }
   };
 
   if (error) {
@@ -127,17 +131,19 @@ const ProductPage = () => {
       <div className="h-[30vh] w-full relative">
         {showVid &&
         product.imageUrl &&
-        vids[product.imageUrl as keyof typeof vids] ? (
-          // Show video when showVid is true
+        videos[product.imageUrl as keyof typeof videos] &&
+        !videoPlayedOnce ? (
+          // Show video only once on initial load
           <video
             ref={videoRef}
             className="w-full h-full object-contain"
             onEnded={handleVideoEnd}
             muted
             playsInline
+            // Removed loop - video plays once and ends
           >
             <source
-              src={vids[product.imageUrl as keyof typeof vids]}
+              src={videos[product.imageUrl as keyof typeof videos]}
               type="video/mp4"
             />
             Your browser does not support the video tag.

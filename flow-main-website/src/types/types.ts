@@ -56,3 +56,15 @@ export type ProductContextType = {
   decrementCartItem: (productId: string) => number;
   clearCart: () => void;
 };
+
+export type SessionUser = {
+  id: string;
+  email?: string | null;
+  name?: string | null;
+  phone?: string | null;
+  age: number | null;
+  address: string | null;
+  isAdmin: boolean;
+  buyingAsGuest: boolean;
+  favourites: string[];
+};
