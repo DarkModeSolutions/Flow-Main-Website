@@ -9,7 +9,7 @@ import { ProductDetailsWithIncludes } from "@/types/types";
 import { images, videos } from "@/utils/constants";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const ProductPage = () => {
   const params = useParams();
@@ -162,7 +162,7 @@ const ProductPage = () => {
           <p>No Image Available</p>
         )}
       </div>
-      <div className="flex justify-between w-full items-start">
+      <div className="flex justify-between w-full md:items-start items-center">
         <div className="w-[50%]">
           <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
             {product.name}
@@ -177,8 +177,8 @@ const ProductPage = () => {
           </h2>
         </div>
       </div>
-      <div className="w-full flex justify-between items-start space-x-4">
-        <div className="w-[70%] h-auto">
+      <div className="w-full flex justify-between items-start space-x-4 not-md:mt-8">
+        <div className="w-[70%] h-auto not-md:w-[50%] not-md:text-sm">
           <p>
             {product.description
               ? product.description
@@ -228,7 +228,7 @@ const ProductPage = () => {
             </div>
           )}
           <div className="w-full flex justify-center items-center">
-            <FlowButton>Buy Now</FlowButton>
+            <FlowButton>Pre Order Now</FlowButton>
           </div>
         </div>
       </div>
