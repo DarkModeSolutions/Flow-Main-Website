@@ -42,6 +42,10 @@ export const authOptions: AuthOptions = {
                 phone: true,
                 password: true,
                 isAdmin: true,
+                age: true,
+                address: true,
+                buyingAsGuest: true,
+                favourites: true,
               },
             });
           }
@@ -58,7 +62,9 @@ export const authOptions: AuthOptions = {
 
           if (!user) {
             throw new Error(
-              `No user found. ${credentials.signInType === "admin" ? "No admin user found." : ""}`
+              `No user found. ${
+                credentials.signInType === "admin" ? "No admin user found." : ""
+              }`
             );
           }
 
@@ -98,14 +104,20 @@ export const authOptions: AuthOptions = {
 
           return {
             id: user.id,
-            email: user.email,
-            name: user.name,
-            phone: user.phone,
+            email: user.email ?? null,
+            name: user.name ?? null,
+            phone: user.phone ?? null,
             isAdmin: user.isAdmin, // Default to false
+            age: user.age ?? null,
+            address: user.address ?? null,
+            buyingAsGuest: user.buyingAsGuest,
+            favourites: user.favourites,
           };
         } catch (error) {
           throw new Error(
-            `Error while logging in: ${error}. Error Message: ${error instanceof Error ? error.message : "Unknown error"}`
+            `Error while logging in: ${error}. Error Message: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`
           );
         }
       },
@@ -132,6 +144,10 @@ export const authOptions: AuthOptions = {
         token.name = user.name;
         token.phone = user.phone;
         token.isAdmin = user.isAdmin; // Default to false
+        token.age = user.age ?? null;
+        token.address = user.address ?? null;
+        token.buyingAsGuest = user.buyingAsGuest ?? false;
+        token.favourites = user.favourites ?? [];
       }
 
       // If session is being updated, fetch fresh user data from database
@@ -153,6 +169,10 @@ export const authOptions: AuthOptions = {
           token.name = freshUser.name;
           token.phone = freshUser.phone;
           token.isAdmin = freshUser.isAdmin; // Default to false
+          token.age = user.age ?? null;
+          token.address = user.address ?? null;
+          token.buyingAsGuest = user.buyingAsGuest ?? false;
+          token.favourites = user.favourites ?? [];
         }
       }
 
@@ -166,6 +186,10 @@ export const authOptions: AuthOptions = {
         session.user.name = token.name as string;
         session.user.phone = token.phone as string;
         session.user.isAdmin = token.isAdmin as boolean; // Default to false
+        session.user.age = token.age as number | null;
+        session.user.address = token.address as string | null;
+        session.user.buyingAsGuest = token.buyingAsGuest as boolean;
+        session.user.favourites = token.favourites as string[];
       }
       return session;
     },

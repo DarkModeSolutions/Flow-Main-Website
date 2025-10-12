@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { getSession, signIn, signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Loader2Icon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import useRegisterUser from "@/hooks/useRegisterUser";
+import { Loader2Icon } from "lucide-react";
+import { getSession, signIn, signOut } from "next-auth/react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState } from "react";
 
 const AuthComponent = ({
   isAdmin = false,
@@ -19,6 +19,9 @@ const AuthComponent = ({
   isSignUp?: boolean;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
+  console.log("This is the redirect: ", redirect);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,7 +68,7 @@ const AuthComponent = ({
             return;
           }
         } else {
-          router.push("/");
+          router.push(redirect);
         }
         router.refresh();
       }
@@ -112,15 +115,15 @@ const AuthComponent = ({
             {isAdmin
               ? "Admin Auth Component"
               : isSignUp
-                ? "Create an Account"
-                : "Welcome Back!"}
+              ? "Create an Account"
+              : "Welcome Back!"}
           </h2>
           <p className="text-gray-400 manrope-regular">
             {isAdmin
               ? "Please manage your settings here."
               : isSignUp
-                ? "Please fill in the details to create an account."
-                : "Please log in to continue."}
+              ? "Please fill in the details to create an account."
+              : "Please log in to continue."}
           </p>
         </div>
         <div className="mt-4">

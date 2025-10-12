@@ -34,16 +34,11 @@ export default async function getUserDetails(
 
     return user;
   } catch (err) {
-    // await prisma.logs.create({
-    //   data: {
-    //     action: "GetUserDetails",
-    //     details: `Error fetching user details: ${err instanceof Error ? err.message : "Unknown error"}`,
-    //     userId: null, // No user ID available if the token is invalid or not found
-    //   },
-    // });
     await log(
       "Get_User_Details",
-      `Error fetching user details: ${err instanceof Error ? err.message : "Unknown error"}`
+      `Error fetching user details: ${
+        err instanceof Error ? err.message : "Unknown error"
+      }`
     );
     return null;
   }

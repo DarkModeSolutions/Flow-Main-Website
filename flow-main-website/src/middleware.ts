@@ -78,55 +78,6 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  //   // Check for valid session token
-  //   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  //   console.log("Middleware token:", token);
-
-  //   if (!token || !token.email) {
-  //     // Handle API routes - return JSON response
-  //     if (pathname.startsWith("/api/")) {
-  //       return new NextResponse(
-  //         JSON.stringify({ error: "Authentication required" }),
-  //         {
-  //           status: 401,
-  //           headers: { "Content-Type": "application/json" },
-  //         }
-  //       );
-  //     }
-
-  //     // Redirect to appropriate sign-in page
-  //     if (pathname.startsWith("/admin")) {
-  //       return NextResponse.redirect(new URL("/admin/auth/sign-in", req.url));
-  //     }
-  //     return NextResponse.redirect(new URL("/auth/sign-in", req.url));
-  //   }
-
-  //   // If accessing admin routes, verify token has admin role claim
-  //   if (
-  //     (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) &&
-  //     token.role !== "ADMIN"
-  //   ) {
-  //     console.warn("Non-admin user attempting to access admin route");
-
-  //     // Handle API routes differently than frontend routes
-  //     if (pathname.startsWith("/api/admin")) {
-  //       return new NextResponse(
-  //         JSON.stringify({
-  //           error: "Unauthorized: Admin access required",
-  //         }),
-  //         {
-  //           status: 403,
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         }
-  //       );
-  //     }
-
-  //     // Redirect to appropriate sign-in page
-  //     return NextResponse.redirect(new URL("/auth/sign-in", req.url));
-  //   }
-
   return NextResponse.next();
 }
 
