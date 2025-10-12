@@ -16,7 +16,6 @@ const MainPage = () => {
             loop
             muted
             playsInline
-            preload="auto"
           >
             <source
               src="/assets/videos/carousel animation.mp4"
