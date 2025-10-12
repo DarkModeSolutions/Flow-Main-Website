@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import FlowButton from "@/components/FlowButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,13 +49,18 @@ const ProductComponent = ({
   };
 
   return (
-    <div>
-      <div>
-        <Image src={prodImage} alt={productData.name} />
+    <div className="pt-12 p-6">
+      <div className="relative w-full not-md:h-[200px] h-[400px] flex justify-center items-center">
+        <Image
+          src={prodImage}
+          alt={productData.name}
+          fill
+          className="w-[200px] md:object-contain"
+        />
       </div>
       <div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+        <form onSubmit={handleSubmit} className="space-y-4 w-full">
+          <div className="flex flex-col gap-4 mb-7">
             <Label htmlFor="name">Name:</Label>
             <Input
               id="name"
@@ -65,7 +70,7 @@ const ProductComponent = ({
               }
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-4 mb-7">
             <Label htmlFor="description">Description:</Label>
             {/* <Input type="" id="description" value={productData.description || ""} /> */}
             <Textarea
@@ -76,7 +81,7 @@ const ProductComponent = ({
               }
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-4 mb-7">
             <Label htmlFor="price">Price:</Label>
             <Input
               type="number"
@@ -90,7 +95,7 @@ const ProductComponent = ({
               }
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-4 mb-7">
             <Label htmlFor="stock">Stock:</Label>
             <Input
               type="number"
@@ -105,16 +110,18 @@ const ProductComponent = ({
             />
           </div>
 
-          <Button size="sm" disabled={loading} type="submit">
-            {loading ? (
-              <>
-                <Loader2Icon className="animate-spin" />
-                Please wait
-              </>
-            ) : (
-              "Update Product"
-            )}
-          </Button>
+          <div className="flex justify-center items-center md:mt-10">
+            <FlowButton submitType={true} className="md:w-[30%]">
+              {loading ? (
+                <>
+                  <Loader2Icon className="animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Update Product"
+              )}
+            </FlowButton>
+          </div>
         </form>
 
         {error && (

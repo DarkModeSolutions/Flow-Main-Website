@@ -40,8 +40,8 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   return (
     <div className="w-full min-h-screen p-10">
       <div className="flex justify-between items-center gap-6 mb-14">
-        <h1 className="text-3xl font-bold">Your Cart</h1>
-        <div className="w-[20%]">
+        <h1 className="md:text-3xl text-2xl font-bold">Your Cart</h1>
+        <div className="md:w-[20%] w-[50%]">
           <FlowButton label="Clear Cart" onClickHandler={() => clearCart()} />
         </div>
       </div>
@@ -50,7 +50,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
         <p>Your cart is empty.</p>
       ) : (
         <>
-          <div className="border p-4 rounded-lg flex flex-col gap-4 w-[70%] mx-auto my-5">
+          <div className="border p-4 rounded-lg flex flex-col gap-4 md:w-[70%] w-full mx-auto my-5">
             {cart.map((item) => {
               const product = products?.find(
                 (prod) => prod.id === item.productId
@@ -60,11 +60,11 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
 
               return (
                 <div
-                  className="border p-4 rounded-lg flex justify-between items-center gap-4"
+                  className="border p-4 rounded-lg md:flex md:justify-between md:items-center md:gap-4"
                   key={item.productId}
                 >
                   {/* Product Image */}
-                  <div className="w-[120px] h-[120px] relative flex-shrink-0">
+                  <div className="md:w-[120px] w-full not-md:mb-10 h-[120px] relative flex-shrink-0">
                     <Image
                       src={images[product.imageUrl as keyof typeof images]}
                       alt={product.name}
@@ -75,17 +75,31 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                   </div>
 
                   {/* Product Info */}
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{product.name}</h3>
-                    <p className="text-gray-600">
+                  <div className="flex-1 not-md:w-full">
+                    <h3 className="font-semibold md:text-lg text-sm not-md:text-center not-md:mb-5">
+                      {product.name}
+                    </h3>
+                    <p className="text-gray-600 not-md:hidden">
                       Price:{" "}
                       {product.price.toLocaleString("en-IN", {
                         style: "currency",
                         currency: "INR",
                       })}
                     </p>
-                    <p className="text-gray-600">Quantity: {item.quantity}</p>
-                    <p className="font-semibold">
+                    <p className="text-gray-600 not-md:hidden">
+                      Quantity: {item.quantity}
+                    </p>
+                    <div className="md:hidden flex justify-between w-full mb-4">
+                      <p className="text-gray-600">
+                        Price:{" "}
+                        {product.price.toLocaleString("en-IN", {
+                          style: "currency",
+                          currency: "INR",
+                        })}
+                      </p>
+                      <p className="text-gray-600">Quantity: {item.quantity}</p>
+                    </div>
+                    <p className="font-semibold not-md:text-center not-md:mb-5">
                       Subtotal:{" "}
                       {(product.price * item.quantity).toLocaleString("en-IN", {
                         style: "currency",
@@ -95,8 +109,8 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                   </div>
 
                   {/* Quantity Controls */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center w-[20%] order-last">
+                  <div className="flex items-center not-md:justify-center not-md:mb-5 gap-3">
+                    <div className="flex items-center md:w-[20%] order-last">
                       <FlowButton
                         onClickHandler={() => {
                           decrementCartItem(product.id);
@@ -137,7 +151,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
           </div>
 
           {/* Cart Summary */}
-          <div className="w-[40%] mx-auto border-t pt-4">
+          <div className="md:w-[40%] w-[90%] mx-auto border-t pt-4">
             <div className="mb-4">
               <h2 className="text-2xl text-center font-bold">
                 Total:{" "}

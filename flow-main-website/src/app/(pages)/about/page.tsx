@@ -1,7 +1,5 @@
-import React from "react";
-
-import { MdOutlineScience } from "react-icons/md";
 import { GiWaterDrop } from "react-icons/gi";
+import { MdOutlineScience } from "react-icons/md";
 import { SlEnergy } from "react-icons/sl";
 import { TbSalt } from "react-icons/tb";
 
@@ -26,7 +24,7 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="pt-4 w-full h-screen flex flex-col gap-8">
+    <div className="pt-4 w-full min-h-screen flex flex-col gap-8">
       <div className="flex flex-col gap-2.5">
         <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
           About FLOW Hydration
@@ -38,12 +36,20 @@ const AboutPage = () => {
           Scientifically crafted, Flow aims to provide you with exactly what is
           right for your body to remain in peak performance throughout the day.
         </p>
-        <div className="flex justify-around gap-8 mt-4">
+        <div className="not-md:hidden flex justify-around gap-8 mt-4">
           {flowCharacteristics.map((characteristic, index) => (
             <div
               key={index}
               className="mt-3 flex flex-col items-center text-white"
             >
+              <div className="text-sm mb-2">{characteristic.icon}</div>
+              <div className="text-sm">{characteristic.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div className="md:hidden flex flex-col gap-5 mt-4 px-16">
+          {flowCharacteristics.map((characteristic, index) => (
+            <div key={index} className="grid grid-cols-2 items-center">
               <div className="text-sm mb-2">{characteristic.icon}</div>
               <div className="text-sm">{characteristic.desc}</div>
             </div>

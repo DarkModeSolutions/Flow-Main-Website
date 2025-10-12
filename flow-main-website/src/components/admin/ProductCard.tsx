@@ -1,14 +1,13 @@
 import { images } from "@/utils/constants";
 import Image from "next/image";
-import React from "react";
 
 const ProductCard = ({ img, name }: { img: string | null; name: string }) => {
   const prodImage = img ? images[img as keyof typeof images] : null; // Fallback image
 
   return (
-    <div>
+    <div className="relative w-[400px] h-[400px]">
       {prodImage !== null ? (
-        <Image src={prodImage} alt={name} fill />
+        <Image src={prodImage} alt={name} fill className="object-cover" />
       ) : (
         <div>
           No Image Available
