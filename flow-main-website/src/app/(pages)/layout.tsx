@@ -17,7 +17,7 @@ export default function PagesLayout({
         </div>
 
         <div className="p-0 px-4 flex-1 w-full">{children}</div>
-        <div className="w-full mt-10">
+        <div className="w-full mt-20">
           <PageFooter />
         </div>
       </div>
