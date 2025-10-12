@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 // Paths that should be accessible without authentication
 // const PUBLIC_PATHS = [
@@ -73,7 +73,7 @@ export async function middleware(req: NextRequest) {
             { status: 403, headers: { "Content-Type": "application/json" } }
           );
         }
-        return NextResponse.redirect(new URL("/auth/login", req.url));
+        return NextResponse.redirect(new URL("/admin/auth/login", req.url));
       }
     }
   }
