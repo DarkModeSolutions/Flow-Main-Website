@@ -250,6 +250,50 @@ function AuthForm({
     registerUser,
   } = useRegisterUser();
 
+  // const handleSignin = async (
+  //   email: string,
+  //   password: string,
+  //   signInType: string
+  // ) => {
+  //   try {
+  //     const res = await signIn("credentials", {
+  //       email,
+  //       password,
+  //       signInType,
+  //       redirect: false,
+  //     });
+
+  //     if (res?.error) {
+  //       setError(
+  //         signInType === "admin"
+  //           ? "Invalid admin credentials"
+  //           : "Invalid email or password"
+  //       );
+  //       setLoading(false);
+  //     } else if (res?.ok) {
+  //       // For admin login, double-check session
+  //       if (signInType === "admin") {
+  //         const session = await getSession();
+  //         if (session?.user?.isAdmin) {
+  //           console.log("Heading to admin dashboard");
+  //           router.push("/admin/");
+  //         } else {
+  //           await signOut({ redirect: false });
+  //           setError("Access denied. Admin privileges required.");
+  //           setLoading(false);
+  //           return;
+  //         }
+  //       } else {
+  //         router.push(redirect);
+  //         router.refresh();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setError(`Login failed. Please try again. ${error}`);
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSignin = async (
     email: string,
     password: string,
@@ -271,22 +315,46 @@ function AuthForm({
         );
         setLoading(false);
       } else if (res?.ok) {
-        // For admin login, double-check session
         if (signInType === "admin") {
-          const session = await getSession();
-          if (session?.user?.isAdmin) {
-            console.log("Heading to admin dashboard");
-            router.push("/admin/");
-          } else {
+          // ✅ Force session update
+          await getSession({ event: "storage" });
+
+          // ✅ Multiple attempts to get session
+          let attempts = 0;
+          const maxAttempts = 5;
+
+          const checkSession = async (): Promise<boolean> => {
+            const session = await getSession();
+            console.log(`Session attempt ${attempts + 1}:`, session);
+
+            if (session?.user?.isAdmin) {
+              console.log("Admin session confirmed, redirecting...");
+              window.location.href = "/admin/";
+              return true;
+            }
+
+            attempts++;
+            if (attempts < maxAttempts) {
+              await new Promise((resolve) => setTimeout(resolve, 200));
+              return checkSession();
+            }
+
+            return false;
+          };
+
+          const sessionConfirmed = await checkSession();
+
+          if (!sessionConfirmed) {
             await signOut({ redirect: false });
-            setError("Access denied. Admin privileges required.");
+            setError("Session verification failed. Please try again.");
             setLoading(false);
-            return;
           }
+
+          return;
         } else {
           router.push(redirect);
+          router.refresh();
         }
-        router.refresh();
       }
     } catch (error) {
       setError(`Login failed. Please try again. ${error}`);
