@@ -275,6 +275,7 @@ function AuthForm({
         if (signInType === "admin") {
           const session = await getSession();
           if (session?.user?.isAdmin) {
+            console.log("Heading to admin dashboard");
             router.push("/admin/");
           } else {
             await signOut({ redirect: false });
