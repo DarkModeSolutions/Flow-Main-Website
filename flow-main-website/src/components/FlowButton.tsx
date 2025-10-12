@@ -1,5 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const FlowButton = ({
@@ -8,17 +11,21 @@ const FlowButton = ({
   children,
   className,
   submitType,
+  redirectTo,
 }: {
   label?: string;
   onClickHandler?: () => void;
   children?: React.ReactNode;
   className?: string;
   submitType?: boolean;
+  redirectTo?: string;
 }) => {
+  const router = useRouter();
+
   return (
     <Button
       type={submitType ? "submit" : "button"}
-      onClick={onClickHandler}
+      onClick={redirectTo ? () => router.push(redirectTo) : onClickHandler}
       className={cn(
         "bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer",
         className
