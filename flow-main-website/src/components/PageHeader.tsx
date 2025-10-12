@@ -103,6 +103,7 @@ import logo from "@/../public/assets/images/Flow Logo.png";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useProductContext } from "@/contexts/ProductContext";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -188,6 +189,12 @@ const PageHeader = () => {
                 onClick={() => handleNavigation("/about")}
               >
                 Profile
+              </p>
+              <p
+                className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
+                onClick={() => signOut()}
+              >
+                Sign Out
               </p>
             </SheetContent>
           </Sheet>

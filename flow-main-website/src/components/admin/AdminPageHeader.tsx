@@ -1,6 +1,7 @@
 "use client";
 
 import logo from "@/../public/assets/images/Flow Logo.png";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +10,7 @@ const AdminPageHeader = () => {
 
   return (
     <div className="p-6 flex items-center justify-start">
-      <div className="w-[50%]" onClick={() => router.push("/admin")}>
+      <div className="w-[40%]" onClick={() => router.push("/admin")}>
         <Image
           src={logo}
           alt="Flow Logo"
@@ -17,6 +18,9 @@ const AdminPageHeader = () => {
         />
       </div>
       <div className="text-3xl w-full md:ml-36">Admin Panel</div>
+      <div className="w-[10%] cursor-pointer" onClick={() => signOut()}>
+        Sign Out
+      </div>
     </div>
   );
 };
