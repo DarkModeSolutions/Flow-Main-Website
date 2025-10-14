@@ -1,12 +1,15 @@
 "use client";
 
 import AuthComponent from "@/components/auth/AuthComponent";
-import React from "react";
+import { Spinner } from "@/components/ui/spinner";
+import { Suspense } from "react";
 
 const AuthRegisterPage = () => {
   return (
     <div>
-      <AuthComponent isSignUp />
+      <Suspense fallback={<Spinner />}>
+        <AuthComponent isSignUp />
+      </Suspense>
     </div>
   );
 };
