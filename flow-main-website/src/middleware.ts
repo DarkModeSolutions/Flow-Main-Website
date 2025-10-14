@@ -113,6 +113,10 @@ export async function middleware(req: NextRequest) {
   const isProtectedApiRoute = pathname.startsWith("/api/admin");
 
   if (isProtectedAdminRoute || isProtectedApiRoute) {
+    console.log(
+      "NEXTAUTH_SECRET hash:",
+      process.env.NEXTAUTH_SECRET?.slice(0, 6)
+    );
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     console.log("Middleware token:", token);
 
