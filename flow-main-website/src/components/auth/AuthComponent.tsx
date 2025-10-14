@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
+// import { Spinner } from "@/components/ui/spinner";
 import useRegisterUser from "@/hooks/useRegisterUser";
 import { Loader2Icon } from "lucide-react";
 import { getSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useState } from "react";
+import React, { useState } from "react";
 
 const AuthComponent = ({
   isAdmin = false,
@@ -111,103 +111,100 @@ const AuthComponent = ({
   };
 
   return (
-    <Suspense fallback={<Spinner />}>
-      <div className="min-h-screen flex items-center justify-center bg-transparent">
-        <div className="rounded-2xl shadow-lg bg-[#121212] max-w-[80vw] p-12">
-          <div>
-            <h2 className="text-3xl manrope-semibold mb-4">
-              {isAdmin
-                ? "Admin Auth Component"
-                : isSignUp
-                ? "Create an Account"
-                : "Welcome Back!"}
-            </h2>
-            <p className="text-gray-400 manrope-regular">
-              {isAdmin
-                ? "Please manage your settings here."
-                : isSignUp
-                ? "Please fill in the details to create an account."
-                : "Please log in to continue."}
-            </p>
-          </div>
-          <div className="mt-4">
-            <form onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-4 mb-4">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-4 mb-4">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  type="password"
-                  id="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <div>
-                {/* <Button>Sign In</Button> */}
-                <Button
-                  size="sm"
-                  disabled={loading || registerLoading}
-                  type="submit"
-                >
-                  {loading || registerLoading ? (
-                    <>
-                      <Loader2Icon className="animate-spin" />
-                      Please wait
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-                {error ||
-                  (registerError && <div>{error || registerError}</div>)}
-              </div>
-            </form>
-            {!isAdmin && (
-              <div>
-                <Separator className="my-4" />
-                {tag === "set-password" ? (
-                  <div>
-                    <p>
-                      Please click on the{" "}
-                      <Button variant="link">
-                        <Link href={"#"}>link</Link>
-                      </Button>{" "}
-                      to set your password.
-                    </p>
-                  </div>
+    <div className="min-h-screen flex items-center justify-center bg-transparent">
+      <div className="rounded-2xl shadow-lg bg-[#121212] max-w-[80vw] p-12">
+        <div>
+          <h2 className="text-3xl manrope-semibold mb-4">
+            {isAdmin
+              ? "Admin Auth Component"
+              : isSignUp
+              ? "Create an Account"
+              : "Welcome Back!"}
+          </h2>
+          <p className="text-gray-400 manrope-regular">
+            {isAdmin
+              ? "Please manage your settings here."
+              : isSignUp
+              ? "Please fill in the details to create an account."
+              : "Please log in to continue."}
+          </p>
+        </div>
+        <div className="mt-4">
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-4 mb-4">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-4 mb-4">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div>
+              {/* <Button>Sign In</Button> */}
+              <Button
+                size="sm"
+                disabled={loading || registerLoading}
+                type="submit"
+              >
+                {loading || registerLoading ? (
+                  <>
+                    <Loader2Icon className="animate-spin" />
+                    Please wait
+                  </>
                 ) : (
-                  <div className="flex justify-between items-center">
-                    <p className="text-gray-400 manrope-regular">
-                      {isSignUp
-                        ? "Already have an account?"
-                        : "Don't have an account?"}
-                    </p>
-                    <Button variant="link">
-                      <Link
-                        href={isSignUp ? "/auth/login" : "/auth/register"}
-                        className="text-center"
-                      >
-                        {isSignUp ? "Log in" : "Create an account"}
-                      </Link>
-                    </Button>
-                  </div>
+                  "Sign In"
                 )}
-              </div>
-            )}
-          </div>
+              </Button>
+              {error || (registerError && <div>{error || registerError}</div>)}
+            </div>
+          </form>
+          {!isAdmin && (
+            <div>
+              <Separator className="my-4" />
+              {tag === "set-password" ? (
+                <div>
+                  <p>
+                    Please click on the{" "}
+                    <Button variant="link">
+                      <Link href={"#"}>link</Link>
+                    </Button>{" "}
+                    to set your password.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex justify-between items-center">
+                  <p className="text-gray-400 manrope-regular">
+                    {isSignUp
+                      ? "Already have an account?"
+                      : "Don't have an account?"}
+                  </p>
+                  <Button variant="link">
+                    <Link
+                      href={isSignUp ? "/auth/login" : "/auth/register"}
+                      className="text-center"
+                    >
+                      {isSignUp ? "Log in" : "Create an account"}
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
-    </Suspense>
+    </div>
   );
 };
 
