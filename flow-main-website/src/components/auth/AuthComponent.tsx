@@ -61,6 +61,8 @@ const AuthComponent = ({
         if (signInType === "admin") {
           const session = await getSession();
           if (session?.user?.isAdmin) {
+            debugger;
+            console.log("User: ", session?.user);
             router.push("/admin");
           } else {
             await signOut({ redirect: false });
