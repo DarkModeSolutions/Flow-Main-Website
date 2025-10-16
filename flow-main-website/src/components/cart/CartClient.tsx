@@ -16,7 +16,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const CartClient = ({ user }: { user: SessionUser | undefined }) => {
-  console.log("CartClient for user:", user);
+  // console.log("CartClient for user:", user);
 
   const router = useRouter();
 
