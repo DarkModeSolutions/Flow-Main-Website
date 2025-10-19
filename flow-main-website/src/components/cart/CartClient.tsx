@@ -18,8 +18,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 
 const CartClient = ({ user }: { user: SessionUser | undefined }) => {
-  // console.log("CartClient for user:", user);
-
   const router = useRouter();
 
   const {
@@ -76,9 +74,6 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
     // Check if Zoho tokens exist for this user
     const res = await fetch(`/api/user/${user.id}/zoho-status`);
     const data = await res.json();
-    debugger;
-
-    console.log("Data after zoho status: ", data);
 
     if (!data.linked) {
       // Redirect to Zoho OAuth

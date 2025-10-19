@@ -8,7 +8,7 @@ export async function getValidZohoAccessToken(userId: string) {
   }
 
   // Try using the existing token first
-  const test = await fetch("https://www.zohoapis.in/crm/v2/users", {
+  const test = await fetch("https://payments.zoho.in/api/v1/", {
     headers: { Authorization: `Zoho-oauthtoken ${user.zohoAccessToken}` },
   });
 

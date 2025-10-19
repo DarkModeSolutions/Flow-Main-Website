@@ -29,8 +29,6 @@ const CheckoutMethodModal = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle guest form submission logic here
-    console.log("Guest Form Data: ", formData);
 
     const res = await registerAsGuest(
       formData.email,
@@ -38,11 +36,7 @@ const CheckoutMethodModal = () => {
       formData.phone
     );
 
-    console.log(res);
-
     if (res && res.id) {
-      console.log("Entering If block in Checkout Modal");
-      // Successfully registered as guest, now sign in
       handleSignIn(formData.email, formData.phone);
     }
   };

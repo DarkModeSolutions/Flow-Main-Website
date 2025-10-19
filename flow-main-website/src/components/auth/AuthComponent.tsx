@@ -21,7 +21,6 @@ const AuthComponent = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
-  // console.log("This is the redirect: ", redirect);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,8 +59,6 @@ const AuthComponent = ({
         if (signInType === "admin") {
           const session = await getSession();
           if (session?.user?.isAdmin) {
-            debugger;
-            // console.log("User: ", session?.user);
             router.push("/admin");
           } else {
             await signOut({ redirect: false });
@@ -91,7 +88,6 @@ const AuthComponent = ({
     } else if (isSignUp) {
       // Sign-up specific submission logic
       const result = await registerUser(email, password);
-      // console.log(result);
 
       if (result?.success === "tagged") {
         if (result?.tag === "set-password") {

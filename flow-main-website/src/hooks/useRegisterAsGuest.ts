@@ -28,8 +28,6 @@ const useRegisterAsGuest = () => {
 
         const data = await res.json();
 
-        console.log(data);
-
         return data.user;
       } catch (error) {
         console.log("Error registering user as guest:", error);
