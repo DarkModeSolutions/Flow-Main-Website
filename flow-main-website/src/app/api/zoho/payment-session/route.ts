@@ -1,42 +1,76 @@
 import getUserDetails from "@/utils/getUserDetails";
-import { getValidZohoAccessToken } from "@/utils/zohoClient";
 import { NextRequest, NextResponse } from "next/server";
 
+let ZOHO_ACCESS_TOKEN: string | null = null;
+
+const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID!;
+const ZOHO_CLIENT_SECRET = process.env.ZOHO_CLIENT_SECRET!;
+const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN!;
+
+async function refreshZohoAccessToken() {
+  const res = await fetch(
+    `https://accounts.zoho.in/oauth/v2/token?refresh_token=${ZOHO_REFRESH_TOKEN}&client_id=${ZOHO_CLIENT_ID}&client_secret=${ZOHO_CLIENT_SECRET}&grant_type=refresh_token`,
+    { method: "POST" }
+  );
+
+  const data = await res.json();
+
+  if (data.access_token) {
+    ZOHO_ACCESS_TOKEN = data.access_token;
+    return ZOHO_ACCESS_TOKEN;
+  } else {
+    throw new Error(
+      "Failed to refresh Zoho access token: " + JSON.stringify(data)
+    );
+  }
+}
+
+async function getZohoAccessToken() {
+  if (!ZOHO_ACCESS_TOKEN) {
+    return await refreshZohoAccessToken();
+  }
+  return ZOHO_ACCESS_TOKEN;
+}
+
+// Named export for POST
 export async function POST(req: NextRequest) {
   try {
-    const { userId, amount, description } = await req.json();
+    // const body = await req.json();
+    const { amount, description } = await req.json();
 
-    if (!userId || !amount) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    const accessToken = await getValidZohoAccessToken(userId);
     const userData = await getUserDetails(req);
+
+    console.log("This is user data: ", userData);
+
+    const accessToken = await getZohoAccessToken();
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const expires_at = tomorrow.toISOString().split("T")[0];
 
-    const bodyData = JSON.stringify({
-      amount: Number(amount).toFixed(2),
+    const bodyData = {
+      amount: Number(amount), // ✅ ensure it's a number
       currency: "INR",
-      email: userData?.email,
-      phone: `${userData?.phone}`,
+      email: userData?.email || "guest@example.com", // fallback if undefined
+      phone: `${userData?.phone || "7338287273"}`, // empty string if no phone
       reference_id: `REF-${Date.now()}`,
-      description: description || "Payment for Order",
+      description: description?.slice(0, 500) || "Payment for Order", // max 500 chars
       expires_at,
       notify_user: true,
       return_url:
         process.env.NODE_ENV === "development"
           ? "https://www.flowhydration.in"
           : `${process.env.REDIRECT_URI}/payment/success`,
-    });
+    };
 
-    console.log("Body Data: ", bodyData);
+    console.log(
+      "Body Data:",
+      JSON.stringify(bodyData),
+      process.env.ACCOUNT_ID,
+      accessToken
+    );
 
+    // Convert to JSON only when passing to fetch
     const response = await fetch(
       `https://payments.zoho.in/api/v1/paymentlinks?account_id=${process.env.ACCOUNT_ID}`,
       {
@@ -45,30 +79,22 @@ export async function POST(req: NextRequest) {
           Authorization: `Zoho-oauthtoken ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: bodyData,
+        body: JSON.stringify(bodyData),
       }
     );
 
     const data = await response.json();
 
-    if (!response.ok) {
-      console.error("Zoho Error:", data);
-      return NextResponse.json(
-        { error: "Failed to create payment session", details: data },
-        { status: 500 }
-      );
+    if (data.code === 0 && data.payment_links?.url) {
+      return NextResponse.json({
+        success: true,
+        checkout_url: data.payment_links?.url,
+      });
     }
 
-    console.log("Response Data in payment session: ", data);
-
-    // const checkoutUrl = `https://payments.zoho.in/checkout?session_id=${data.payment_links.url}`;
-
-    return NextResponse.json({
-      success: true,
-      checkout_url: data.payment_links.url,
-    });
-  } catch (error) {
-    console.error("Payment session error:", error);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ success: false, error: data }, { status: 400 });
+  } catch (err) {
+    console.error("Zoho Payment API error:", err);
+    return NextResponse.json({ success: false, error: err }, { status: 500 });
   }
 }

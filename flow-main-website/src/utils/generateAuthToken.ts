@@ -5,8 +5,9 @@ const generateAuthToken = async (user: SessionUser | undefined) => {
   const redirectUri = `${process.env.NEXT_PUBLIC_REDIRECT_URI}/api/zoho/callback`;
   const scope =
     "ZohoPay.payments.CREATE,ZohoPay.payments.READ,ZohoPay.payments.UPDATE";
+  const accountId = process.env.ACCOUNT_ID;
 
-  const authUrl = `https://accounts.zoho.in/oauth/v2/auth?scope=${scope}&client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&access_type=offline&state=${user?.id}&prompt=consent`;
+  const authUrl = `https://accounts.zoho.in/oauth/v2/org/auth?scope=${scope}&client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&access_type=offline&state=${user?.id}&soid=zohopay.${accountId}`;
 
   window.location.href = authUrl;
   return;
