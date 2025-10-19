@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import generateAuthToken from "@/utils/generateAuthToken";
 
 export async function getValidZohoAccessToken(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -12,11 +13,18 @@ export async function getValidZohoAccessToken(userId: string) {
   });
 
   if (test.status === 401) {
+    console.log("Refreshing Token in Zoho Client");
+
+    if (user.zohoRefreshTokenCounter > 19) {
+      console.log("Generating a new auth token for new refresh token");
+      generateAuthToken(user);
+    }
+
     // Token expired — refresh it
     const payload = new URLSearchParams({
       refresh_token: user.zohoRefreshToken,
-      client_id: process.env.ZOHO_CLIENT_ID!,
-      client_secret: process.env.ZOHO_CLIENT_SECRET!,
+      client_id: process.env.CLIENT_ID!,
+      client_secret: process.env.CLIENT_SECRET!,
       grant_type: "refresh_token",
     });
 
@@ -33,7 +41,10 @@ export async function getValidZohoAccessToken(userId: string) {
     // Save new token in DB
     await prisma.user.update({
       where: { id: userId },
-      data: { zohoAccessToken: data.access_token },
+      data: {
+        zohoAccessToken: data.access_token,
+        zohoRefreshTokenCounter: (user.zohoRefreshTokenCounter || 0) + 1,
+      },
     });
 
     return data.access_token;

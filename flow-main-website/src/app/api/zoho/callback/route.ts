@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const client_id = process.env.ZOHO_CLIENT_ID!;
-  const client_secret = process.env.ZOHO_CLIENT_SECRET!;
+  const client_id = process.env.CLIENT_ID!;
+  const client_secret = process.env.CLIENT_SECRET!;
   const redirect_uri = `${process.env.REDIRECT_URI}/api/zoho/callback`;
 
   const payload = new URLSearchParams({
@@ -26,6 +26,8 @@ export async function GET(request: NextRequest) {
     redirect_uri,
     grant_type: "authorization_code",
   });
+
+  console.log("Payload in zoho callback: ", payload);
 
   const response = await fetch("https://accounts.zoho.in/oauth/v2/token", {
     method: "POST",

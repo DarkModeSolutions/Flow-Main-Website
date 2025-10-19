@@ -13,10 +13,16 @@ export async function GET(req: NextRequest) {
     select: {
       zohoAccessToken: true,
       zohoRefreshToken: true,
+      zohoTokenExpiry: true,
     },
   });
 
   return NextResponse.json({
-    linked: !!(user?.zohoAccessToken && user?.zohoRefreshToken),
+    linked: !!(
+      user?.zohoAccessToken &&
+      user?.zohoRefreshToken &&
+      user?.zohoTokenExpiry &&
+      user.zohoTokenExpiry > new Date()
+    ),
   });
 }

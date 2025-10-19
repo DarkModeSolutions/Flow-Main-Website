@@ -12,6 +12,7 @@ import {
 import { useProductContext } from "@/contexts/ProductContext";
 import { SessionUser } from "@/types/types";
 import { images } from "@/utils/constants";
+import generateAuthToken from "@/utils/generateAuthToken";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
@@ -75,18 +76,13 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
     // Check if Zoho tokens exist for this user
     const res = await fetch(`/api/user/${user.id}/zoho-status`);
     const data = await res.json();
+    debugger;
+
+    console.log("Data after zoho status: ", data);
 
     if (!data.linked) {
       // Redirect to Zoho OAuth
-      const clientId = process.env.NEXT_PUBLIC_ZOHO_CLIENT_ID;
-      const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/zoho/callback`;
-      const scope =
-        "ZohoPay.payments.CREATE,ZohoPay.payments.READ,ZohoPay.payments.UPDATE";
-
-      const authUrl = `https://accounts.zoho.in/oauth/v2/auth?scope=${scope}&client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&access_type=offline&state=${user.id}&prompt=consent`;
-
-      window.location.href = authUrl;
-      return;
+      generateAuthToken(user);
     }
 
     // Otherwise, directly initiate payment
@@ -234,7 +230,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                       onClick={() => handleCheckout()}
                       className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
                     >
-                      Checkout
+                      Checkout for Payment
                     </Button>
                   ) : (
                     <Dialog>
