@@ -12,19 +12,32 @@ export const authOptions: AuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        phone: { label: "Phone", type: "text" },
         signInType: { label: "Sign In Type", type: "text" },
       },
       async authorize(credentials) {
         try {
-          if (!credentials?.email || !credentials?.password) {
+          if (!credentials?.email) {
             throw new Error("Email and password required");
           }
 
           let user;
 
           if (credentials.signInType === "admin") {
-            user = await prisma.user.findUnique({
+            user = await prisma.user.findFirst({
               where: { email: credentials.email, isAdmin: true },
+              omit: {
+                createdAt: true,
+                updatedAt: true,
+              },
+            });
+          } else if (credentials.signInType === "guest") {
+            user = await prisma.user.findFirst({
+              where: {
+                email: credentials.email,
+                phone: credentials.phone,
+                buyingAsGuest: true,
+              },
               omit: {
                 createdAt: true,
                 updatedAt: true,
@@ -66,6 +79,20 @@ export const authOptions: AuthOptions = {
                 credentials.signInType === "admin" ? "No admin user found." : ""
               }`
             );
+          }
+
+          if (credentials.signInType === "guest") {
+            return {
+              id: user.id,
+              email: user.email ?? null,
+              name: user.name ?? null,
+              phone: user.phone ?? null,
+              isAdmin: user.isAdmin, // Default to false
+              age: user.age ?? null,
+              address: user.address ?? null,
+              buyingAsGuest: user.buyingAsGuest,
+              favourites: user.favourites,
+            };
           }
 
           if (!user.password) {

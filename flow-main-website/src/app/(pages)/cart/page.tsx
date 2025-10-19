@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 
 const Cart = async () => {
   const session = await getServerSession(authOptions);
-  console.log("Session in Cart:", session);
 
   return <CartClient user={session?.user} />;
 };
