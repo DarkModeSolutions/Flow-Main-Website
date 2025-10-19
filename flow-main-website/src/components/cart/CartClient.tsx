@@ -1,21 +1,21 @@
 "use client";
 
-import CheckoutMethodModal from "@/components/CheckoutMethodModal";
+// import CheckoutMethodModal from "@/components/CheckoutMethodModal";
 import FlowButton from "@/components/FlowButton";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
 import { useProductContext } from "@/contexts/ProductContext";
 import { SessionUser } from "@/types/types";
 import { images } from "@/utils/constants";
-import generateAuthToken from "@/utils/generateAuthToken";
+// import generateAuthToken from "@/utils/generateAuthToken";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   const router = useRouter();
@@ -36,7 +36,8 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
       return total + (product?.price || 0) * item.quantity;
     }, 0);
   }, [cart, products]);
-  const initiatePaymentFlow = useCallback(async () => {
+
+  const handleCheckout = async () => {
     try {
       const totalAmount = getTotalPrice();
 
@@ -44,53 +45,24 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user?.id,
           amount: totalAmount,
           description: "Cart purchase from FlowHydration",
+          userId: user?.id,
         }),
       });
 
       const data = await res.json();
-
       if (data.success && data.checkout_url) {
-        window.location.href = data.checkout_url; // redirect to Zoho checkout
+        window.location.href = data.checkout_url;
       } else {
-        console.error("Payment initiation failed:", data);
+        console.error(data.error);
         alert("Failed to start payment. Please try again.");
       }
     } catch (err) {
-      console.error("Payment error:", err);
-      alert("Error starting payment. Please try again.");
+      console.error(err);
+      alert("Error initiating payment.");
     }
-  }, [user, getTotalPrice]);
-
-  const handleCheckout = async () => {
-    if (!user) {
-      // If user not logged in, open login dialog
-      // You already have that handled via Dialog
-      return;
-    }
-
-    // Check if Zoho tokens exist for this user
-    const res = await fetch(`/api/user/${user.id}/zoho-status`);
-    const data = await res.json();
-
-    if (!data.linked) {
-      // Redirect to Zoho OAuth
-      generateAuthToken(user);
-    }
-
-    // Otherwise, directly initiate payment
-    await initiatePaymentFlow();
   };
-
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("zoho") === "linked") {
-      initiatePaymentFlow();
-    }
-  }, [searchParams, initiatePaymentFlow]);
 
   return (
     <div className="w-full min-h-screen p-10">
@@ -217,7 +189,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
               </h2>
               <div className="w-[100%]">
                 <div className="w-[60%] mx-auto flex flex-col gap-4 mt-4">
-                  <FlowButton onClickHandler={() => router.push("/shop")}>
+                  {/* <FlowButton onClickHandler={() => router.push("/shop")}>
                     Continue Shopping
                   </FlowButton>
                   {user && user.email ? (
@@ -239,7 +211,16 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                         <CheckoutMethodModal />
                       </DialogContent>
                     </Dialog>
-                  )}
+                  )} */}
+                  <FlowButton onClickHandler={() => router.push("/shop")}>
+                    Continue Shopping
+                  </FlowButton>
+                  <FlowButton onClickHandler={handleCheckout}>
+                    Checkout for Payment
+                  </FlowButton>
+                  <FlowButton onClickHandler={() => clearCart()}>
+                    Clear Cart
+                  </FlowButton>
                 </div>
               </div>
             </div>
