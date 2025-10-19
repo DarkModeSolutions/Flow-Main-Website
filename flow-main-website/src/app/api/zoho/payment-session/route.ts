@@ -24,12 +24,15 @@ export async function POST(req: NextRequest) {
       amount: Number(amount).toFixed(2),
       currency: "INR",
       email: userData?.email,
-      phone: `7619613318`,
+      phone: `${userData?.phone}`,
       reference_id: `REF-${Date.now()}`,
       description: description || "Payment for Order",
       expires_at,
       notify_user: true,
-      return_url: `https://www.flowhydration.in`,
+      return_url:
+        process.env.NODE_ENV === "development"
+          ? "https://www.flowhydration.in"
+          : `${process.env.PAYMENT_SUCCESS_URL}/payment/success`,
     });
 
     console.log("Body Data: ", bodyData);
