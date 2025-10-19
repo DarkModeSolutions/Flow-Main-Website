@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       return_url:
         process.env.NODE_ENV === "development"
           ? "https://www.flowhydration.in"
-          : `${process.env.PAYMENT_SUCCESS_URL}/payment/success`,
+          : `${process.env.REDIRECT_URI}/payment/success`,
     });
 
     console.log("Body Data: ", bodyData);
