@@ -12,18 +12,21 @@ datasource db {
 
 // Example model - you can modify this based on your needs
 model User {
-    id            String   @id @default(cuid())
-    email         String   @unique
-    password      String?
-    name          String?
-    phone         String?
-    age           Int?
-    address       String?
-    isAdmin       Boolean  @default(false)
-    buyingAsGuest Boolean  @default(false)
-    favourites    String[] @default([]) // Array of product IDs
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    id               String    @id @default(cuid())
+    email            String    @unique
+    password         String?
+    name             String?
+    phone            String?
+    age              Int?
+    address          String?
+    isAdmin          Boolean   @default(false)
+    buyingAsGuest    Boolean   @default(false)
+    favourites       String[]  @default([]) // Array of product IDs
+    zohoAccessToken  String?
+    zohoRefreshToken String?
+    zohoTokenExpiry  DateTime?
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
 
     @@map("users")
 }

@@ -13,7 +13,8 @@ import { useProductContext } from "@/contexts/ProductContext";
 import { SessionUser } from "@/types/types";
 import { images } from "@/utils/constants";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect } from "react";
 
 const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   // console.log("CartClient for user:", user);
@@ -30,12 +31,75 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   } = useProductContext();
 
   // Calculate total price
-  const getTotalPrice = () => {
+  const getTotalPrice = useCallback(() => {
     return cart.reduce((total, item) => {
       const product = products?.find((prod) => prod.id === item.productId);
       return total + (product?.price || 0) * item.quantity;
     }, 0);
+  }, [cart, products]);
+  const initiatePaymentFlow = useCallback(async () => {
+    try {
+      const totalAmount = getTotalPrice();
+
+      const res = await fetch("/api/zoho/payment-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user?.id,
+          amount: totalAmount,
+          description: "Cart purchase from FlowHydration",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.checkout_url) {
+        window.location.href = data.checkout_url; // redirect to Zoho checkout
+      } else {
+        console.error("Payment initiation failed:", data);
+        alert("Failed to start payment. Please try again.");
+      }
+    } catch (err) {
+      console.error("Payment error:", err);
+      alert("Error starting payment. Please try again.");
+    }
+  }, [user, getTotalPrice]);
+
+  const handleCheckout = async () => {
+    if (!user) {
+      // If user not logged in, open login dialog
+      // You already have that handled via Dialog
+      return;
+    }
+
+    // Check if Zoho tokens exist for this user
+    const res = await fetch(`/api/user/${user.id}/zoho-status`);
+    const data = await res.json();
+
+    if (!data.linked) {
+      // Redirect to Zoho OAuth
+      const clientId = process.env.NEXT_PUBLIC_ZOHO_CLIENT_ID;
+      const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/zoho/callback`;
+      const scope =
+        "ZohoPay.payments.CREATE,ZohoPay.payments.READ,ZohoPay.payments.UPDATE";
+
+      const authUrl = `https://accounts.zoho.in/oauth/v2/auth?scope=${scope}&client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&access_type=offline&state=${user.id}&prompt=consent`;
+
+      window.location.href = authUrl;
+      return;
+    }
+
+    // Otherwise, directly initiate payment
+    await initiatePaymentFlow();
   };
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("zoho") === "linked") {
+      initiatePaymentFlow();
+    }
+  }, [searchParams, initiatePaymentFlow]);
 
   return (
     <div className="w-full min-h-screen p-10">
@@ -166,7 +230,10 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                     Continue Shopping
                   </FlowButton>
                   {user && user.email ? (
-                    <Button className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer">
+                    <Button
+                      onClick={() => handleCheckout()}
+                      className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+                    >
                       Checkout
                     </Button>
                   ) : (
