@@ -6,7 +6,6 @@ import { useProductContext } from "@/contexts/ProductContext";
 import { images } from "@/utils/constants";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 const ShopPage = () => {
   const router = useRouter();
@@ -66,7 +65,10 @@ const ShopPage = () => {
                     {product.name}
                   </p>
                   <p className="text-gray-600 text-xs text-center">
-                    ${product.price}
+                    {product.price.toLocaleString("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                    })}
                   </p>
                 </div>
               </div>

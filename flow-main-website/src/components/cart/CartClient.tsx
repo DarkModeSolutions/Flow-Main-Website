@@ -1,18 +1,16 @@
 "use client";
-
-// import CheckoutMethodModal from "@/components/CheckoutMethodModal";
+import CheckoutMethodModal from "@/components/CheckoutMethodModal";
 import FlowButton from "@/components/FlowButton";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useProductContext } from "@/contexts/ProductContext";
 import { SessionUser } from "@/types/types";
 import { images } from "@/utils/constants";
-// import generateAuthToken from "@/utils/generateAuthToken";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
@@ -45,6 +43,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          cart,
           amount: totalAmount,
           description: "Cart purchase from FlowHydration",
           userId: user?.id,
@@ -52,7 +51,13 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
       });
 
       const data = await res.json();
-      if (data.success && data.checkout_url) {
+      if (data.success && data.checkout_url && data.orderId) {
+        const existingOrderId = localStorage.getItem("orderId");
+        if (existingOrderId) {
+          localStorage.removeItem("orderId");
+        }
+        localStorage.setItem("orderId", data.orderId);
+
         window.location.href = data.checkout_url;
       } else {
         console.error(data.error);
@@ -189,7 +194,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
               </h2>
               <div className="w-[100%]">
                 <div className="w-[60%] mx-auto flex flex-col gap-4 mt-4">
-                  {/* <FlowButton onClickHandler={() => router.push("/shop")}>
+                  <FlowButton onClickHandler={() => router.push("/shop")}>
                     Continue Shopping
                   </FlowButton>
                   {user && user.email ? (
@@ -211,16 +216,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                         <CheckoutMethodModal />
                       </DialogContent>
                     </Dialog>
-                  )} */}
-                  <FlowButton onClickHandler={() => router.push("/shop")}>
-                    Continue Shopping
-                  </FlowButton>
-                  <FlowButton onClickHandler={handleCheckout}>
-                    Checkout for Payment
-                  </FlowButton>
-                  <FlowButton onClickHandler={() => clearCart()}>
-                    Clear Cart
-                  </FlowButton>
+                  )}
                 </div>
               </div>
             </div>
