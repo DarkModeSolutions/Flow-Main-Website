@@ -1,3 +1,5 @@
+import { prisma } from "@/lib/db/prisma";
+import { Cart } from "@/types/types";
 import getUserDetails from "@/utils/getUserDetails";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -25,7 +27,7 @@ async function refreshZohoAccessToken() {
   }
 }
 
-async function getZohoAccessToken() {
+export async function getZohoAccessToken() {
   if (!ZOHO_ACCESS_TOKEN) {
     return await refreshZohoAccessToken();
   }
@@ -36,11 +38,32 @@ async function getZohoAccessToken() {
 export async function POST(req: NextRequest) {
   try {
     // const body = await req.json();
-    const { amount, description } = await req.json();
+    const { cart, amount, description } = await req.json();
 
     const userData = await getUserDetails(req);
 
     console.log("This is user data: ", userData);
+
+    const order = await prisma.orders.create({
+      data: {
+        userId: userData?.id || "guest-user",
+        // payment_link_id: data.payment_links.payment_link_id,
+        total: Number(amount),
+        status: "PENDING",
+        orderEmail: userData?.email,
+        orderPhone: userData?.phone,
+        orderAddress: userData?.address,
+        orderItems: {
+          create: cart.map((item: Cart) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+        },
+      },
+      include: {
+        orderItems: true,
+      },
+    });
 
     const accessToken = await getZohoAccessToken();
 
@@ -52,7 +75,7 @@ export async function POST(req: NextRequest) {
       amount: Number(amount), // ✅ ensure it's a number
       currency: "INR",
       email: userData?.email || "guest@example.com", // fallback if undefined
-      phone: `${userData?.phone || "7338287273"}`, // empty string if no phone
+      phone: `${userData?.phone || ""}`, // empty string if no phone
       reference_id: `REF-${Date.now()}`,
       description: description?.slice(0, 500) || "Payment for Order", // max 500 chars
       expires_at,
@@ -83,12 +106,24 @@ export async function POST(req: NextRequest) {
       }
     );
 
+    console.log("This is response: ", response);
+
     const data = await response.json();
 
+    console.log("This is data: ", data);
+
     if (data.code === 0 && data.payment_links?.url) {
+      const updatedOrder = await prisma.orders.update({
+        where: { id: order.id },
+        data: {
+          payment_link_id: data.payment_links?.payment_link_id,
+        },
+      });
+
       return NextResponse.json({
         success: true,
         checkout_url: data.payment_links?.url,
+        orderId: updatedOrder.id,
       });
     }
 
