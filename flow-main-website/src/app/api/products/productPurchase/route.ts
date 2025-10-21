@@ -8,6 +8,18 @@ export async function PATCH(req: NextRequest) {
   try {
     const { orderId, paymentLink } = await req.json();
 
+    await log(
+      "Product_Purchase",
+      `Product_Purchase logging: orderId or paymentLink received - ${orderId}, ${paymentLink}`
+    );
+
+    console.log(
+      "Received PATCH request with orderId:",
+      orderId,
+      "and paymentLink:",
+      paymentLink
+    );
+
     let existingOrder;
 
     if (orderId) {
