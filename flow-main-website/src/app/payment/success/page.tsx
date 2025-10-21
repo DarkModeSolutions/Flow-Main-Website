@@ -9,13 +9,22 @@ import { Suspense, useEffect } from "react";
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  console.log();
 
   const { success, error, loading, updatePurchaseOrder } =
     useUpdatePurchaseOrder();
 
   useEffect(() => {
+    if (!orderId) {
+      console.log("No order ID right now");
+    } // wait until it's available
+
     async function updateOrderStatus() {
-      if (orderId) {
+      if (
+        typeof orderId === "string" &&
+        orderId.length > 0 &&
+        orderId !== null
+      ) {
         const data = await updatePurchaseOrder(orderId);
 
         if (data?.orderFullfillmentStatus === "PENDING") {
