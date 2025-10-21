@@ -23,7 +23,7 @@ const useUpdatePurchaseOrder = () => {
         const requestData: RequestType = {
           url: `/api/products/productPurchase`,
           method: "PATCH",
-          body: JSON.stringify({ orderId, paymentLink }),
+          body: { orderId, paymentLink },
         };
 
         const response = await getRequestData({ requestData });
