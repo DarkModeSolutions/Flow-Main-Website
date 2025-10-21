@@ -10,8 +10,8 @@ const useUpdatePurchaseOrder = () => {
 
   const updatePurchaseOrder = useCallback(
     async (orderId?: string, paymentLink?: string) => {
-      if (!orderId || !paymentLink) {
-        setError("Order ID and Payment Link are required.");
+      if (!orderId && !paymentLink) {
+        setError("Order ID or Payment Link are required.");
         return null;
       }
 

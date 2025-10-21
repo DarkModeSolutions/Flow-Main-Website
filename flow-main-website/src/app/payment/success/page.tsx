@@ -38,7 +38,9 @@ function PaymentSuccessContent() {
       <h1 className="text-3xl font-semibold text-green-600 mb-4">
         Payment Successful 🎉
       </h1>
-      <p className="text-gray-700">{error || success}</p>
+      <p className="text-gray-700">{`${
+        error || success
+      }: Please contact our support team. Email Id at the footer of the page. `}</p>
       <Link
         href="/"
         className="mt-6 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
