@@ -82,8 +82,8 @@ export async function POST(req: NextRequest) {
       notify_user: true,
       return_url:
         process.env.NODE_ENV === "development"
-          ? "https://www.flowhydration.in"
-          : `${process.env.REDIRECT_URI}/payment/success`,
+          ? `https://flow-main-website.vercel.app/payment/success?orderId=${order.id}`
+          : `${process.env.REDIRECT_URI}/payment/success?orderId=${order.id}`,
     };
 
     console.log(
