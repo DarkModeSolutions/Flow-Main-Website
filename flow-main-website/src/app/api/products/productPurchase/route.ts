@@ -6,13 +6,25 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { orderId } = await req.json();
+    const { orderId, paymentLink } = await req.json();
 
-    const existingOrder = await prisma.orders.findUnique({
-      where: {
-        id: orderId,
-      },
-    });
+    let existingOrder;
+
+    if (orderId) {
+      existingOrder = await prisma.orders.findUnique({
+        where: { id: orderId },
+      });
+    } else if (paymentLink) {
+      existingOrder = await prisma.orders.findFirst({
+        where: { payment_link_id: paymentLink },
+      });
+    } else {
+      await log(
+        "Product_Purchase",
+        `Product_Purchase error: orderId or paymentLink not provided`
+      );
+      throw new Error("orderId or paymentLink not provided");
+    }
 
     if (!existingOrder) {
       return NextResponse.json(
@@ -77,7 +89,7 @@ export async function PATCH(req: NextRequest) {
   } catch (err) {
     await log(
       "Product_Purchase",
-      `Registration error: ${
+      `Product_Purchase error: ${
         err instanceof Error ? err.message : "Unknown error"
       }`
     );
