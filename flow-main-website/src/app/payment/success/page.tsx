@@ -9,7 +9,7 @@ import { Suspense, useEffect } from "react";
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
-  console.log();
+  console.log("This is orderId in PaymentSuccess page: ", orderId);
 
   const { success, error, loading, updatePurchaseOrder } =
     useUpdatePurchaseOrder();
