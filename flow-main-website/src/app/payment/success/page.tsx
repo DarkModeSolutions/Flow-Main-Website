@@ -9,6 +9,7 @@ import { Suspense, useEffect } from "react";
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
+  const paymentLink = searchParams.get("payment_link_id");
   console.log("This is orderId in PaymentSuccess page: ", orderId);
 
   const { success, error, loading, updatePurchaseOrder } =
@@ -25,18 +26,24 @@ function PaymentSuccessContent() {
         orderId.length > 0 &&
         orderId !== null
       ) {
-        const data = await updatePurchaseOrder(orderId);
+        const data = await updatePurchaseOrder(
+          orderId || undefined,
+          paymentLink || undefined
+        );
 
         if (data?.orderFullfillmentStatus === "PENDING") {
           console.error("Order is still pending:", data?.message);
         } else if (data?.orderFullfillmentStatus === "COMPLETED") {
           console.log("Order completed successfully.");
         }
+
+        localStorage.removeItem("cart");
+        localStorage.removeItem("orderId");
       }
     }
 
     updateOrderStatus();
-  }, [orderId, updatePurchaseOrder]);
+  }, [orderId, updatePurchaseOrder, paymentLink]);
 
   if (loading) {
     return <Spinner />;

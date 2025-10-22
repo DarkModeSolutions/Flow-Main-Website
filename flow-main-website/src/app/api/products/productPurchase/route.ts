@@ -25,10 +25,12 @@ export async function PATCH(req: NextRequest) {
     if (orderId) {
       existingOrder = await prisma.orders.findUnique({
         where: { id: orderId },
+        include: { orderItems: true },
       });
     } else if (paymentLink) {
       existingOrder = await prisma.orders.findFirst({
         where: { payment_link_id: paymentLink },
+        include: { orderItems: true },
       });
     } else {
       await log(
@@ -59,6 +61,16 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    if (existingOrder.status === "COMPLETED") {
+      return NextResponse.json(
+        {
+          message: "Order already processed",
+          orderFullfillmentStatus: "COMPLETED",
+        },
+        { status: 200 }
+      );
+    }
+
     const accessToken = await getZohoAccessToken();
 
     const getPaymentDetails = await fetch(
@@ -77,6 +89,33 @@ export async function PATCH(req: NextRequest) {
       paymentData.code === 0 &&
       paymentData?.payment_links?.status === "paid"
     ) {
+      await Promise.all(
+        existingOrder.orderItems.map(async (item) => {
+          const product = await prisma.products.findUnique({
+            where: { id: item.productId },
+          });
+
+          if (!product) {
+            throw new Error(`Product ${item.productId} not found`);
+          }
+
+          if (product.stock < item.quantity) {
+            throw new Error(
+              `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`
+            );
+          }
+
+          return prisma.products.update({
+            where: { id: item.productId },
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+          });
+        })
+      );
+
       await prisma.orders.update({
         where: { id: existingOrder.id },
         data: {
