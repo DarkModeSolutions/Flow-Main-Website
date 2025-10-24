@@ -161,7 +161,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   }
 
   return (
-    <div className="w-full min-h-screen md:flex not-md::flex-col items-center space-y-3 p-4 hidden">
+    <div className="w-full min-h-screen flex flex-row not-md:flex-col items-center space-y-3 p-4">
       <div className="h-[30vh] w-full relative md:w-[60%]">
         {showVid &&
         product.imageUrl &&
@@ -196,7 +196,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
           <p>No Image Available</p>
         )}
       </div>
-      <div className="flex md:flex-col md:gap-y-3">
+      <div className="flex md:flex-col not-md:flex-col md:gap-y-3 mt-5">
         <div className="flex justify-between w-full md:items-start items-center">
           <div className="w-[50%]">
             <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
