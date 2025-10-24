@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useProductContext } from "@/contexts/ProductContext";
+import useInitiatePayment from "@/hooks/useInitiatePayment";
 import { SessionUser } from "@/types/types";
 import { images } from "@/utils/constants";
 import Image from "next/image";
@@ -27,6 +28,8 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
     clearCart,
   } = useProductContext();
 
+  const { error, loading, initiatePayment } = useInitiatePayment();
+
   // Calculate total price
   const getTotalPrice = useCallback(() => {
     return cart.reduce((total, item) => {
@@ -36,36 +39,19 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   }, [cart, products]);
 
   const handleCheckout = async () => {
-    try {
-      const totalAmount = getTotalPrice();
+    const totalAmount = getTotalPrice();
 
-      const res = await fetch("/api/zoho/payment-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cart,
-          amount: totalAmount,
-          description: "Cart purchase from FlowHydration",
-          userId: user?.id,
-        }),
-      });
+    const response = await initiatePayment({
+      cart,
+      amount: totalAmount,
+      description: "Cart purchase from FlowHydration",
+      userId: user?.id,
+    });
 
-      const data = await res.json();
-      if (data.success && data.checkout_url && data.orderId) {
-        const existingOrderId = localStorage.getItem("orderId");
-        if (existingOrderId) {
-          localStorage.removeItem("orderId");
-        }
-        localStorage.setItem("orderId", data.orderId);
-
-        window.location.href = data.checkout_url;
-      } else {
-        console.error(data.error);
-        alert("Failed to start payment. Please try again.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error initiating payment.");
+    if (typeof response === "string") {
+      window.location.href = response;
+    } else {
+      alert("Failed to start payment. Please try again.");
     }
   };
 
@@ -199,10 +185,11 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                   </FlowButton>
                   {user && user.email ? (
                     <Button
+                      disabled={loading}
                       onClick={() => handleCheckout()}
                       className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
                     >
-                      Checkout for Payment
+                      {loading ? "Processing..." : "Checkout"}
                     </Button>
                   ) : (
                     <Dialog>
@@ -216,6 +203,9 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                         <CheckoutMethodModal />
                       </DialogContent>
                     </Dialog>
+                  )}
+                  {error && (
+                    <div className="text-red-500 text-center">{`${error}`}</div>
                   )}
                 </div>
               </div>
