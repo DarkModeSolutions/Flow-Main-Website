@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/ui/spinner";
+import { useProductContext } from "@/contexts/ProductContext";
 import useUpdatePurchaseOrder from "@/hooks/useUpdatePurchaseOrder";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -11,6 +12,8 @@ function PaymentSuccessContent() {
   const orderId = searchParams.get("orderId");
   const paymentLink = searchParams.get("payment_link_id");
   console.log("This is orderId in PaymentSuccess page: ", orderId);
+
+  const { clearCart } = useProductContext();
 
   const { success, error, loading, updatePurchaseOrder } =
     useUpdatePurchaseOrder();
@@ -37,13 +40,15 @@ function PaymentSuccessContent() {
           console.log("Order completed successfully.");
         }
 
+        clearCart();
+
         localStorage.removeItem("cart");
         localStorage.removeItem("orderId");
       }
     }
 
     updateOrderStatus();
-  }, [orderId, updatePurchaseOrder, paymentLink]);
+  }, [orderId, updatePurchaseOrder, paymentLink, clearCart]);
 
   if (loading) {
     return <Spinner />;

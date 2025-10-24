@@ -43,7 +43,7 @@ const ShopPage = () => {
                 key={product.id} // ✅ Use product.id instead of index
                 className="w-full h-[300px] flex flex-col cursor-pointer hover:opacity-80 transition-opacity"
               >
-                <div className="w-full flex-1 relative rounded-lg overflow-hidden bg-gray-100">
+                <div className="w-full flex-1 relative overflow-hidden">
                   {product.imageUrl &&
                   product.imageUrl in images &&
                   images[product.imageUrl as keyof typeof images] ? (
@@ -52,7 +52,7 @@ const ShopPage = () => {
                       alt={product.name}
                       fill
                       sizes=""
-                      className="object-cover" // ✅ Use className instead of style
+                      className="object-contain bg-transparent" // ✅ Use className instead of style
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-500">

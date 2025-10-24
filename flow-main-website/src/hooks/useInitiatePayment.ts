@@ -14,7 +14,7 @@ const useInitiatePayment = () => {
       description,
       userId,
     }: {
-      cart: Cart[] | [];
+      cart?: Cart[] | [];
       amount: number;
       description: string;
       userId: string | undefined;

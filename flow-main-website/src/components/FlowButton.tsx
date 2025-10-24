@@ -12,6 +12,7 @@ const FlowButton = ({
   className,
   submitType,
   redirectTo,
+  isDisabled,
 }: {
   label?: string;
   onClickHandler?: () => void;
@@ -19,11 +20,13 @@ const FlowButton = ({
   className?: string;
   submitType?: boolean;
   redirectTo?: string;
+  isDisabled?: boolean;
 }) => {
   const router = useRouter();
 
   return (
     <Button
+      disabled={isDisabled}
       type={submitType ? "submit" : "button"}
       onClick={redirectTo ? () => router.push(redirectTo) : onClickHandler}
       className={cn(
