@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useProductContext } from "@/contexts/ProductContext";
 import useUserSignOut from "@/hooks/useUserSignOut";
 import { AllProductDetails } from "@/types/types";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,10 +17,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
 
 const PageHeader = () => {
-  const { data: session, status } = useSession();
-
   const router = useRouter();
-
   const { cart, products } = useProductContext();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -115,13 +112,7 @@ const PageHeader = () => {
             )}
           </div>
           <Link href={"/profile"}>
-            {status === "authenticated" &&
-            session.user &&
-            session.user.email ? (
-              <IoPersonSharp className="not-md:hidden text-[#24bfcf]" />
-            ) : (
-              <IoPersonSharp className="not-md:hidden text-white" />
-            )}
+            <IoPersonSharp className="not-md:hidden text-white" />
           </Link>
 
           {/* Only render Sheet after component mounts on client */}
