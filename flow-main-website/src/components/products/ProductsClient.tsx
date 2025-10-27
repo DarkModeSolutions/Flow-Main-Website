@@ -114,16 +114,16 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   const handleClick = async () => {
     if (!product) return;
 
+    let effectiveQuantity = quantityInCart;
+    if (effectiveQuantity === 0) {
+      effectiveQuantity = 1; // Ensure at least 1 item is purchased
+    }
+
     const response = await initiatePayment({
-      amount: product.price * quantityInCart,
+      amount: product.price * effectiveQuantity,
       description: `Purchase of ${product.name}`,
       userId: user?.id,
-      cart: [
-        {
-          productId: product.id,
-          quantity: quantityInCart === 0 ? 1 : quantityInCart,
-        },
-      ],
+      cart: [{ productId: product.id, quantity: effectiveQuantity }],
     });
 
     if (typeof response === "string") {
