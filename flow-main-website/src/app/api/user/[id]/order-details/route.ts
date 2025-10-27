@@ -5,9 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    console.log("Entering API layer");
     const url = new URL(req.url);
     const pathSegments = url.pathname.split("/");
     const userId = pathSegments.slice(-2, -1)[0]; // Gets [id] part
+
+    console.log("here");
 
     if (!userId) {
       await log(
