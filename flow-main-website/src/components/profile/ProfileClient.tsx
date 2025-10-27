@@ -263,7 +263,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
           <h2 className="text-2xl font-bold mb-4">My Order History</h2>
           {myOrderHistory && myOrderHistory.length > 0
             ? myOrderHistory.map((order) => (
-                <div key={order.id}>
+                <div className="border p-4" key={order.id}>
                   <h3 className="text-xl font-semibold mb-2">
                     Order ID: {order.id}
                   </h3>
