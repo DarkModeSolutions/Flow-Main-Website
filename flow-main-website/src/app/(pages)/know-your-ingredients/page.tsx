@@ -1,3 +1,6 @@
+"use client";
+
+import FlowButton from "@/components/FlowButton";
 import {
   Table,
   TableBody,
@@ -347,8 +350,17 @@ const KnowYourIngredients = () => {
     },
   ];
 
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/assets/docs/Flow Hydration Mechanism and Uses.docx";
+    link.download = "Flow Hydration Mechanism and Uses.docx";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <div className="w-full p-6">
+    <div className="w-full p-6 relative">
       <h2 className="text-2xl font-bold">
         Flow Hydration: Know your Ingredients
       </h2>
@@ -467,6 +479,12 @@ const KnowYourIngredients = () => {
           </ol>
         </div>
       </div>
+      <FlowButton
+        className="absolute top-2 right-2 w-[10%]"
+        onClickHandler={handleDownload}
+      >
+        📥 Download Guide
+      </FlowButton>
     </div>
   );
 };
