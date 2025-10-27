@@ -118,7 +118,12 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
       amount: product.price * quantityInCart,
       description: `Purchase of ${product.name}`,
       userId: user?.id,
-      cart: [{ productId: product.id, quantity: quantityInCart }],
+      cart: [
+        {
+          productId: product.id,
+          quantity: quantityInCart === 0 ? 1 : quantityInCart,
+        },
+      ],
     });
 
     if (typeof response === "string") {
