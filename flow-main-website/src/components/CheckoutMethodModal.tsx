@@ -82,6 +82,7 @@ const CheckoutMethodModal = () => {
           <div className="flex flex-col gap-4 mb-4">
             <Label htmlFor="email">Email</Label>
             <Input
+              required
               type="email"
               id="email"
               placeholder="Email"
@@ -94,6 +95,7 @@ const CheckoutMethodModal = () => {
           <div className="flex flex-col gap-4 mb-4">
             <Label htmlFor="name">Name</Label>
             <Input
+              required
               type="text"
               id="name"
               placeholder="Name"
@@ -106,6 +108,7 @@ const CheckoutMethodModal = () => {
           <div className="flex flex-col gap-4 mb-4">
             <Label htmlFor="phone">Phone Number</Label>
             <Input
+              required
               type="tel"
               id="phone"
               placeholder="Phone Number"
