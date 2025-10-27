@@ -8,7 +8,13 @@ const useRegisterAsGuest = () => {
   const [error, setError] = useState<string | null>(null);
 
   const registerAsGuest = useCallback(
-    async (email: string, name: string, phone: string) => {
+    async (
+      email: string,
+      name: string,
+      phone: string,
+      address: string,
+      age: number
+    ) => {
       try {
         setLoading(true);
         setError(null); // Clear previous errors
@@ -16,7 +22,7 @@ const useRegisterAsGuest = () => {
         const requestData: RequestType = {
           url: "/api/auth/registerAsGuest",
           method: "POST",
-          body: { email, name, phone },
+          body: { email, name, phone, address, age },
         };
 
         const res = await getRequestData({ requestData });

@@ -1,12 +1,12 @@
-import { log } from "@/utils/log";
-import { error } from "@/utils/errorResponse";
-import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
+import { error } from "@/utils/errorResponse";
+import { log } from "@/utils/log";
 import bcrypt from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { email, password, name, address, phone, age } = await req.json();
 
     if (!email || !password) {
       return error(400, "Email and password are required");
@@ -36,6 +36,10 @@ export async function POST(req: NextRequest) {
       data: {
         email,
         password: hashedPassword,
+        name,
+        address,
+        phone,
+        age,
       },
     });
 
@@ -56,7 +60,9 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     await log(
       "Auth_Register",
-      `Registration error: ${err instanceof Error ? err.message : "Unknown error"}`
+      `Registration error: ${
+        err instanceof Error ? err.message : "Unknown error"
+      }`
     );
     return error(
       500,

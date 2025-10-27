@@ -12,7 +12,11 @@ const useRegisterUser = () => {
 
   const registerUser = async (
     email: string,
-    password: string
+    password: string,
+    name: string,
+    address: string,
+    phone: string,
+    age: number
   ): Promise<RegisterResult> => {
     try {
       setLoading(true);
@@ -21,7 +25,7 @@ const useRegisterUser = () => {
       const requestData: RequestType = {
         url: "/api/auth/register",
         method: "POST",
-        body: { email, password },
+        body: { email, password, name, address, phone, age },
       };
 
       const res = await getRequestData({ requestData });

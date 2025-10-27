@@ -1,11 +1,7 @@
 "use client";
 
 import useGetAllProducts from "@/hooks/useGetAllProducts";
-import {
-  Cart,
-  ProductContextType,
-  ProductDetailsWithIncludes,
-} from "@/types/types";
+import { AllProductDetails, Cart, ProductContextType } from "@/types/types";
 import React, { createContext, useEffect, useState } from "react";
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -15,7 +11,7 @@ export const ProductProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [products, setProducts] = useState<ProductDetailsWithIncludes[]>([]);
+  const [products, setProducts] = useState<AllProductDetails[]>([]);
   const [cart, setCart] = useState<Cart[] | []>([]);
 
   const { error, getAllProducts, loading } = useGetAllProducts();

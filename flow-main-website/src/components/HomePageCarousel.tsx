@@ -7,7 +7,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProductDetailsWithIncludes } from "@/types/types";
+import { AllProductDetails } from "@/types/types";
 import { tempProducts } from "@/utils/constants";
 import React, { useEffect, useRef } from "react";
 
@@ -16,7 +16,7 @@ const HomePageCarousel = ({
   loading,
   shouldStart = false,
 }: {
-  products: ProductDetailsWithIncludes[] | null;
+  products: AllProductDetails[] | null;
   loading: boolean;
   shouldStart?: boolean;
 }) => {

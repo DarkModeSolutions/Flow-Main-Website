@@ -1,5 +1,5 @@
 import { ProductRequest } from "@/types/adminTypes";
-import { ProductDetailsWithIncludes, RequestType } from "@/types/types";
+import { AllProductDetails, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleHookCatch from "@/utils/handleHookCatch";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
@@ -31,7 +31,7 @@ const useUpdateProductForAdmin = () => {
 
       const data = await response.json();
 
-      return data.product as ProductDetailsWithIncludes | null;
+      return data.product as AllProductDetails | null;
     } catch (error) {
       //   const errorMessage =
       //     error instanceof Error ? error.message : "Failed to update product";
