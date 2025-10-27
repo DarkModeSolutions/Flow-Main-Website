@@ -15,6 +15,7 @@ async function main() {
         price: 0,
         stock: 0,
         imageUrl: "lemonade",
+        searchTags: ["lemon", "lemonade", "citrus", "refreshing", "tangy"],
       },
       {
         name: "FLOW Hydration Original",
@@ -23,6 +24,7 @@ async function main() {
         price: 0,
         stock: 0,
         imageUrl: "original",
+        searchTags: ["original", "regular", "classic"],
       },
       {
         name: "FLOW Hydration Mango",
@@ -31,6 +33,7 @@ async function main() {
         price: 0,
         stock: 0,
         imageUrl: "mango",
+        searchTags: ["mango", "tropical", "fruity", "sweet"],
       },
     ],
     skipDuplicates: true,
