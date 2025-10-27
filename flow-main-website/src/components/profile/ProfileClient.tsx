@@ -19,6 +19,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
+  console.log("Entering Profile client");
+
   const router = useRouter();
 
   const [myUserDetails, setMyUserDetails] = useState<
@@ -59,8 +61,16 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
         console.log("Fetched user details: ", userDetails);
         console.log("Fetched order history: ", orderHistory);
         setMyUserDetails(userDetails);
+        setUpdatedUserDetails({
+          name: userDetails?.name,
+          email: userDetails?.email,
+          address: userDetails?.address,
+          phone: userDetails?.phone,
+          age: userDetails?.age,
+        });
         setMyOrderHistory(orderHistory);
       } else {
+        console.log("redirecting from use effect");
         router.push("/auth/login");
       }
     }
@@ -87,9 +97,10 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     console.log("Updated user details response: ", updateDetails);
   };
 
-  if (!myUserDetails) {
-    router.push("/auth/login");
-  }
+  // if (!myUserDetails) {
+  //   console.log("redirecting from other if block");
+  //   router.push("/auth/login");
+  // }
 
   if (getUserLoading || orderDetailsLoading) {
     return (
@@ -111,13 +122,17 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
           <TabsTrigger value="order-history">Order History</TabsTrigger>
         </TabsList>
         <TabsContent value="user-details">
-          <h2 className="text-2xl font-bold">My User Profile</h2>
-          <form onSubmit={(e) => handleSubmit(e)}>
-            <div className="flex justify-between items-center border border-white rounded-lg p-6">
+          <h2 className="text-2xl font-bold mb-4">My User Profile</h2>
+          <form
+            className="w-[30%] mx-auto flex flex-col gap-y-4"
+            onSubmit={(e) => handleSubmit(e)}
+          >
+            <div className="flex justify-between gap-5 items-center border border-white rounded-lg p-6">
               <Label htmlFor="name" className="text-lg font-medium">
                 Name:
               </Label>
               <Input
+                className="w-[50%]"
                 name="name"
                 type="text"
                 placeholder="Enter Name"
@@ -130,11 +145,12 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
                 }
               />
             </div>
-            <div className="flex justify-between items-center border border-white rounded-lg p-6">
+            <div className="flex justify-between gap-5 items-center border border-white rounded-lg p-6">
               <Label htmlFor="email" className="text-lg font-medium">
                 Email:
               </Label>
               <Input
+                className="w-[50%]"
                 name="email"
                 type="email"
                 placeholder="Enter Email"
@@ -147,24 +163,26 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
                 }
               />
             </div>
-            <div className="flex justify-between items-center border border-gray-400 rounded-lg p-6 relative">
+            <div className="flex justify-between gap-5 items-center border border-gray-400 rounded-lg p-6 relative">
               <Label htmlFor="passwword" className="text-lg font-medium">
                 Password:
               </Label>
               <Input
+                className="w-[50%]"
                 name="passwword"
                 type="password"
                 placeholder="Enter Password"
                 value={myUserDetails?.password || ""}
-                className="pr-6"
+                // className="pr-6"
                 disabled
               />
             </div>
-            <div className="flex justify-between items-center border border-white rounded-lg p-6">
+            <div className="flex justify-between gap-5 items-center border border-white rounded-lg p-6">
               <Label htmlFor="address" className="text-lg font-medium">
                 Address:
               </Label>
               <Input
+                className="w-[50%]"
                 name="address"
                 type="text"
                 placeholder="Enter Address"
@@ -177,11 +195,12 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
                 }
               />
             </div>
-            <div className="flex justify-between items-center border border-white rounded-lg p-6">
+            <div className="flex justify-between gap-5 items-center border border-white rounded-lg p-6">
               <Label htmlFor="phone" className="text-lg font-medium">
                 Phone Number:
               </Label>
               <Input
+                className="w-[50%]"
                 name="phone"
                 type="text"
                 placeholder="Enter Phone Number"
@@ -194,11 +213,12 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
                 }
               />
             </div>
-            <div className="flex justify-between items-center border border-white rounded-lg p-6">
+            <div className="flex justify-between gap-5 items-center border border-white rounded-lg p-6">
               <Label htmlFor="age" className="text-lg font-medium">
                 Age:
               </Label>
               <Input
+                className="w-[50%]"
                 name="age"
                 type="number"
                 placeholder="Enter Age"
@@ -210,6 +230,22 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
                   })
                 }
               />
+            </div>
+            <div className="flex justify-end">
+              <FlowButton
+                submitType={true}
+                isDisabled={updateUserLoading}
+                className="w-[50%] flex justify-center items-center"
+              >
+                {updateUserLoading ? (
+                  <>
+                    <Spinner />
+                    <span>Updating</span>
+                  </>
+                ) : (
+                  "Update Details"
+                )}
+              </FlowButton>
             </div>
           </form>
         </TabsContent>
@@ -238,21 +274,6 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
             : "No orders placed yet."}
         </TabsContent>
       </Tabs>
-      <div className="flex justify-end">
-        <FlowButton
-          isDisabled={updateUserLoading}
-          className="w-[20%] flex justify-center items-center"
-        >
-          {updateUserLoading ? (
-            <>
-              <Spinner />
-              <span>Updating</span>
-            </>
-          ) : (
-            "Update Details"
-          )}
-        </FlowButton>
-      </div>
     </div>
   );
 };

@@ -13,7 +13,7 @@ const useGetOrderDetails = () => {
       setError(null);
 
       const requestData: RequestType = {
-        url: `/api/user/${userId}/orderDetails`,
+        url: `/api/user/${userId}/order-details`,
         method: "GET",
       };
 
