@@ -118,8 +118,18 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     <div>
       <Tabs defaultValue="user-details">
         <TabsList className="mb-10">
-          <TabsTrigger value="user-details">User Details</TabsTrigger>
-          <TabsTrigger value="order-history">Order History</TabsTrigger>
+          <TabsTrigger
+            className="data-[state=active]:bg-white data-[state=active]:text-black"
+            value="user-details"
+          >
+            User Details
+          </TabsTrigger>
+          <TabsTrigger
+            className="data-[state=active]:bg-white data-[state=active]:text-black"
+            value="order-history"
+          >
+            Order History
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="user-details">
           <h2 className="text-2xl font-bold mb-4">My User Profile</h2>
@@ -250,7 +260,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
           </form>
         </TabsContent>
         <TabsContent value="order-history">
-          <h2 className="text-2xl font-bold">My Order History</h2>
+          <h2 className="text-2xl font-bold mb-4">My Order History</h2>
           {myOrderHistory && myOrderHistory.length > 0
             ? myOrderHistory.map((order) => (
                 <div key={order.id}>
