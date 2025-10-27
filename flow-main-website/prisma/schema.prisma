@@ -50,6 +50,8 @@ model Products {
     imageUrl    String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+    tags        String[] @default([])
+    searchTags  String[] @default([])
 
     orderItems OrderItems[]
 

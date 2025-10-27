@@ -1,10 +1,12 @@
 "use client";
 
 import logo from "@/../public/assets/images/Flow Logo.png";
+import SearchResult from "@/components/SearchResult";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useProductContext } from "@/contexts/ProductContext";
 import useUserSignOut from "@/hooks/useUserSignOut";
+import { ProductDetailsWithIncludes } from "@/types/types";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,9 +18,32 @@ import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
 
 const PageHeader = () => {
   const router = useRouter();
-  const { cart } = useProductContext();
+  const { cart, products } = useProductContext();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [searchResult, setSearchResult] = useState<
+    ProductDetailsWithIncludes[] | undefined
+  >(undefined);
+
+  const findHandler = (searchString: string) => {
+    console.log("Search string: ", searchString);
+    let results: ProductDetailsWithIncludes[] | undefined = undefined;
+    if (searchString.length <= 2) {
+      results = [];
+    } else {
+      const lowerCaseSearchString = searchString.toLowerCase();
+      const searchResults = products?.filter(
+        (product) =>
+          product.name.toLowerCase().includes(lowerCaseSearchString) ||
+          product.searchTags.some((tag) =>
+            tag.toLowerCase().includes(lowerCaseSearchString)
+          )
+      );
+      console.log("Search Results: ", searchResults);
+      results = searchResults;
+    }
+    setSearchResult(results);
+  };
 
   const { userSignOut } = useUserSignOut();
 
@@ -55,12 +80,25 @@ const PageHeader = () => {
             className="w-[50px] h-auto cursor-pointer"
           />
         </div>
-        <div className="p-2 transition-all ease-in-out md:w-[30%] md:ml-20">
+        <div className="relative p-2 transition-all ease-in-out md:w-[30%] md:ml-20">
           <Input
             placeholder="🔍 Search here"
             type="text"
             className="rounded-[40px] transition-all ease-in-out placeholder:font-bold"
+            onChange={(e) => findHandler(e.target.value)}
           />
+          {searchResult && searchResult?.length > 0 && (
+            <div className="w-full min-h-0 absolute top-[110%] left-0 rounded-md shadow-md max-h-60 overflow-y-auto bg-black/15 backdrop-blur-md p-4">
+              {searchResult?.map((result) => (
+                <SearchResult
+                  id={result.id}
+                  img={result.imageUrl}
+                  name={result.name}
+                  key={result.id}
+                />
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-10 text-2xl">
           <div className="not-md:hidden relative">
@@ -108,6 +146,12 @@ const PageHeader = () => {
                   onClick={() => handleNavigation("/about")}
                 >
                   Profile
+                </p>
+                <p
+                  className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
+                  onClick={() => handleNavigation("/know-your-ingredients")}
+                >
+                  Know your Ingredients
                 </p>
                 <p
                   className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
