@@ -1,41 +1,42 @@
-import { RequestType, UserAllDetails } from "@/types/types";
+import { OrderDetailsWiithIncludes, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
 
-const useGetUserDetails = () => {
+const useGetOrderDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | unknown | null>(null);
 
-  const getUserDetails = useCallback(async (userId: string) => {
+  const getOrderDetails = useCallback(async (userId: string) => {
     try {
       setLoading(true);
       setError(null);
 
       const requestData: RequestType = {
-        url: `/api/user/${userId}`,
+        url: `/api/user/${userId}/orderDetails`,
         method: "GET",
       };
 
       const response = await getRequestData({ requestData });
 
       if (!response.ok) {
-        handleResponseNotOk(response, "Error in fetching user details");
-        return null;
+        handleResponseNotOk(response, "fetching order details for user");
+        throw new Error(
+          `Failed to fetch order details for user with ID: ${userId}`
+        );
       }
 
       const data = await response.json();
-
-      return data.user as UserAllDetails | null;
+      return (data.orders as OrderDetailsWiithIncludes[]) || [];
     } catch (error) {
       setError(error);
-      console.error("Error fetching user details:", error);
+      console.error("Error fetching order details for user:", error);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  return { getUserDetails, loading, error };
+  return { getOrderDetails, loading, error };
 };
 
-export default useGetUserDetails;
+export default useGetOrderDetails;

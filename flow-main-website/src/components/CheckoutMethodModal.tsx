@@ -25,6 +25,8 @@ const CheckoutMethodModal = () => {
     email: "",
     name: "",
     phone: "",
+    address: "",
+    age: 0,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +35,9 @@ const CheckoutMethodModal = () => {
     const res = await registerAsGuest(
       formData.email,
       formData.name,
-      formData.phone
+      formData.phone,
+      formData.address,
+      formData.age
     );
 
     if (res && res.id) {
@@ -80,7 +84,9 @@ const CheckoutMethodModal = () => {
         </div>
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-4 mb-4">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">
+              Email <span className="text-red-600">*</span>
+            </Label>
             <Input
               required
               type="email"
@@ -93,7 +99,9 @@ const CheckoutMethodModal = () => {
             />
           </div>
           <div className="flex flex-col gap-4 mb-4">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">
+              Name <span className="text-red-600">*</span>
+            </Label>
             <Input
               required
               type="text"
@@ -106,7 +114,9 @@ const CheckoutMethodModal = () => {
             />
           </div>
           <div className="flex flex-col gap-4 mb-4">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">
+              Phone Number <span className="text-red-600">*</span>
+            </Label>
             <Input
               required
               type="tel"
@@ -115,6 +125,35 @@ const CheckoutMethodModal = () => {
               value={formData.phone}
               onChange={(e) =>
                 setFormData({ ...formData, phone: e.target.value })
+              }
+            />
+          </div>
+          <div className="flex flex-col gap-4 mb-4">
+            <Label htmlFor="address">
+              Address <span className="text-red-600">*</span>
+            </Label>
+            <Input
+              required
+              type="text"
+              id="address"
+              name="address"
+              placeholder="Address"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+            />
+          </div>
+          <div className="flex flex-col gap-4 mb-4">
+            <Label htmlFor="age">Age</Label>
+            <Input
+              type="number"
+              id="age"
+              name="age"
+              placeholder="Age"
+              value={formData.age <= 0 ? "" : formData.age}
+              onChange={(e) =>
+                setFormData({ ...formData, age: Number(e.target.value) })
               }
             />
           </div>

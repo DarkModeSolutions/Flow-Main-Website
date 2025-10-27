@@ -1,4 +1,4 @@
-import { Prisma, Products } from "@prisma/client";
+import { Prisma, Products, User } from "@prisma/client";
 
 // Get Payloads from DB
 // export type ProductRequestWithIncludes = Prisma.ProductsGetPayload<{
@@ -6,6 +6,10 @@ import { Prisma, Products } from "@prisma/client";
 //     description: true;
 //   };
 // }>;
+
+export type UserAllDetails = User;
+
+export type AllProductDetails = Products;
 
 export type UserDetailsWithIncludes = Prisma.UserGetPayload<{
   omit: {
@@ -15,7 +19,16 @@ export type UserDetailsWithIncludes = Prisma.UserGetPayload<{
   };
 }>;
 
-export type ProductDetailsWithIncludes = Products;
+export type OrderDetailsWiithIncludes = Prisma.OrdersGetPayload<{
+  omit: {
+    updatedAt: true;
+    payment_link_id: true;
+  };
+  include: {
+    orderItems: true;
+    _count: true;
+  };
+}>;
 
 // Custom Types
 
@@ -45,7 +58,7 @@ export type Cart = {
 // Custom Context Types
 
 export type ProductContextType = {
-  products: ProductDetailsWithIncludes[] | null;
+  products: AllProductDetails[] | null;
   error: unknown;
   loading: boolean;
   addToCart: ({ productId, quantity }: Cart) => number;

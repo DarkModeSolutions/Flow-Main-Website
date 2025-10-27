@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useProductContext } from "@/contexts/ProductContext";
 import useGetProductById from "@/hooks/useGetProductById";
 import useInitiatePayment from "@/hooks/useInitiatePayment";
-import { ProductDetailsWithIncludes, SessionUser } from "@/types/types";
+import { AllProductDetails, SessionUser } from "@/types/types";
 import { images, videos } from "@/utils/constants";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -26,9 +26,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   const params = useParams();
   const productId = params.productId as string;
 
-  const [product, setProduct] = useState<ProductDetailsWithIncludes | null>(
-    null
-  );
+  const [product, setProduct] = useState<AllProductDetails | null>(null);
   const [showVid, setShowVid] = useState<boolean>(false);
   const [videoPlayedOnce, setVideoPlayedOnce] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);

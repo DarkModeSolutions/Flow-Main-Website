@@ -120,11 +120,14 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      return NextResponse.json({
-        success: true,
-        checkout_url: data.payment_links?.url,
-        orderId: updatedOrder.id,
-      });
+      return NextResponse.json(
+        {
+          success: true,
+          checkout_url: data.payment_links?.url,
+          orderId: updatedOrder.id,
+        },
+        { status: 200 }
+      );
     }
 
     return NextResponse.json({ success: false, error: data }, { status: 400 });

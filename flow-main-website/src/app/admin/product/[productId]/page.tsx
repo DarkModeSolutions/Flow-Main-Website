@@ -2,9 +2,9 @@
 
 import ProductComponent from "@/components/admin/ProductComponent";
 import useGetProductById from "@/hooks/useGetProductById";
-import { ProductDetailsWithIncludes } from "@/types/types";
+import { AllProductDetails } from "@/types/types";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const AdminProductPage = () => {
   const params = useParams();
@@ -12,9 +12,7 @@ const AdminProductPage = () => {
 
   const router = useRouter();
 
-  const [product, setProduct] = useState<ProductDetailsWithIncludes | null>(
-    null
-  );
+  const [product, setProduct] = useState<AllProductDetails | null>(null);
 
   const { getProductById, loading, error } = useGetProductById();
 

@@ -24,6 +24,10 @@ const AuthComponent = ({
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [age, setAge] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [tag, setTag] = useState("");
@@ -87,7 +91,14 @@ const AuthComponent = ({
       await handleSignin(email, password, "admin");
     } else if (isSignUp) {
       // Sign-up specific submission logic
-      const result = await registerUser(email, password);
+      const result = await registerUser(
+        email,
+        password,
+        name,
+        address,
+        phone,
+        age
+      );
 
       if (result?.success === "tagged") {
         if (result?.tag === "set-password") {
@@ -106,7 +117,7 @@ const AuthComponent = ({
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-transparent">
+    <div className="min-h-screen flex items-center justify-center bg-transparent py-36 pt-6">
       <div className="rounded-2xl shadow-lg bg-[#121212] max-w-[80vw] p-12">
         <div>
           <h2 className="text-3xl manrope-semibold mb-4">
@@ -146,6 +157,54 @@ const AuthComponent = ({
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {isSignUp && (
+              <div className="flex flex-col gap-4 mb-4">
+                <div className="flex flex-col gap-4 mb-4 order-first">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-4 mb-4">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    type="text"
+                    id="address"
+                    name="address"
+                    placeholder="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-4 mb-4">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-4 mb-4">
+                  <Label htmlFor="age">Age</Label>
+                  <Input
+                    type="number"
+                    id="age"
+                    name="age"
+                    placeholder="Age"
+                    value={age <= 0 ? "" : age}
+                    onChange={(e) => setAge(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+            )}
             <div>
               {/* <Button>Sign In</Button> */}
               <Button

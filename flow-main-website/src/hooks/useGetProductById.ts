@@ -1,4 +1,4 @@
-import { ProductDetailsWithIncludes, RequestType } from "@/types/types";
+import { AllProductDetails, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleHookCatch from "@/utils/handleHookCatch";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
@@ -26,7 +26,7 @@ const useGetProductById = () => {
 
       const data = await response.json();
 
-      return (data.product as ProductDetailsWithIncludes) || null;
+      return (data.product as AllProductDetails) || null;
     } catch (error) {
       handleHookCatch(error, setError, "Failed to fetch product by ID");
       return null;

@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useProductContext } from "@/contexts/ProductContext";
 import useUserSignOut from "@/hooks/useUserSignOut";
-import { ProductDetailsWithIncludes } from "@/types/types";
-import { signOut } from "next-auth/react";
+import { AllProductDetails } from "@/types/types";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,17 +17,20 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
 
 const PageHeader = () => {
+  const { data: session, status } = useSession();
+
   const router = useRouter();
+
   const { cart, products } = useProductContext();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchResult, setSearchResult] = useState<
-    ProductDetailsWithIncludes[] | undefined
+    AllProductDetails[] | undefined
   >(undefined);
 
   const findHandler = (searchString: string) => {
     console.log("Search string: ", searchString);
-    let results: ProductDetailsWithIncludes[] | undefined = undefined;
+    let results: AllProductDetails[] | undefined = undefined;
     if (searchString.length <= 2) {
       results = [];
     } else {
@@ -111,7 +114,15 @@ const PageHeader = () => {
               </div>
             )}
           </div>
-          <IoPersonSharp className="not-md:hidden text-white" />
+          <Link href={"/profile"}>
+            {status === "authenticated" &&
+            session.user &&
+            session.user.email ? (
+              <IoPersonSharp className="not-md:hidden text-[#24bfcf]" />
+            ) : (
+              <IoPersonSharp className="not-md:hidden text-white" />
+            )}
+          </Link>
 
           {/* Only render Sheet after component mounts on client */}
           {mounted ? (
@@ -143,7 +154,7 @@ const PageHeader = () => {
                 </p>
                 <p
                   className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
-                  onClick={() => handleNavigation("/about")}
+                  onClick={() => handleNavigation("/profile")}
                 >
                   Profile
                 </p>

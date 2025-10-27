@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, phone, name } = await req.json();
+    const { email, phone, name, address, age } = await req.json();
 
     if (!email || !phone || !name) {
       return error(400, "Email, phone, and name are required");
@@ -32,6 +32,8 @@ export async function POST(req: NextRequest) {
           email: email,
           phone: phone,
           buyingAsGuest: true,
+          address: address,
+          age: age,
         },
       });
       await log(

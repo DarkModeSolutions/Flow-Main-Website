@@ -6,18 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import useUpdateProductForAdmin from "@/hooks/useUpdateProductForAdmin";
 import { ProductRequest } from "@/types/adminTypes";
-import { ProductDetailsWithIncludes } from "@/types/types";
+import { AllProductDetails } from "@/types/types";
 import { images } from "@/utils/constants";
 import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-const ProductComponent = ({
-  product,
-}: {
-  product: ProductDetailsWithIncludes;
-}) => {
+const ProductComponent = ({ product }: { product: AllProductDetails }) => {
   const router = useRouter();
 
   const [productData, setProductData] = useState(product);

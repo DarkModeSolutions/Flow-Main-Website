@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PATCH(_req: NextRequest) {
-  return NextResponse.redirect("/");
+export async function PATCH(req: NextRequest) {
+  return NextResponse.redirect(new URL("/", req.url));
   // try {
 
   //   const searchTags = [

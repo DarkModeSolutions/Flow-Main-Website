@@ -1,4 +1,4 @@
-import { ProductDetailsWithIncludes, RequestType } from "@/types/types";
+import { AllProductDetails, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
@@ -25,7 +25,7 @@ const useGetAllProducts = () => {
       }
 
       const data = await response.json();
-      return data.products as ProductDetailsWithIncludes[] | null;
+      return data.products as AllProductDetails[] | null;
     } catch (error) {
       setError(error);
       console.error("Error fetching products:", error);
