@@ -41,6 +41,11 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   const handleCheckout = async () => {
     const totalAmount = getTotalPrice();
 
+    if (!user?.address) {
+      alert("Please set a valid address");
+      return;
+    }
+
     const response = await initiatePayment({
       cart,
       amount: totalAmount,

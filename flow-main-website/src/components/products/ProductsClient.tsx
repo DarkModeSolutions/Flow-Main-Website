@@ -112,6 +112,11 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   const handleClick = async () => {
     if (!product) return;
 
+    if (!user?.address) {
+      alert("Please set an address");
+      return;
+    }
+
     let effectiveQuantity = quantityInCart;
     if (effectiveQuantity === 0) {
       effectiveQuantity = 1; // Ensure at least 1 item is purchased
