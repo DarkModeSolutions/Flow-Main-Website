@@ -10,14 +10,12 @@ const useUpdateUserDetails = () => {
   const updateUserDetails = useCallback(
     async ({
       updatedName = null,
-      updatedAddress = null,
       updatedAge = null,
       updatedEmail = null,
       updatedPhone = null,
       userId,
     }: {
       updatedName: string | null | undefined;
-      updatedAddress: string | null | undefined;
       updatedAge: number | null | undefined;
       updatedEmail: string | null | undefined;
       updatedPhone: string | null | undefined;
@@ -31,7 +29,7 @@ const useUpdateUserDetails = () => {
           url: `/api/user/${userId}/updateDetails`,
           method: "PATCH",
           body: {
-            updatedAddress,
+            // updatedAddress,
             updatedAge,
             updatedEmail,
             updatedPhone,

@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type NextAuth from "next-auth";
+import "next-auth";
 
 declare module "next-auth" {
   interface Session {
@@ -9,7 +8,18 @@ declare module "next-auth" {
       name?: string | null;
       phone?: string | null;
       age: number | null;
-      address: string | null;
+      address:
+        | {
+            id: string;
+            userId: string;
+            addressLine1: string;
+            addressLine2: string | null;
+            pincode: string;
+            city: string;
+            state: string;
+            country: string;
+          }[]
+        | null;
       isAdmin: boolean;
       buyingAsGuest: boolean;
       favourites: string[];
@@ -22,7 +32,18 @@ declare module "next-auth" {
     name?: string | null;
     phone?: string | null;
     age: number | null;
-    address: string | null;
+    address:
+      | {
+          id: string;
+          userId: string;
+          addressLine1: string;
+          addressLine2: string | null;
+          pincode: string;
+          city: string;
+          state: string;
+          country: string;
+        }[]
+      | null;
     isAdmin: boolean;
     buyingAsGuest: boolean;
     favourites: string[];
@@ -36,7 +57,18 @@ declare module "next-auth/jwt" {
     name?: string | null;
     phone?: string | null;
     age: number | null;
-    address: string | null;
+    address:
+      | {
+          id: string;
+          userId: string;
+          addressLine1: string;
+          addressLine2: string | null;
+          pincode: string;
+          city: string;
+          state: string;
+          country: string;
+        }[]
+      | null;
     isAdmin: boolean;
     buyingAsGuest: boolean;
     favourites: string[];

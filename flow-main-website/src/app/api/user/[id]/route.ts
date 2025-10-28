@@ -20,6 +20,9 @@ export async function GET(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        address: true,
+      },
     });
 
     if (!user) {

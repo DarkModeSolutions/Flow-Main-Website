@@ -25,7 +25,14 @@ const AuthComponent = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState({
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    pincode: "",
+    state: "",
+    country: "",
+  });
   const [phone, setPhone] = useState("");
   const [age, setAge] = useState(0);
   const [error, setError] = useState("");
@@ -171,14 +178,66 @@ const AuthComponent = ({
                   />
                 </div>
                 <div className="flex flex-col gap-4 mb-4">
-                  <Label htmlFor="address">Address</Label>
+                  <Label>Address</Label>
                   <Input
                     type="text"
-                    id="address"
-                    name="address"
-                    placeholder="Address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    id="address1"
+                    name="address1"
+                    placeholder="Address Line 1"
+                    value={address.addressLine1}
+                    onChange={(e) =>
+                      setAddress({ ...address, addressLine1: e.target.value })
+                    }
+                  />
+                  <Input
+                    type="text"
+                    id="address2"
+                    name="address2"
+                    placeholder="Address Line 2"
+                    value={address.addressLine2}
+                    onChange={(e) =>
+                      setAddress({ ...address, addressLine2: e.target.value })
+                    }
+                  />
+                  <Input
+                    type="text"
+                    id="city"
+                    name="city"
+                    placeholder="City"
+                    value={address.city}
+                    onChange={(e) =>
+                      setAddress({ ...address, city: e.target.value })
+                    }
+                  />
+                  <Input
+                    type="text"
+                    id="pincode"
+                    name="pincode"
+                    placeholder="Pincode"
+                    value={address.pincode}
+                    onChange={(e) =>
+                      setAddress({ ...address, pincode: e.target.value })
+                    }
+                  />
+                  <Input
+                    type="text"
+                    id="state"
+                    name="state"
+                    placeholder="State"
+                    value={address.state}
+                    onChange={(e) =>
+                      setAddress({ ...address, state: e.target.value })
+                    }
+                  />
+                  <Input
+                    type="text"
+                    id="country"
+                    name="country"
+                    placeholder="Country"
+                    value={address.country}
+                    onChange={(e) =>
+                      setAddress({ ...address, country: e.target.value })
+                    }
                   />
                 </div>
                 <div className="flex flex-col gap-4 mb-4">

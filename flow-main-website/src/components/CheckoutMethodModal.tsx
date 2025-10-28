@@ -36,7 +36,7 @@ const CheckoutMethodModal = () => {
       formData.email,
       formData.name,
       formData.phone,
-      formData.address,
+      // formData.address,
       formData.age
     );
 

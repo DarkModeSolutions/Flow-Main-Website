@@ -38,11 +38,21 @@ export async function getZohoAccessToken() {
 export async function POST(req: NextRequest) {
   try {
     // const body = await req.json();
-    const { cart, amount, description } = await req.json();
+    const { cart, amount, description, address = null } = await req.json();
 
     const userData = await getUserDetails(req);
 
     console.log("This is user data: ", userData);
+
+    // const {} = userData?.address
+    const defaultUserAddress =
+      userData?.address[0].addressLine1 +
+      ", " +
+      userData?.address[0].addressLine2 +
+      ", " +
+      userData?.address[0].city +
+      " - " +
+      userData?.address[0].pincode;
 
     const order = await prisma.orders.create({
       data: {
@@ -52,7 +62,7 @@ export async function POST(req: NextRequest) {
         status: "PENDING",
         orderEmail: userData?.email,
         orderPhone: userData?.phone,
-        orderAddress: userData?.address,
+        orderAddress: address || defaultUserAddress,
         orderItems: {
           create: cart.map((item: Cart) => ({
             productId: item.productId,

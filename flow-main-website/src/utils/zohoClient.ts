@@ -2,7 +2,10 @@ import { prisma } from "@/lib/db/prisma";
 import generateAuthToken from "@/utils/generateAuthToken";
 
 export async function getValidZohoAccessToken(userId: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { address: true },
+  });
   if (!user?.zohoAccessToken || !user?.zohoRefreshToken) {
     throw new Error("User not linked with Zoho.");
   }

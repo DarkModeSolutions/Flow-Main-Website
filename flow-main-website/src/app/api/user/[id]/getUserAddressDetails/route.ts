@@ -11,33 +11,25 @@ export async function GET(req: NextRequest) {
 
     if (!userId) {
       await log(
-        "Get_Order_Details_By_User_ID",
+        "Get_Address_Details_By_User_ID",
         `User ID not provided in request.`
       );
       return error(400, "User ID is required");
     }
 
-    const orders = await prisma.orders.findMany({
+    const addresses = await prisma.address.findMany({
       where: { userId: userId },
-      omit: {
-        updatedAt: true,
-        payment_link_id: true,
-      },
-      include: {
-        orderItems: true,
-        _count: true,
-      },
     });
 
-    if (!orders || orders.length === 0) {
+    if (!addresses || addresses.length === 0) {
       await log(
         "Get_Order_Details_By_User_ID",
-        `No orders found for User ID: ${userId}`
+        `No addresses found for User ID: ${userId}`
       );
       return NextResponse.json(
         {
-          message: "No orders found for this user",
-          orders: [],
+          message: "No addresses found for this user",
+          addresses: [],
         },
         { status: 200 }
       );
@@ -45,15 +37,15 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       {
-        message: `${orders.length} found for User ID: ${userId}`,
-        orders,
+        message: `${addresses.length} addresses found for User ID: ${userId}`,
+        addresses,
       },
       { status: 200 }
     );
   } catch (err) {
     await log(
-      "Get_Order_Details_By_User_ID",
-      `Get order details by user id failed: ${
+      "Get_Address_Details_By_User_ID",
+      `Get address details by user id failed: ${
         err instanceof Error ? err.message : "Unknown error"
       }`
     );

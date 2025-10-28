@@ -21,6 +21,9 @@ export default async function getUserDetails(
       where: {
         email: token.email,
       },
+      include: {
+        address: true,
+      },
       omit: {
         createdAt: true,
         updatedAt: true,

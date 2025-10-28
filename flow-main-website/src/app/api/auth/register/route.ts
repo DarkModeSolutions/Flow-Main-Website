@@ -7,6 +7,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const { email, password, name, address, phone, age } = await req.json();
+    const {
+      addressLine1,
+      addressLine2 = "",
+      pincode,
+      city,
+      state,
+      country,
+    } = address;
 
     if (!email || !password) {
       return error(400, "Email and password are required");
@@ -37,7 +45,17 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        address,
+        address: {
+          create: {
+            addressLine1,
+            addressLine2,
+            pincode,
+            city,
+            state,
+            country,
+            addressName: "Home",
+          },
+        },
         phone,
         age,
       },
@@ -49,6 +67,9 @@ export async function POST(req: NextRequest) {
         createdAt: true,
         updatedAt: true,
         password: true,
+      },
+      include: {
+        address: true,
       },
     });
 

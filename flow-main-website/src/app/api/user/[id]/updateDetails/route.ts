@@ -37,7 +37,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
 
     const {
-      updatedAddress,
+      // updatedAddress,
       updatedAge,
       updatedEmail,
       updatedPhone,
@@ -48,7 +48,6 @@ export async function PATCH(req: NextRequest) {
       where: { id: userId },
       data: {
         name: updatedName ?? currentUser.name,
-        address: updatedAddress ?? currentUser.address,
         age: Number(updatedAge) ?? Number(currentUser.age),
         email: updatedEmail ?? currentUser.email,
         phone: updatedPhone ?? currentUser.phone,
