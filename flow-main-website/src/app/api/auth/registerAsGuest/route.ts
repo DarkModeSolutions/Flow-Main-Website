@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("entered register as user");
     const { email, phone, name, address, age } = await req.json();
     const {
       addressLine1,
@@ -14,6 +15,8 @@ export async function POST(req: NextRequest) {
       state,
       country,
     } = address;
+
+    console.log("All data recieved");
 
     if (!email || !phone || !name || !address) {
       return error(400, "Email, phone, address and name are required");

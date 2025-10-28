@@ -12,7 +12,14 @@ const useRegisterAsGuest = () => {
       email: string,
       name: string,
       phone: string,
-      // address: string,
+      address: {
+        addressLine1: string;
+        addressLine2?: string;
+        pincode: string;
+        city: string;
+        state: string;
+        country: string;
+      },
       age: number
     ) => {
       try {
@@ -22,7 +29,7 @@ const useRegisterAsGuest = () => {
         const requestData: RequestType = {
           url: "/api/auth/registerAsGuest",
           method: "POST",
-          body: { email, name, phone, age },
+          body: { email, name, phone, age, address },
         };
 
         const res = await getRequestData({ requestData });

@@ -38,14 +38,41 @@ export async function getZohoAccessToken() {
 export async function POST(req: NextRequest) {
   try {
     // const body = await req.json();
-    const { cart, amount, description, address = null } = await req.json();
+    const { cart, amount, description, orderAddressId } = await req.json();
 
     const userData = await getUserDetails(req);
 
     console.log("This is user data: ", userData);
 
+    if (userData?.address.length === 0 && !orderAddressId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "No address found. Please add an address before ordering.",
+        },
+        { status: 400 }
+      );
+    }
+
+    let address = "";
+
+    if (orderAddressId) {
+      const addressData = await prisma.address.findUnique({
+        where: { id: orderAddressId },
+      });
+      address = addressData
+        ? addressData.addressLine1 +
+          ", " +
+          addressData.addressLine2 +
+          ", " +
+          addressData.city +
+          " - " +
+          addressData.pincode
+        : "";
+    }
+
     // const {} = userData?.address
-    const defaultUserAddress =
+    address =
       userData?.address[0].addressLine1 +
       ", " +
       userData?.address[0].addressLine2 +
@@ -62,7 +89,7 @@ export async function POST(req: NextRequest) {
         status: "PENDING",
         orderEmail: userData?.email,
         orderPhone: userData?.phone,
-        orderAddress: address || defaultUserAddress,
+        orderAddress: address,
         orderItems: {
           create: cart.map((item: Cart) => ({
             productId: item.productId,

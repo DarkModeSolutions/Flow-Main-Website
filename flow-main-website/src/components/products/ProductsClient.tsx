@@ -11,10 +11,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { useProductContext } from "@/contexts/ProductContext";
 import useGetProductById from "@/hooks/useGetProductById";
+import useGetUserAddressDetails from "@/hooks/useGetUserAddressDetails";
 import useInitiatePayment from "@/hooks/useInitiatePayment";
-import { AllProductDetails, SessionUser } from "@/types/types";
+import {
+  AddressAllDetails,
+  AllProductDetails,
+  SessionUser,
+} from "@/types/types";
 import { images, videos } from "@/utils/constants";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -29,6 +35,10 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   const [product, setProduct] = useState<AllProductDetails | null>(null);
   const [showVid, setShowVid] = useState<boolean>(false);
   const [videoPlayedOnce, setVideoPlayedOnce] = useState<boolean>(false);
+  const [userAddresses, setUserAddresses] = useState<
+    AddressAllDetails[] | [] | null
+  >(null);
+  const [orderAddressId, setOrderAddressId] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { error, getProductById, loading } = useGetProductById();
@@ -46,6 +56,11 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
     initiatePayment,
     loading: paymentLoading,
   } = useInitiatePayment();
+  const {
+    error: getUserAddressDetailsError,
+    loading: getUserAddressDetailsLoading,
+    getUserAddressDetails,
+  } = useGetUserAddressDetails();
 
   const [quantityInCart, setQuantityInCart] = useState<number>(
     getCartItemQuantity(productId) || 0
@@ -113,7 +128,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
     if (!product) return;
 
     if (!user?.address) {
-      alert("Please set an address");
+      alert("Please set a valid address");
       return;
     }
 
@@ -127,6 +142,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
       description: `Purchase of ${product.name}`,
       userId: user?.id,
       cart: [{ productId: product.id, quantity: effectiveQuantity }],
+      orderAddressId: orderAddressId!,
     });
 
     if (typeof response === "string") {
@@ -136,8 +152,18 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
     }
   };
 
-  if (error) {
-    return <ErrorComponent error={error} />;
+  const handleSelectAddress = async () => {
+    if (user) {
+      const addressesResponse = await getUserAddressDetails(user.id);
+      setUserAddresses(addressesResponse);
+    } else {
+      alert("Please log in to select an address.");
+      return;
+    }
+  };
+
+  if (error || getUserAddressDetailsError) {
+    return <ErrorComponent error={error || getUserAddressDetailsError} />;
   }
 
   if (loading || product === null) {
@@ -272,12 +298,60 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
             )}
             <div className="w-full flex justify-center items-center">
               {user && user.email ? (
-                <FlowButton
-                  isDisabled={!(product.stock > 0)}
-                  onClickHandler={handleClick}
-                >
-                  {paymentLoading ? "Processing..." : "Pre Order Now"}
-                </FlowButton>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      // disabled={loading}
+                      onClick={() => handleSelectAddress()}
+                      className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+                    >
+                      Checkout
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] bg-black p-10">
+                    <DialogTitle>Choose your Address</DialogTitle>
+                    {getUserAddressDetailsLoading ? (
+                      <div className="w-full h-full flex justify-center items-center">
+                        <Spinner />
+                      </div>
+                    ) : userAddresses && userAddresses.length > 0 ? (
+                      userAddresses.map((address) => (
+                        <div
+                          onClick={() =>
+                            setOrderAddressId((prev) =>
+                              prev === address.id ? null : address.id
+                            )
+                          }
+                          key={address.id}
+                          className={`border-2 p-2 rounded-lg cursor-pointer ${
+                            orderAddressId === address.id
+                              ? "border-blue-500"
+                              : "border-white"
+                          } mb-2`}
+                        >
+                          <p className="font-semibold">{address.addressName}</p>
+                          <p>
+                            {address.addressLine1}, {address.addressLine2},{" "}
+                            {address.city} - {address.pincode}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      "No addresses found. Please add an address in your profile."
+                    )}
+                    <Button
+                      disabled={
+                        !(product.stock > 0) ||
+                        paymentLoading ||
+                        orderAddressId === null
+                      }
+                      onClick={() => handleClick()}
+                      className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+                    >
+                      {paymentLoading ? "Processing..." : "Pre Order Now"}
+                    </Button>
+                  </DialogContent>
+                </Dialog>
               ) : (
                 <Dialog>
                   <DialogTrigger asChild>
