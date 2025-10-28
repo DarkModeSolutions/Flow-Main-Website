@@ -123,12 +123,7 @@ export async function POST(req: NextRequest) {
           : `${process.env.REDIRECT_URI}/payment/success?orderId=${order.id}`,
     };
 
-    console.log(
-      "Body Data:",
-      JSON.stringify(bodyData),
-      process.env.ACCOUNT_ID,
-      accessToken
-    );
+    console.log("Body Data:", JSON.stringify(bodyData));
 
     // Convert to JSON only when passing to fetch
     const response = await fetch(
