@@ -5,10 +5,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("entered register as user");
     const { email, phone, name, address, age } = await req.json();
+    const {
+      addressLine1,
+      addressLine2 = "",
+      pincode,
+      city,
+      state,
+      country,
+    } = address;
 
-    if (!email || !phone || !name) {
-      return error(400, "Email, phone, and name are required");
+    console.log("All data recieved");
+
+    if (!email || !phone || !name || !address) {
+      return error(400, "Email, phone, address and name are required");
     }
 
     let user;
@@ -20,10 +31,30 @@ export async function POST(req: NextRequest) {
         createdAt: true,
         updatedAt: true,
       },
+      include: {
+        address: true,
+      },
     });
 
     if (existingUser) {
       user = existingUser;
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          address: {
+            create: {
+              addressLine1,
+              addressLine2,
+              pincode,
+              city,
+              state,
+              country,
+              addressName: "Guest Home",
+            },
+          },
+        },
+      });
       await log("Auth_Guest", `User with email: ${email}`);
     } else {
       user = await prisma.user.create({
@@ -32,7 +63,17 @@ export async function POST(req: NextRequest) {
           email: email,
           phone: phone,
           buyingAsGuest: true,
-          address: address,
+          address: {
+            create: {
+              addressLine1,
+              addressLine2,
+              pincode,
+              city,
+              state,
+              country,
+              addressName: "Guest Home",
+            },
+          },
           age: age,
         },
       });
@@ -48,6 +89,9 @@ export async function POST(req: NextRequest) {
         password: true,
         createdAt: true,
         updatedAt: true,
+      },
+      include: {
+        address: true,
       },
     });
 

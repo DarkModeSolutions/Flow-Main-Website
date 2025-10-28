@@ -1,5 +1,6 @@
 "use client";
 import CheckoutMethodModal from "@/components/CheckoutMethodModal";
+import ErrorComponent from "@/components/ErrorComponent";
 import FlowButton from "@/components/FlowButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,13 +9,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 import { useProductContext } from "@/contexts/ProductContext";
+import useGetUserAddressDetails from "@/hooks/useGetUserAddressDetails";
 import useInitiatePayment from "@/hooks/useInitiatePayment";
-import { SessionUser } from "@/types/types";
+import { AddressAllDetails, SessionUser } from "@/types/types";
 import { images } from "@/utils/constants";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 const CartClient = ({ user }: { user: SessionUser | undefined }) => {
   const router = useRouter();
@@ -28,7 +31,17 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
     clearCart,
   } = useProductContext();
 
+  const [userAddresses, setUserAddresses] = useState<
+    AddressAllDetails[] | [] | null
+  >(null);
+  const [orderAddressId, setOrderAddressId] = useState<string | null>(null);
+
   const { error, loading, initiatePayment } = useInitiatePayment();
+  const {
+    error: getUserAddressDetailsError,
+    loading: getUserAddressDetailsLoading,
+    getUserAddressDetails,
+  } = useGetUserAddressDetails();
 
   // Calculate total price
   const getTotalPrice = useCallback(() => {
@@ -51,6 +64,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
       amount: totalAmount,
       description: "Cart purchase from FlowHydration",
       userId: user?.id,
+      orderAddressId: orderAddressId,
     });
 
     if (typeof response === "string") {
@@ -60,6 +74,19 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
     }
   };
 
+  const handleSelectAddress = async () => {
+    if (user) {
+      const addressesResponse = await getUserAddressDetails(user.id);
+      setUserAddresses(addressesResponse);
+    } else {
+      alert("Please log in to select an address.");
+      return;
+    }
+  };
+
+  if (getUserAddressDetailsError) {
+    <ErrorComponent error={getUserAddressDetailsError} />;
+  }
   return (
     <div className="w-full min-h-screen p-10">
       <div className="flex justify-between items-center gap-6 mb-14">
@@ -189,13 +216,58 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                     Continue Shopping
                   </FlowButton>
                   {user && user.email ? (
-                    <Button
-                      disabled={loading}
-                      onClick={() => handleCheckout()}
-                      className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
-                    >
-                      {loading ? "Processing..." : "Checkout"}
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          // disabled={loading}
+                          onClick={() => handleSelectAddress()}
+                          className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+                        >
+                          Checkout
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px] bg-black p-10">
+                        <DialogTitle>Choose your Address</DialogTitle>
+                        {getUserAddressDetailsLoading ? (
+                          <div className="w-full h-full flex justify-center items-center">
+                            <Spinner />
+                          </div>
+                        ) : userAddresses && userAddresses.length > 0 ? (
+                          userAddresses.map((address) => (
+                            <div
+                              onClick={() =>
+                                setOrderAddressId((prev) =>
+                                  prev === address.id ? null : address.id
+                                )
+                              }
+                              key={address.id}
+                              className={`border-2 p-2 rounded-lg cursor-pointer ${
+                                orderAddressId === address.id
+                                  ? "border-blue-500"
+                                  : "border-white"
+                              } mb-2`}
+                            >
+                              <p className="font-semibold">
+                                {address.addressName}
+                              </p>
+                              <p>
+                                {address.addressLine1}, {address.addressLine2},{" "}
+                                {address.city} - {address.pincode}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          "No addresses found. Please add an address in your profile."
+                        )}
+                        <Button
+                          disabled={loading || orderAddressId === null}
+                          onClick={() => handleCheckout()}
+                          className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
+                        >
+                          {loading ? "Processing..." : "Checkout"}
+                        </Button>
+                      </DialogContent>
+                    </Dialog>
                   ) : (
                     <Dialog>
                       <DialogTrigger asChild>

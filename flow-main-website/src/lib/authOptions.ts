@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { AddressAllDetails } from "@/types/types";
 import bcrypt from "bcryptjs";
 import { AuthOptions } from "next-auth";
 // import GitHubProvider from "next-auth/providers/github";
@@ -30,17 +31,23 @@ export const authOptions: AuthOptions = {
                 createdAt: true,
                 updatedAt: true,
               },
+              include: {
+                address: true,
+              },
             });
           } else if (credentials.signInType === "guest") {
             user = await prisma.user.findFirst({
               where: {
                 email: credentials.email,
-                phone: credentials.phone,
+                // phone: credentials.phone,
                 buyingAsGuest: true,
               },
               omit: {
                 createdAt: true,
                 updatedAt: true,
+              },
+              include: {
+                address: true,
               },
             });
           } else {
@@ -214,7 +221,7 @@ export const authOptions: AuthOptions = {
         session.user.phone = token.phone as string;
         session.user.isAdmin = token.isAdmin as boolean; // Default to false
         session.user.age = token.age as number | null;
-        session.user.address = token.address as string | null;
+        session.user.address = token.address as AddressAllDetails[] | null;
         session.user.buyingAsGuest = token.buyingAsGuest as boolean;
         session.user.favourites = token.favourites as string[];
       }

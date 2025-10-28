@@ -1,4 +1,4 @@
-import { Prisma, Products, User } from "@prisma/client";
+import { Address, Prisma, Products, User } from "@prisma/client";
 
 // Get Payloads from DB
 // export type ProductRequestWithIncludes = Prisma.ProductsGetPayload<{
@@ -11,7 +11,12 @@ export type UserAllDetails = User;
 
 export type AllProductDetails = Products;
 
+export type AddressAllDetails = Address;
+
 export type UserDetailsWithIncludes = Prisma.UserGetPayload<{
+  include: {
+    address: true;
+  };
   omit: {
     createdAt: true;
     updatedAt: true;
@@ -31,6 +36,11 @@ export type OrderDetailsWiithIncludes = Prisma.OrdersGetPayload<{
 }>;
 
 // Custom Types
+
+export type UserDetails = {
+  user: UserAllDetails | null;
+  address: AddressAllDetails[] | null;
+};
 
 export interface RequestType {
   url: string;
@@ -76,7 +86,18 @@ export type SessionUser = {
   name?: string | null;
   phone?: string | null;
   age: number | null;
-  address: string | null;
+  address:
+    | {
+        id: string;
+        userId: string;
+        addressLine1: string;
+        addressLine2: string | null;
+        pincode: string;
+        city: string;
+        state: string;
+        country: string;
+      }[]
+    | null;
   isAdmin: boolean;
   buyingAsGuest: boolean;
   favourites: string[];

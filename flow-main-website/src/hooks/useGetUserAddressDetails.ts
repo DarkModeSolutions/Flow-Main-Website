@@ -1,46 +1,43 @@
-import { RequestType, UserDetails } from "@/types/types";
+import { RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
 
-const useGetUserDetails = () => {
+const useGetUserAddressDetails = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | unknown | null>(null);
 
-  const getUserDetails = useCallback(async (userId: string) => {
+  const getUserAddressDetails = useCallback(async (userId: string) => {
     try {
       setLoading(true);
       setError(null);
 
       const requestData: RequestType = {
-        url: `/api/user/${userId}`,
+        url: `/api/user/${userId}/getUserAddressDetails`,
         method: "GET",
       };
 
       const response = await getRequestData({ requestData });
 
       if (!response.ok) {
-        handleResponseNotOk(response, "Error in fetching user details");
-        return null;
+        handleResponseNotOk(response, "fetching user address details");
+        throw new Error(
+          `Failed to fetch user address details: ${response.statusText}`
+        );
       }
 
       const data = await response.json();
 
-      const userData: UserDetails = {
-        user: data.user,
-        address: data.user.address,
-      };
-
-      return userData;
+      return data.addresses;
     } catch (error) {
       setError(error);
-      console.error("Error fetching user details:", error);
+      console.error("Error fetching user address details:", error);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  return { getUserDetails, loading, error };
+  return { getUserAddressDetails, loading, error };
 };
 
-export default useGetUserDetails;
+export default useGetUserAddressDetails;

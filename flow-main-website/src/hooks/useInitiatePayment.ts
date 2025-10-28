@@ -13,11 +13,13 @@ const useInitiatePayment = () => {
       amount,
       description,
       userId,
+      orderAddressId,
     }: {
       cart?: Cart[] | [];
       amount: number;
       description: string;
       userId: string | undefined;
+      orderAddressId: string | null;
     }) => {
       try {
         setLoading(true);
@@ -26,7 +28,7 @@ const useInitiatePayment = () => {
         const requestData: RequestType = {
           url: "/api/zoho/payment-session",
           method: "POST",
-          body: { cart, amount, description, userId },
+          body: { cart, amount, description, userId, orderAddressId },
         };
 
         const response = await getRequestData({ requestData });
