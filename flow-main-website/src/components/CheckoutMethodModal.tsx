@@ -142,6 +142,7 @@ const CheckoutMethodModal = () => {
                 Address <span className="text-red-600">*</span>
               </Label>
               <Input
+                required
                 type="text"
                 id="address1"
                 name="address1"
@@ -174,6 +175,7 @@ const CheckoutMethodModal = () => {
                 }
               />
               <Input
+                required
                 type="text"
                 id="city"
                 name="city"
@@ -187,6 +189,7 @@ const CheckoutMethodModal = () => {
                 }
               />
               <Input
+                required
                 type="text"
                 id="pincode"
                 name="pincode"
@@ -200,6 +203,7 @@ const CheckoutMethodModal = () => {
                 }
               />
               <Input
+                required
                 type="text"
                 id="state"
                 name="state"
@@ -213,6 +217,7 @@ const CheckoutMethodModal = () => {
                 }
               />
               <Input
+                required
                 type="text"
                 id="country"
                 name="country"

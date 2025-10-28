@@ -147,6 +147,7 @@ const AuthComponent = ({
             <div className="flex flex-col gap-4 mb-4">
               <Label htmlFor="email">Email</Label>
               <Input
+                required
                 type="email"
                 id="email"
                 placeholder="Email"
@@ -157,6 +158,7 @@ const AuthComponent = ({
             <div className="flex flex-col gap-4 mb-4">
               <Label htmlFor="password">Password</Label>
               <Input
+                required
                 type="password"
                 id="password"
                 placeholder="Password"
@@ -180,6 +182,7 @@ const AuthComponent = ({
                 <div className="flex flex-col gap-4 mb-4">
                   <Label>Address</Label>
                   <Input
+                    required
                     type="text"
                     id="address1"
                     name="address1"
@@ -200,6 +203,7 @@ const AuthComponent = ({
                     }
                   />
                   <Input
+                    required
                     type="text"
                     id="city"
                     name="city"
@@ -210,6 +214,7 @@ const AuthComponent = ({
                     }
                   />
                   <Input
+                    required
                     type="text"
                     id="pincode"
                     name="pincode"
@@ -220,6 +225,7 @@ const AuthComponent = ({
                     }
                   />
                   <Input
+                    required
                     type="text"
                     id="state"
                     name="state"
@@ -230,6 +236,7 @@ const AuthComponent = ({
                     }
                   />
                   <Input
+                    required
                     type="text"
                     id="country"
                     name="country"
