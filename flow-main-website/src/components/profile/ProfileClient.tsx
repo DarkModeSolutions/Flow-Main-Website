@@ -144,7 +144,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
   const handleUpdateUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user?.id) {
+    if (!user?.id || user.buyingAsGuest) {
       router.push("/auth/login");
     }
 

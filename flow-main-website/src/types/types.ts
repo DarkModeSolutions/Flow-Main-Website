@@ -80,6 +80,15 @@ export type ProductContextType = {
   clearCart: () => void;
 };
 
+export type UserContextType = {
+  user: SessionUser | null;
+  loading: boolean;
+  error: string | unknown | null;
+  setUser: React.Dispatch<React.SetStateAction<SessionUser | null>>;
+};
+
+// Session User Type
+
 export type SessionUser = {
   id: string;
   email?: string | null;

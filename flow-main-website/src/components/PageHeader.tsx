@@ -5,6 +5,7 @@ import SearchResult from "@/components/SearchResult";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useProductContext } from "@/contexts/ProductContext";
+import { useUserContext } from "@/contexts/UserContext";
 import useUserSignOut from "@/hooks/useUserSignOut";
 import { AllProductDetails } from "@/types/types";
 import { signOut } from "next-auth/react";
@@ -18,7 +19,10 @@ import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
 
 const PageHeader = () => {
   const router = useRouter();
+
   const { cart, products } = useProductContext();
+  const { user } = useUserContext();
+
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchResult, setSearchResult] = useState<
@@ -56,6 +60,8 @@ const PageHeader = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  console.log("This is header");
 
   const handleNavigation = (href: string) => {
     setIsSheetOpen(false);
@@ -111,9 +117,11 @@ const PageHeader = () => {
               </div>
             )}
           </div>
-          <Link href={"/profile"}>
-            <IoPersonSharp className="not-md:hidden text-white" />
-          </Link>
+          {user && user.email && !user.buyingAsGuest && (
+            <Link href={"/profile"}>
+              <IoPersonSharp className="not-md:hidden text-[#24bfcf]" />
+            </Link>
+          )}
 
           {/* Only render Sheet after component mounts on client */}
           {mounted ? (
@@ -143,24 +151,35 @@ const PageHeader = () => {
                 >
                   Cart
                 </p>
-                <p
-                  className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
-                  onClick={() => handleNavigation("/profile")}
-                >
-                  Profile
-                </p>
+                {user && user.email && !user.buyingAsGuest && (
+                  <p
+                    className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
+                    onClick={() => handleNavigation("/profile")}
+                  >
+                    Profile
+                  </p>
+                )}
                 <p
                   className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
                   onClick={() => handleNavigation("/know-your-ingredients")}
                 >
                   Know your Ingredients
                 </p>
-                <p
-                  className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
-                  onClick={() => handleSignOut()}
-                >
-                  Sign Out
-                </p>
+                {user && user.email && !user.buyingAsGuest ? (
+                  <p
+                    className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
+                    onClick={() => handleSignOut()}
+                  >
+                    Sign Out
+                  </p>
+                ) : (
+                  <p
+                    className="w-full border-b pb-3 border-white mt-4 text-center cursor-pointer"
+                    onClick={() => handleNavigation("/auth/login")}
+                  >
+                    Sign In
+                  </p>
+                )}
               </SheetContent>
             </Sheet>
           ) : (
