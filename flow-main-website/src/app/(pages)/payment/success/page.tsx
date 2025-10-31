@@ -3,8 +3,11 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useProductContext } from "@/contexts/ProductContext";
 import useUpdatePurchaseOrder from "@/hooks/useUpdatePurchaseOrder";
+import useUserSignOut from "@/hooks/useUserSignOut";
+import { getSessionUserClient } from "@/utils/getUserDetailsClient";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
 function PaymentSuccessContent() {
@@ -18,9 +21,12 @@ function PaymentSuccessContent() {
   const { success, error, loading, updatePurchaseOrder } =
     useUpdatePurchaseOrder();
 
+  const { userSignOut } = useUserSignOut();
+
   useEffect(() => {
     if (!orderId) {
       console.log("No order ID right now");
+      redirect("/");
     } // wait until it's available
 
     async function updateOrderStatus() {
@@ -40,6 +46,13 @@ function PaymentSuccessContent() {
           console.log("Order completed successfully.");
         }
 
+        const userDetails = await getSessionUserClient();
+
+        if (userDetails && userDetails.buyingAsGuest) {
+          await userSignOut();
+          signOut({ callbackUrl: window.location.href });
+        }
+
         clearCart();
 
         localStorage.removeItem("cart");
@@ -48,10 +61,14 @@ function PaymentSuccessContent() {
     }
 
     updateOrderStatus();
-  }, [orderId, updatePurchaseOrder, paymentLink, clearCart]);
+  }, [orderId, updatePurchaseOrder, paymentLink, clearCart, userSignOut]);
 
   if (loading) {
-    return <Spinner />;
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Spinner className="size-10" />
+      </div>
+    );
   }
 
   return (
