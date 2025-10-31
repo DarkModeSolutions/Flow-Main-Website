@@ -15,7 +15,7 @@ import "./globals.css";
 const manRope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["200", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
-      <body className={`${manRope.variable} antialiased bg-[#000000]`}>
+      <body
+        className={`${manRope.variable} ${manRope.className} manrope antialiased bg-[#000000]`}
+      >
         {children}
       </body>
     </html>
