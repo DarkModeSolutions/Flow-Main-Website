@@ -114,6 +114,15 @@ input[type="number"] {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* --font-man: var(--font-manrope); */
+  --font-manrope-xlight: 200;
+  --font-manrope-light: 300;
+  --font-manrope-regular: 400;
+  --font-manrope-medium: 500;
+  --font-manrope-semibold: 600;
+  --font-manrope-bold: 700;
+  --font-manrope-extrabold: 800;
 }
 
 .dark {
@@ -148,15 +157,6 @@ input[type="number"] {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-
-  --font-man: var(--font-manrope);
-  --font-man-xlight: 200;
-  --font-man-light: 300;
-  --font-man-regular: 400;
-  --font-man-medium: 500;
-  --font-man-semibold: 600;
-  --font-man-bold: 700;
-  --font-man-extrabold: 800;
 }
 
 @layer base {
@@ -176,24 +176,25 @@ input[type="number"] {
 }
 
 .manrope {
-  font-family: var(--font-man);
+  font-family: var(--font-manrope);
+  letter-spacing: 0.1em;
 }
 
 .manrope-xlight {
-  font-weight: var(--font-man-xlight);
+  font-weight: var(--font-manrope-xlight);
 }
 .manrope-light {
-  font-weight: var(--font-man-light);
+  font-weight: var(--font-manrope-light);
 }
 .manrope-medium {
-  font-weight: var(--font-man-medium);
+  font-weight: var(--font-manrope-medium);
 }
 .manrope-semibold {
-  font-weight: var(--font-man-semibold);
+  font-weight: var(--font-manrope-semibold);
 }
 .manrope-bold {
-  font-weight: var(--font-man-bold);
+  font-weight: var(--font-manrope-bold);
 }
 .manrope-extrabold {
-  font-weight: var(--font-man-extrabold);
+  font-weight: var(--font-manrope-extrabold);
 }

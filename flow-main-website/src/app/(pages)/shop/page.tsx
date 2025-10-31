@@ -19,7 +19,7 @@ const ShopPage = () => {
   }
   return (
     <div className="w-full flex flex-col pt-4 gap-8">
-      <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl mb-5">
+      <h2 className="manrope manrope-bold text-[#24BFCF] text-2xl mb-5">
         Shop
       </h2>
       <div className="grid grid-cols-2 gap-x-4 gap-y-20">
