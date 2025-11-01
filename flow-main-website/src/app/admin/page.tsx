@@ -37,11 +37,8 @@ const AdminHomePage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {adminModules
           .sort((a, b) => {
-            // If a is disabled and b is not, a comes after b (return 1)
             if (a.isDisabled && !b.isDisabled) return 1;
-            // If b is disabled and a is not, a comes before b (return -1)
             if (!a.isDisabled && b.isDisabled) return -1;
-            // If both have same disabled status, maintain original order
             return 0;
           })
           .map((module, index) => (
