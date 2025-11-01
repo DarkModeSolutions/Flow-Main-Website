@@ -1,60 +1,58 @@
-"use client";
+import AdminModuleComponent from "@/components/admin/AdminModuleComponent";
 
-import ProductCard from "@/components/admin/ProductCard";
-import useGetAllProducts from "@/hooks/useGetAllProducts";
-import { AllProductDetails } from "@/types/types";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+interface AdminModules {
+  title: string;
+  url: string;
+  isDisabled?: boolean;
+}
 
 const AdminHomePage = () => {
-  const router = useRouter();
-
-  const [products, setProducts] = useState<
-    AllProductDetails[] | null | undefined
-  >();
-
-  const { error, getAllProducts, loading } = useGetAllProducts();
-
-  useEffect(() => {
-    async function fetchProducts() {
-      const prods = await getAllProducts();
-
-      if (prods === null || prods === undefined) {
-        setProducts(null);
-        return;
-      }
-
-      setProducts(prods);
-    }
-
-    fetchProducts();
-  }, [getAllProducts]);
+  const adminModules: AdminModules[] = [
+    {
+      title: "User Management",
+      url: "/admin/users",
+    },
+    {
+      title: "Product Management",
+      url: "/admin/products",
+    },
+    {
+      title: "Order Management",
+      url: "/admin/orders",
+    },
+    {
+      title: "Analytics Dashboard",
+      url: "/admin/analytics",
+      isDisabled: true,
+    },
+    {
+      title: "Promotions & Discounts",
+      url: "/admin/promotions",
+    },
+  ];
 
   return (
-    <div>
-      {loading ? (
-        "Loading..."
-      ) : error ? (
-        <span>Error: {`${error}`}</span>
-      ) : (
-        <div>
-          <h2>Products in Database: {products ? products?.length : 0}</h2>
-          <div>
-            {products?.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => router.push(`/admin/product/${product.id}`)}
-              >
-                <ProductCard
-                  img={product.imageUrl}
-                  name={product.name}
-                  key={product.id}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+    <div className="min-h-screen w-full">
+      <h1 className="text-2xl manrope-bold manrope">Admin Modules</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {adminModules
+          .sort((a, b) => {
+            // If a is disabled and b is not, a comes after b (return 1)
+            if (a.isDisabled && !b.isDisabled) return 1;
+            // If b is disabled and a is not, a comes before b (return -1)
+            if (!a.isDisabled && b.isDisabled) return -1;
+            // If both have same disabled status, maintain original order
+            return 0;
+          })
+          .map((module, index) => (
+            <AdminModuleComponent
+              key={index}
+              title={module.title}
+              url={module.url}
+              isDisabled={module.isDisabled === undefined ? false : true}
+            />
+          ))}
+      </div>
     </div>
   );
 };
