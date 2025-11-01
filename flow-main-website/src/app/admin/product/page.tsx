@@ -1,3 +1,5 @@
+"use client";
+
 import ProductCard from "@/components/admin/ProductCard";
 import ErrorComponent from "@/components/ErrorComponent";
 import { Spinner } from "@/components/ui/spinner";

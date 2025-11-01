@@ -1,3 +1,5 @@
+"use client";
+
 import { AllProductDetails, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
