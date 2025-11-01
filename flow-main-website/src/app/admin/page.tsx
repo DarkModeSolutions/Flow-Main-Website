@@ -1,3 +1,5 @@
+"use client";
+
 import AdminModuleComponent from "@/components/admin/AdminModuleComponent";
 
 interface AdminModules {
