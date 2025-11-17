@@ -46,6 +46,7 @@ export interface RequestType {
   url: string;
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: unknown;
+  additionalHeaders?: Record<string, string>;
 }
 
 export type RegisterUserResponse = {

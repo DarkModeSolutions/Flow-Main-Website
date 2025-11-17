@@ -5,32 +5,26 @@ import getShadowfaxRequestData from "@/utils/getShadowfaxRequestData";
 import { log } from "@/utils/log";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const { orderId, cancelReason } = await req.json();
+    const { orderId } = await req.json();
 
     const orderDetails = await prisma.orders.findUnique({
       where: { id: orderId },
-      include: {
-        shadowfaxOrder: { omit: { createdAt: true, updatedAt: true } },
-      },
+      include: { shadowfaxOrder: true },
     });
 
     if (!orderDetails || !orderDetails.shadowfaxOrder) {
       await log(
-        "Cancel_Order",
+        "Get_Delivery_Order_Details",
         `Order not found or no Shadowfax order for Order ID: ${orderId}`
       );
       return error(404, "Order not found or no Shadowfax order associated");
     }
 
     const requestData: RequestType = {
-      url: "v3/clients/orders/cancel/",
-      method: "POST",
-      body: {
-        request_id: orderDetails.shadowfaxOrder.awb_number,
-        cancel_remarks: cancelReason,
-      },
+      url: `v4/clients/orders/${orderDetails.shadowfaxOrder.awb_number}/track/`,
+      method: "GET",
     };
 
     const response = await getShadowfaxRequestData({ requestData });
@@ -38,53 +32,52 @@ export async function POST(req: NextRequest) {
     if (!response.ok) {
       const errorData = await response.json();
       await log(
-        "Cancel_Order",
-        `Shadowfax cancel order failed for Order ID: ${orderId}, Error: ${JSON.stringify(
+        "Get_Delivery_Order_Details",
+        `Shadowfax get delivery order details failed for Order ID: ${orderId}, Error: ${JSON.stringify(
           errorData
         )}`
       );
       return error(
         500,
-        "Failed to cancel order with Shadowfax",
+        "Failed to fetch delivery order details from Shadowfax",
         JSON.stringify(errorData)
       );
     }
 
     const responseData = await response.json();
 
-    if (responseData.responseCode !== 200) {
+    if (responseData.message === "Invalid AWB number") {
       await log(
-        "Cancel_Order",
-        `Shadowfax cancel order unsuccessful for Order ID: ${orderId}, Response: ${JSON.stringify(
+        "Get_Delivery_Order_Details",
+        `Shadowfax get delivery order details unsuccessful for Order ID: ${orderId}, Response: ${JSON.stringify(
           responseData
         )}`
       );
+
       return NextResponse.json(
         {
-          message: responseData.responseMsg,
+          message: responseData.message,
         },
-        { status: responseData.responseCode }
+        { status: 400 }
       );
     }
 
     await prisma.shadowfaxOrders.update({
       where: { orderId: orderId },
-      data: {
-        shipment_status: "Cancelled",
-      },
+      data: { shipment_status: responseData.order_details.status },
     });
 
     return NextResponse.json(
       {
-        message: "Order cancelled successfully",
+        message: "Success",
         data: responseData,
       },
       { status: 200 }
     );
   } catch (err) {
     await log(
-      "Cancel_Order",
-      `Cancel Order failed: ${
+      "Get_Delivery_Order_Details",
+      `Get Delivery Order Details failed: ${
         err instanceof Error ? err.message : "Unknown error"
       }`
     );
