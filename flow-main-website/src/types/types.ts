@@ -111,3 +111,83 @@ export type SessionUser = {
   buyingAsGuest: boolean;
   favourites: string[];
 };
+
+export type ShadowfaxOrderPayload = {
+  order_type: "marketplace";
+  order_details: {
+    client_order_id: string;
+    awb_number?: string;
+    actual_weight?: number;
+    volumetric_weight?: number;
+    product_value: number;
+    cod_amount: number;
+    payment_mode: "Prepaid" | "COD";
+    promised_delivery_date?: string;
+    total_amount?: number;
+    eway_bill?: string;
+    gstin_number?: string;
+    order_service?: "regular" | "express";
+  };
+  customer_details: {
+    name: string;
+    contact: string;
+    alternate_contact?: string;
+    address_line_1: string;
+    address_line_2?: string;
+    city: string;
+    state: string;
+    pincode: number;
+    latitude?: string;
+    longitude?: string;
+  };
+  pickup_details: {
+    name?: string;
+    contact: string;
+    address_line_1: string;
+    address_line_2?: string;
+    city: string;
+    state: string;
+    pincode: number;
+    latitude?: string;
+    longitude?: string;
+    unique_code?: string;
+  };
+  rts_details: {
+    name: string;
+    contact: string;
+    address_line_1: string;
+    address_line_2?: string;
+    city: string;
+    state: string;
+    pincode: number;
+    email?: string;
+    latitude?: string;
+    longitude?: string;
+    unique_code?: string;
+  };
+  product_details: {
+    sku_id?: string;
+    sku_name: string;
+    hsn_code?: string;
+    invoice_no?: string;
+    category?: string;
+    price: number;
+    seller_details?: {
+      seller_name?: string;
+      seller_address?: string;
+      seller_state?: string;
+      gstin_number?: string;
+    };
+    taxes?: {
+      cgst?: number;
+      sgst?: number;
+      igst?: number;
+      total_tax?: number;
+    };
+    additional_details?: {
+      requires_extra_care?: "True" | "False";
+      type_extra_care?: string;
+      quantity?: number;
+    };
+  }[];
+};
