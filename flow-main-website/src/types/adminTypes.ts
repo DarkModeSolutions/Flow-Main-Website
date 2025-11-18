@@ -5,3 +5,12 @@ export type ProductRequest = {
   stock?: number;
   imageUrl?: string;
 };
+
+export type PromotionRequest = {
+  code?: string;
+  discount?: number;
+  description?: string;
+  validFrom?: string;
+  validTo?: string;
+  isActive?: boolean;
+};
