@@ -7,11 +7,11 @@ const getShadowfaxRequestData = async ({
 }) => {
   const { url, method, body, additionalHeaders } = requestData;
 
-  const res = await fetch(`${process.env.SHADOWFAX_PROD_URL}${url}`, {
+  const res = await fetch(`${process.env.SHADOWFAX_URL}${url}`, {
     method: method,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Token ${process.env.SHADOWFAX_PROD_TOKEN}`,
+      Authorization: `Token ${process.env.SHADOWFAX_TOKEN}`,
       ...additionalHeaders,
     },
     body: body ? JSON.stringify(body) : undefined,
