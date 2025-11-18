@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     // console.log();
 
-    if (userDetails.id !== id) {
+    if (userDetails.id !== id && !userDetails.isAdmin) {
       await log(
         "Create_User_Address_Details",
         `User ID mismatch: Authenticated user ID ${userDetails.id} does not match path user ID ${id}.`
