@@ -4,7 +4,6 @@ export const images = {
   original: "/assets/images/Still Render Original.png",
 };
 
-// Videos
 export const videos = {
   lemonade: "/assets/videos/Lemonade Individual Sachet Animation.mp4",
   mango: "/assets/videos/Mango Individual Sachet Animation.mp4",
@@ -43,30 +42,3 @@ export const tempProducts = [
     updatedAt: new Date(),
   },
 ];
-
-export const shadowfaxServiceParameters = {
-  sellerPickup: {
-    serviceParam: "seller_pickup",
-    desc: "List all the pincodes where seller pickup is available.",
-  },
-  customerDelivery: {
-    serviceParam: "customer_delivery",
-    desc: "List all the pincodes where customer delivery is available.",
-  },
-  customerPickup: {
-    serviceParam: "customer_pickup",
-    desc: "List all the pincodes where customer pickup is available.",
-  },
-  sellerDelivery: {
-    serviceParam: "seller_delivery",
-    desc: "List all the pincodes where seller delivery is available.",
-  },
-  warehousePickup: {
-    serviceParam: "warehouse_pickup",
-    desc: "List all the pincodes where warehouse pickup is available.",
-  },
-  warehouseReturn: {
-    serviceParam: "warehouse_return",
-    desc: "List all the pincodes where warehouse return or rto is available.",
-  },
-};
