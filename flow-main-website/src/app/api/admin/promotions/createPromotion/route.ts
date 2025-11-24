@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
 
     const user = await getUserDetails(req);
     if (!user || !user.isAdmin) {
-      await log("Create_Promotion", `Unauthorized product update attempt.`);
+      await log(
+        "Create_Promotion",
+        `Unauthorized promotion code creation attempt.`
+      );
       return error(403, "Unauthorized");
     }
 

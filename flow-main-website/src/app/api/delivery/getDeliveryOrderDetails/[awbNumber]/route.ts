@@ -7,7 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const { orderId } = await req.json();
+    const url = new URL(req.url);
+    const orderId = url.pathname.split("/").pop();
 
     const orderDetails = await prisma.orders.findUnique({
       where: { id: orderId },

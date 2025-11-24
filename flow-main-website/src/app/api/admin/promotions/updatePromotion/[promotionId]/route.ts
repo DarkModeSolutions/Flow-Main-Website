@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
 
     const user = await getUserDetails(req);
     if (!user || !user.isAdmin) {
-      await log("Update_Promotion", `Unauthorized product update attempt.`);
+      await log("Update_Promotion", `Unauthorized promotions update attempt.`);
       return error(403, "Unauthorized");
     }
 

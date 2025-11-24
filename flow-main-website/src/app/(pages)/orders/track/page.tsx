@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const TrackOrderPage = () => {
@@ -28,7 +28,7 @@ const TrackOrderPage = () => {
         />
         <button
           onClick={handleTrackOrder}
-          className="ml-2 bg-[#24BFCF] text-white p-2"
+          className="ml-2 bg-[#24BFCF] text-black p-2"
         >
           Track
         </button>

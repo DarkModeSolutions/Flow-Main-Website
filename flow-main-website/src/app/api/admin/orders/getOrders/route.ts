@@ -6,34 +6,37 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const promotions = await prisma.promotionCodes.findMany();
-
     const user = await getUserDetails(req);
     if (!user || !user.isAdmin) {
-      await log(
-        "Get_Promotions",
-        `Unauthorized fetching of promotions attempt.`
-      );
+      await log("Get_Orders", `Unauthorized fetching orders attempt.`);
       return error(403, "Unauthorized");
     }
 
-    await log("Get_Promotions", `Fetched ${promotions.length} promotions`);
+    const orders = await prisma.orders.findMany({
+      include: {
+        orderItems: true,
+        shadowfaxOrder: true,
+      },
+    });
 
-    if (promotions.length === 0) {
-      return error(404, "No promotions found");
+    if (!orders || orders.length === 0) {
+      await log("Get_Orders", `No orders found in the database.`);
+      return NextResponse.json(
+        { orders: [], message: "No orders found" },
+        { status: 200 }
+      );
     }
 
+    await log("Get_Orders", `Fetched ${orders.length} orders successfully.`);
+
     return NextResponse.json(
-      {
-        message: `Found ${promotions.length} promotions`,
-        promotions: promotions,
-      },
+      { orders, message: `${orders.length} orders found` },
       { status: 200 }
     );
   } catch (err) {
     await log(
-      "Get_Promotions",
-      `Get Promotions failed: ${
+      "Get_Orders",
+      `Fetching Orders failed: ${
         err instanceof Error ? err.message : "Unknown error"
       }`
     );

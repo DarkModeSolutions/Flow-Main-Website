@@ -48,3 +48,5 @@ data-only.sql
 full-dump.sql
 
 google-client.json
+
+tempUpdateProducts.ts
