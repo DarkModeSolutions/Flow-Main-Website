@@ -1,3 +1,5 @@
+"use client";
+
 import ErrorComponent from "@/components/ErrorComponent";
 import FlowButton from "@/components/FlowButton";
 import LoadingComponent from "@/components/LoadingComponent";

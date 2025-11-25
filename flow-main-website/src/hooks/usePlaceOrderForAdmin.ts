@@ -1,3 +1,5 @@
+"use client";
+
 import { RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleHookCatch from "@/utils/handleHookCatch";
