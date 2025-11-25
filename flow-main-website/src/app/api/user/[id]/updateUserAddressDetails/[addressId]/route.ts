@@ -17,7 +17,7 @@ export async function PATCH(req: NextRequest) {
     const addressId = url.pathname.split("/").pop();
     const id = url.pathname.split("/").slice(-3, -2)[0];
 
-    if (userDetails.id !== id) {
+    if (userDetails.id !== id && !userDetails.isAdmin) {
       await log(
         "Update_User_Address_Details",
         `User ID mismatch: Authenticated user ID ${userDetails.id} does not match path user ID ${id}.`

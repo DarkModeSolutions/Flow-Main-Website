@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest) {
     // Get user ID (assuming it's at index -2: /api/user/[id]/zoho-status)
     const userId = pathSegments.slice(-2, -1)[0]; // Gets [id] part
 
-    if (userDetails.id !== userId) {
+    if (userDetails.id !== userId && !userDetails.isAdmin) {
       await log(
         "Update_User_Details",
         `User ID mismatch: Authenticated user ID ${userDetails.id} does not match path user ID ${userId}.`

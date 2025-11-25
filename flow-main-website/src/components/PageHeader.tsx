@@ -112,7 +112,7 @@ const PageHeader = () => {
               <IoCartOutline className="text-white" />
             </Link>
             {cart && cart.length > 0 && (
-              <div className="absolute rounded-full bg-red-300 w-[18px] h-[18px] top-[-5px] right-[-10px] flex items-center justify-center text-black text-xs">
+              <div className="absolute rounded-full bg-red-300 w-[18px] h-[18px] top-[-5px] -right-2.5 flex items-center justify-center text-black text-xs">
                 {cart.reduce((total, item) => total + item.quantity, 0)}
               </div>
             )}

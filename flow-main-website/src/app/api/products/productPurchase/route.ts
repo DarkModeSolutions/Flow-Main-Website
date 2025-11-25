@@ -120,6 +120,7 @@ export async function PATCH(req: NextRequest) {
         where: { id: existingOrder.id },
         data: {
           status: "COMPLETED",
+          deliveryStatus: "PROCESSING",
         },
       });
 

@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.sample-prod-env
 
 # vercel
 .vercel
@@ -47,3 +48,5 @@ data-only.sql
 full-dump.sql
 
 google-client.json
+
+tempUpdateProducts.ts

@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "OrderDeliveryStatus" AS ENUM ('PROCESSING', 'INITIATED_BY_ADMIN', 'INITIATED_BY_USER', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_USER');
+
+-- AlterTable
+ALTER TABLE "orders" ADD COLUMN     "deliveryStatus" "OrderDeliveryStatus" NOT NULL DEFAULT 'PROCESSING';
