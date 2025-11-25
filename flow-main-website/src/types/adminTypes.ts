@@ -1,3 +1,16 @@
+import { Prisma } from "@prisma/client";
+
+// DB Payloads
+
+export type OrderDetailsWithAdminIncludes = Prisma.OrdersGetPayload<{
+  include: {
+    orderItems: true;
+    shadowfaxOrder: true;
+  };
+}>;
+
+// Custom Admin Types
+
 export type ProductRequest = {
   name?: string;
   description?: string;

@@ -4,37 +4,33 @@ import handleHookCatch from "@/utils/handleHookCatch";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
 
-const usePlaceOrderForAdmin = () => {
+const useGlobalCancelOrder = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const placeOrderForAdmin = useCallback(
-    async (
-      orderId: string,
-      pickupAddressId: number,
-      acceptOrderRequest: boolean
-    ) => {
+  const globalCancelOrder = useCallback(
+    async (orderId: string, cancelReason: string) => {
       try {
         setLoading(true);
-        setError(null); // Clear previous errors
+        setError(null);
 
         const requestData: RequestType = {
-          url: `/api/admin/delivery/placeOrder`,
+          url: `/api/delivery/cancelOrder`,
           method: "POST",
-          body: { orderId, pickupAddressId, acceptOrderRequest },
+          body: { orderId, cancelReason },
         };
 
         const response = await getRequestData({ requestData });
 
         if (!response.ok) {
-          handleResponseNotOk(response, "Error in placing order for admin");
+          handleResponseNotOk(response, "Error in cancelling order");
+          return null;
         }
 
         const data = await response.json();
-
         return data;
       } catch (error) {
-        handleHookCatch(error, setError, "Failed to place order");
+        handleHookCatch(error, setError, "Failed to cancel order");
         return null;
       } finally {
         setLoading(false);
@@ -43,7 +39,7 @@ const usePlaceOrderForAdmin = () => {
     []
   );
 
-  return { placeOrderForAdmin, loading, error };
+  return { globalCancelOrder, loading, error };
 };
 
-export default usePlaceOrderForAdmin;
+export default useGlobalCancelOrder;

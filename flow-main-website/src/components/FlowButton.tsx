@@ -30,7 +30,7 @@ const FlowButton = ({
       type={submitType ? "submit" : "button"}
       onClick={redirectTo ? () => router.push(redirectTo) : onClickHandler}
       className={cn(
-        "bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer",
+        "bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer disabled:cursor-not-allowed",
         className
       )}
     >
