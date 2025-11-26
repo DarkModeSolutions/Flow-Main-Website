@@ -23,6 +23,7 @@ enum OrderDeliveryStatus {
     INITIATED_BY_USER
     CANCELLED_BY_ADMIN
     CANCELLED_BY_USER
+    REJECTED_BY_ADMIN
 }
 
 // Example model - you can modify this based on your needs

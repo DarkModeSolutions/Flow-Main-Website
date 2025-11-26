@@ -46,6 +46,8 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      console.log(orderDetails, "Order details address");
+
       if (!orderDetails || !orderDetails.orderPhone) {
         await log(
           "Place_Order",
@@ -97,7 +99,9 @@ export async function POST(req: NextRequest) {
           address_line_2: orderAddress?.addressLine2 || "",
           city: orderAddress?.city,
           state: orderAddress?.state,
-          pincode: Number(orderAddress?.pincode),
+          pincode: Number.isNaN(Number(orderAddress?.pincode))
+            ? 560077
+            : Number(orderAddress?.pincode),
         },
         pickup_details: {
           contact: pickupAddress?.contactPhone,
@@ -105,7 +109,7 @@ export async function POST(req: NextRequest) {
           address_line_2: pickupAddress?.addressLine2 || "",
           city: pickupAddress?.city,
           state: pickupAddress?.state,
-          pincode: Number(pickupAddress?.pincode),
+          pincode: 560077,
         },
         rts_details: {
           name: "Deepak",
@@ -113,7 +117,7 @@ export async function POST(req: NextRequest) {
           address_line_1: pickupAddress?.addressLine1,
           city: pickupAddress?.city,
           state: pickupAddress?.state,
-          pincode: Number(pickupAddress?.pincode),
+          pincode: 560077,
         },
         product_details: orderDetails.orderItems.map((item) => ({
           sku_name: item.product.name,
@@ -183,18 +187,47 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      return NextResponse.json({
-        message: "Success",
-        errors: null,
-        data: shadowfaxData.data,
-        shadowfaxOrderAwbNumber: newShadowfaxOrder.awb_number,
+      await log(
+        "Place_Order",
+        `Successfully placed order with Shadowfax for Order ID: ${orderId}, AWB Number: ${newShadowfaxOrder.awb_number}`
+      );
+
+      await prisma.orders.update({
+        where: { id: orderDetails.id },
+        data: {
+          deliveryStatus: "INITIATED_BY_ADMIN",
+        },
       });
+
+      return NextResponse.json(
+        {
+          message: "Success",
+          errors: null,
+          data: shadowfaxData.data,
+          shadowfaxOrderAwbNumber: newShadowfaxOrder.awb_number,
+        },
+        { status: 200 }
+      );
     } else {
       await log(
         "Place_Order",
         `Place order request not accepted for Order ID: ${orderId}`
       );
-      return error(400, "Place order request not accepted");
+
+      await prisma.orders.update({
+        where: { id: orderId },
+        data: {
+          deliveryStatus: "REJECTED_BY_ADMIN",
+        },
+      });
+
+      return NextResponse.json(
+        {
+          message: "Order request rejected by admin",
+          errors: null,
+        },
+        { status: 200 }
+      );
     }
   } catch (err) {
     await log(
