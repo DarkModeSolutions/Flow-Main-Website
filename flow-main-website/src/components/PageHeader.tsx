@@ -30,7 +30,7 @@ const PageHeader = () => {
   >(undefined);
 
   const findHandler = (searchString: string) => {
-    console.log("Search string: ", searchString);
+    // console.log("Search string: ", searchString);
     let results: AllProductDetails[] | undefined = undefined;
     if (searchString.length <= 2) {
       results = [];
@@ -43,7 +43,7 @@ const PageHeader = () => {
             tag.toLowerCase().includes(lowerCaseSearchString)
           )
       );
-      console.log("Search Results: ", searchResults);
+      // console.log("Search Results: ", searchResults);
       results = searchResults;
     }
     setSearchResult(results);
@@ -61,7 +61,7 @@ const PageHeader = () => {
     setMounted(true);
   }, []);
 
-  console.log("This is header");
+  // console.log("This is header");
 
   const handleNavigation = (href: string) => {
     setIsSheetOpen(false);

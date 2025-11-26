@@ -13,13 +13,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      console.log("Inside User context provider");
+      // console.log("Inside User context provider");
       setLoading(true);
       setError(null);
       try {
         const userData = await getSessionUserClient();
         setUser(userData);
-        console.log("User data from context: ", userData);
+        // console.log("User data from context: ", userData);
       } catch (error) {
         setError(error);
         setUser(null);
