@@ -21,7 +21,7 @@ const usePlaceOrderForAdmin = () => {
         setError(null); // Clear previous errors
 
         const requestData: RequestType = {
-          url: `/api/admin/delivery/placeOrder`,
+          url: `/api/admin/orders/placeOrder`,
           method: "POST",
           body: { orderId, pickupAddressId, acceptOrderRequest },
         };
@@ -33,6 +33,7 @@ const usePlaceOrderForAdmin = () => {
         }
 
         const data = await response.json();
+        console.log(data);
 
         return data;
       } catch (error) {

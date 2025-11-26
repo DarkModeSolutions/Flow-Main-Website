@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 
 const ProfilePage = async () => {
   const session = await getServerSession(authOptions);
-  console.log("Session User: ", session?.user);
+  // console.log("Session User: ", session?.user);
   return <ProfileClient user={session?.user} />;
 };
 

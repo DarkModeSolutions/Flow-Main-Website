@@ -160,7 +160,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
 
                   {/* Quantity Controls */}
                   <div className="flex items-center not-md:justify-center not-md:mb-5 gap-3">
-                    <div className="flex items-center md:w-[20%] order-last">
+                    <div className="flex items-center md:w-[20%] order-first">
                       <FlowButton
                         onClickHandler={() => {
                           decrementCartItem(product.id);
@@ -174,7 +174,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                       {item.quantity}
                     </span>
 
-                    <div className="flex items-center w-[20%] order-first">
+                    <div className="flex items-center w-[20%] order-last">
                       <FlowButton
                         onClickHandler={() => {
                           incrementCartItem(product.id);

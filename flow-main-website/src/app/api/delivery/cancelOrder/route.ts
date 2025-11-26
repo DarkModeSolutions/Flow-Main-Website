@@ -2,12 +2,15 @@ import { prisma } from "@/lib/db/prisma";
 import { RequestType } from "@/types/types";
 import { error } from "@/utils/errorResponse";
 import getShadowfaxRequestData from "@/utils/getShadowfaxRequestData";
+import getUserDetails from "@/utils/getUserDetails";
 import { log } from "@/utils/log";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const { orderId, cancelReason } = await req.json();
+
+    const user = await getUserDetails(req);
 
     const orderDetails = await prisma.orders.findUnique({
       where: { id: orderId },
@@ -70,7 +73,16 @@ export async function POST(req: NextRequest) {
     await prisma.shadowfaxOrders.update({
       where: { orderId: orderId },
       data: {
-        shipment_status: "Cancelled",
+        shipment_status: "CANCELLED",
+      },
+    });
+
+    await prisma.orders.update({
+      where: { id: orderId },
+      data: {
+        deliveryStatus: user?.isAdmin
+          ? "CANCELLED_BY_ADMIN"
+          : "CANCELLED_BY_USER",
       },
     });
 

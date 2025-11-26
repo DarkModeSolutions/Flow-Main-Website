@@ -1,7 +1,7 @@
 "use client";
 
+import AdminPlaceCancelOrderDialog from "@/components/AdminPlaceOrderAddressDialog";
 import ErrorComponent from "@/components/ErrorComponent";
-import FlowButton from "@/components/FlowButton";
 import LoadingComponent from "@/components/LoadingComponent";
 import {
   Table,
@@ -12,56 +12,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useGetOrdersForAdmin from "@/hooks/useGetOrdersForAdmin";
-import useGlobalCancelOrder from "@/hooks/useGlobalCancelOrder";
-import usePlaceOrderForAdmin from "@/hooks/usePlaceOrderForAdmin";
 import { OrderDetailsWithAdminIncludes } from "@/types/adminTypes";
 import { useEffect, useState } from "react";
-import { ImCross } from "react-icons/im";
-import { TiTick } from "react-icons/ti";
 
 const OrdersPage = () => {
   const [orderDetails, setOrderDetails] = useState<
     OrderDetailsWithAdminIncludes[] | []
   >([]);
-  const [buttonLoadingState, setButtonLoadingState] = useState<{
-    orderId: string | null;
-    action: "approve" | "reject" | null;
-  }>({ orderId: null, action: null });
-
-  const {
-    error: placeOrderError,
-    loading: placeOrderLoading,
-    placeOrderForAdmin,
-  } = usePlaceOrderForAdmin();
 
   const {
     error: getOrdersError,
     getOrdersForAdmin,
     loading: getOrdersLoading,
   } = useGetOrdersForAdmin();
-
-  const {
-    error: globalCancelOrderError,
-    globalCancelOrder,
-    loading: globalCancelOrderLoading,
-  } = useGlobalCancelOrder();
-
-  const handleApproveReject = async (
-    orderId: string,
-    action: "approve" | "reject"
-  ) => {
-    setButtonLoadingState({ orderId, action });
-    const pickupAddressId = 1;
-    const acceptOrderRequest = action === "approve" ? true : false;
-    await placeOrderForAdmin(orderId, pickupAddressId, acceptOrderRequest);
-    setButtonLoadingState({ orderId: null, action: null });
-    const updatedOrders = await getOrdersForAdmin();
-    if (updatedOrders.length > 0) {
-      setOrderDetails(updatedOrders);
-    } else {
-      setOrderDetails([]);
-    }
-  };
 
   useEffect(() => {
     async function fetchOrders() {
@@ -86,12 +49,8 @@ const OrdersPage = () => {
     "Actions",
   ];
 
-  if (getOrdersError || placeOrderError || globalCancelOrderError) {
-    return (
-      <ErrorComponent
-        error={getOrdersError || placeOrderError || globalCancelOrderError}
-      />
-    );
+  if (getOrdersError) {
+    return <ErrorComponent error={getOrdersError} />;
   }
 
   return (
@@ -107,7 +66,12 @@ const OrdersPage = () => {
               <TableHeader>
                 <TableRow>
                   {tableHeaders.map((header, index) => (
-                    <TableHead key={index}>{header}</TableHead>
+                    <TableHead
+                      className="border-r border-l border-solid"
+                      key={index}
+                    >
+                      {header}
+                    </TableHead>
                   ))}
                 </TableRow>
               </TableHeader>
@@ -129,52 +93,21 @@ const OrdersPage = () => {
                         <TableCell>{order.orderPhone}</TableCell>
                         <TableCell>
                           {order.deliveryStatus === "PROCESSING" ? (
-                            <div className="w-full flex justify-between items-center gap-4 p-2">
-                              <FlowButton
-                                isDisabled={placeOrderLoading}
-                                className="bg-[#8f0000] hover:bg-[#8f0000]"
-                                onClickHandler={() =>
-                                  handleApproveReject(order.id, "reject")
-                                }
-                              >
-                                {buttonLoadingState.orderId === order.id &&
-                                buttonLoadingState.action === "reject" ? (
-                                  <LoadingComponent className="size-5" />
-                                ) : (
-                                  <ImCross className="text-black" />
-                                )}
-                              </FlowButton>
-                              <FlowButton
-                                isDisabled={placeOrderLoading}
-                                className="bg-[#0d6e00] hover:bg-[#0d6e00]"
-                                onClickHandler={() =>
-                                  handleApproveReject(order.id, "approve")
-                                }
-                              >
-                                {buttonLoadingState.orderId === order.id &&
-                                buttonLoadingState.action === "approve" ? (
-                                  <LoadingComponent className="size-5" />
-                                ) : (
-                                  <TiTick className="text-black" />
-                                )}
-                              </FlowButton>
+                            <div className="flex justify-between items-center p-2">
+                              <AdminPlaceCancelOrderDialog
+                                orderId={order.id}
+                                action="approve"
+                              />
+                              <AdminPlaceCancelOrderDialog
+                                orderId={order.id}
+                                action="reject"
+                              />
                             </div>
                           ) : order.deliveryStatus === "INITIATED_BY_ADMIN" ? (
-                            <FlowButton
-                              onClickHandler={() =>
-                                globalCancelOrder(order.id, "Reason to cancel")
-                              }
-                              isDisabled={globalCancelOrderLoading}
-                              className="bg-red-700 hover:bg-red-700"
-                            >
-                              {globalCancelOrderLoading && (
-                                <>
-                                  <LoadingComponent className="size-5" />
-                                  {` `}
-                                </>
-                              )}
-                              Cancel Order
-                            </FlowButton>
+                            <AdminPlaceCancelOrderDialog
+                              orderId={order.id}
+                              action="cancel"
+                            />
                           ) : (
                             <p className="text-gray-500">
                               No actions available
