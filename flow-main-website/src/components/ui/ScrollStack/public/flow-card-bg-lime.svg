@@ -1,0 +1,25 @@
+<!-- public/flow-bg/flow-card-bg-lime.svg -->
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="#050607"/>
+
+  <defs>
+    <!-- Lime glow bottom-right -->
+    <radialGradient id="limeGlow" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(700 340) rotate(-30) scale(260 260)">
+      <stop stop-color="#dae249" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#dae249" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Dot fill -->
+    <pattern id="dotGrid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#f5f5f7" fill-opacity="0.08" />
+    </pattern>
+  </defs>
+
+  <!-- Very faint grid -->
+  <rect width="800" height="400" fill="url(#dotGrid)" />
+
+  <!-- Glow -->
+  <rect width="800" height="400" fill="url(#limeGlow)" />
+</svg>

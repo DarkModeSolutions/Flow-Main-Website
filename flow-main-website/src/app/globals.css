@@ -213,3 +213,13 @@ input[type="number"] {
 .manrope-extrabold {
   font-weight: var(--font-manrope-extrabold);
 }
+
+/* Gradient + shadow for FLOW word */
+.flow-gradient {
+  background: linear-gradient(180deg, #6ae1e8 0%, #0b4f75 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 6px 18px rgba(20, 30, 40, 0.45);
+}
