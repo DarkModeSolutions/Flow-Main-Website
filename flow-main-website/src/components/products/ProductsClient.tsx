@@ -27,7 +27,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
-  console.log("User in product page: ", user);
+  // console.log("User in product page: ", user);
 
   const params = useParams();
   const productId = params.productId as string;

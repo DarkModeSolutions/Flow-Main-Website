@@ -41,7 +41,7 @@ const UserDetailsComponent = ({ user }: { user: SessionUser | undefined }) => {
     async function fetchUserDetails() {
       if (user?.id) {
         const userDetails = await getUserDetails(user.id);
-        console.log("Fetched user details: ", userDetails);
+        // console.log("Fetched user details: ", userDetails);
         setMyUserDetails(userDetails);
         setUpdatedUserDetails({
           name: userDetails?.user?.name,
@@ -50,7 +50,7 @@ const UserDetailsComponent = ({ user }: { user: SessionUser | undefined }) => {
           age: userDetails?.user?.age,
         });
       } else {
-        console.log("redirecting from use effect");
+        // console.log("redirecting from use effect");
         router.push("/auth/login");
       }
     }
@@ -65,7 +65,7 @@ const UserDetailsComponent = ({ user }: { user: SessionUser | undefined }) => {
       router.push("/auth/login");
     }
 
-    const updateDetails = await updateUserDetails({
+    await updateUserDetails({
       userId: user!.id,
       // updatedAddress: updatedUserDetails.address,
       updatedAge: updatedUserDetails.age,
@@ -74,7 +74,7 @@ const UserDetailsComponent = ({ user }: { user: SessionUser | undefined }) => {
       updatedPhone: updatedUserDetails.phone,
     });
 
-    console.log("Updated user details response: ", updateDetails);
+    // console.log("Updated user details response: ", updateDetails);
   };
 
   if (getUserLoading) {

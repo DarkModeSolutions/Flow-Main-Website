@@ -14,7 +14,7 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const paymentLink = searchParams.get("payment_link_id");
-  console.log("This is orderId in PaymentSuccess page: ", orderId);
+  // console.log("This is orderId in PaymentSuccess page: ", orderId);
 
   const { clearCart } = useProductContext();
 
@@ -25,7 +25,7 @@ function PaymentSuccessContent() {
 
   useEffect(() => {
     if (!orderId) {
-      console.log("No order ID right now");
+      // console.log("No order ID right now");
       redirect("/");
     } // wait until it's available
 

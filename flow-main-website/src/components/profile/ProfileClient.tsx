@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
-  console.log("Entering Profile client");
+  // console.log("Entering Profile client");
 
   const router = useRouter();
 
@@ -60,8 +60,8 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     OrderDetailsWiithIncludes[] | [] | undefined
   >();
 
-  console.log("User details in profile section: ", user);
-  console.log("Updated User details in profile section: ", updatedUserDetails);
+  // console.log("User details in profile section: ", user);
+  // console.log("Updated User details in profile section: ", updatedUserDetails);
 
   const { getUserDetails, loading: getUserLoading } = useGetUserDetails();
 
@@ -112,15 +112,15 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
         const userDetails = await getUserDetails(user.id);
         const orderHistory = await getOrderDetails(user.id);
         const userAddressDetails = await getUserAddressDetails(user.id);
-        console.log("Fetched user details: ", userDetails);
-        console.log("Fetched order history: ", orderHistory);
-        console.log("Fetched user address details: ", userAddressDetails);
+        // console.log("Fetched user details: ", userDetails);
+        // console.log("Fetched order history: ", orderHistory);
+        // console.log("Fetched user address details: ", userAddressDetails);
         setMyUserDetails(userDetails);
         // console.log(updatedUserDetails);
         setMyOrderHistory(orderHistory);
         setUpdatedUserAddressDetails(userAddressDetails);
       } else {
-        console.log("redirecting from use effect");
+        // console.log("redirecting from use effect");
         router.push("/auth/login");
       }
     }
@@ -129,9 +129,9 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
   }, [getUserDetails, router, user, getOrderDetails, getUserAddressDetails]);
 
   useEffect(() => {
-    console.log("My user details inside use effect: ", myUserDetails);
+    // console.log("My user details inside use effect: ", myUserDetails);
     if (myUserDetails) {
-      console.log("Entering if in use effect");
+      // console.log("Entering if in use effect");
       setUpdatedUserDetails({
         name: myUserDetails.user?.name,
         email: myUserDetails.user?.email,
@@ -148,7 +148,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
       router.push("/auth/login");
     }
 
-    const updateDetails = await updateUserDetails({
+    await updateUserDetails({
       userId: user!.id,
       // updatedAddress: updatedUserDetails.address,
       updatedAge: updatedUserDetails.age,
@@ -157,7 +157,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
       updatedPhone: updatedUserDetails.phone,
     });
 
-    console.log("Updated user details response: ", updateDetails);
+    // console.log("Updated user details response: ", updateDetails);
   };
 
   const addressOnChangeHandler = (
@@ -191,7 +191,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     );
 
     if (addressToUpdate) {
-      const updateAddressResponse = await updateUserAddress({
+      await updateUserAddress({
         userId: user!.id,
         addressId: addressToUpdate.id,
         updatedAddressLine1: addressToUpdate.addressLine1,
@@ -203,7 +203,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
         updatedAddressName: addressToUpdate.addressName,
       });
 
-      console.log("Updated address response: ", updateAddressResponse);
+      // console.log("Updated address response: ", updateAddressResponse);
       return;
     }
 
@@ -228,7 +228,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
       addressName: newUserAddressDetails?.addressName,
     });
 
-    console.log("Create new address response: ", createAddressResponse);
+    // console.log("Create new address response: ", createAddressResponse);
 
     if (createAddressResponse && createAddressResponse.success) {
       const updatedAddresses = await getUserAddressDetails(user!.id);
@@ -243,7 +243,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
 
     const deleteAddressResponse = await deleteUserAddress(user!.id, addressId);
 
-    console.log("Delete address response: ", deleteAddressResponse);
+    // console.log("Delete address response: ", deleteAddressResponse);
 
     if (deleteAddressResponse && deleteAddressResponse.success) {
       const updatedAddresses = await getUserAddressDetails(user!.id);

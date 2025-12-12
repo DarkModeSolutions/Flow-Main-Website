@@ -61,25 +61,17 @@ export async function POST(req: NextRequest) {
         where: { id: orderAddressId },
       });
       address = addressData
-        ? addressData.addressLine1 +
-          ", " +
-          addressData.addressLine2 +
-          ", " +
-          addressData.city +
-          " - " +
-          addressData.pincode
+        ? `${addressData.addressLine1}, ${
+            addressData.addressLine2 ? addressData.addressLine2 + ", " : ""
+          }${addressData.city} - ${addressData.pincode}`
         : "";
+    } else if (userData?.address?.[0]) {
+      // Only use user's default address if no orderAddressId is provided
+      const userAddr = userData.address[0];
+      address = `${userAddr.addressLine1}, ${
+        userAddr.addressLine2 ? userAddr.addressLine2 + ", " : ""
+      }${userAddr.city} - ${userAddr.pincode}`;
     }
-
-    // const {} = userData?.address
-    address =
-      userData?.address[0].addressLine1 +
-      ", " +
-      userData?.address[0].addressLine2 +
-      ", " +
-      userData?.address[0].city +
-      " - " +
-      userData?.address[0].pincode;
 
     const order = await prisma.orders.create({
       data: {

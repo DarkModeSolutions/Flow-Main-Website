@@ -39,7 +39,7 @@ const PageHeader = () => {
   const [displayedText, setDisplayedText] = useState("");
 
   const findHandler = (searchString: string) => {
-    console.log("Search string: ", searchString);
+    // console.log("Search string: ", searchString);
     let results: AllProductDetails[] | undefined = undefined;
     if (searchString.length <= 2) {
       results = [];
@@ -52,7 +52,7 @@ const PageHeader = () => {
             tag.toLowerCase().includes(lowerCaseSearchString)
           )
       );
-      console.log("Search Results: ", searchResults);
+      // console.log("Search Results: ", searchResults);
       results = searchResults;
     }
     setSearchResult(results);
@@ -224,7 +224,7 @@ const PageHeader = () => {
               <IoCartOutline className="text-white" />
             </Link>
             {cart && cart.length > 0 && (
-              <div className="absolute rounded-full bg-red-300 w-[18px] h-[18px] top-[-5px] right-[-10px] flex items-center justify-center text-black text-xs">
+              <div className="absolute rounded-full bg-red-300 w-[18px] h-[18px] top-[-5px] -right-2.5 flex items-center justify-center text-black text-xs">
                 {cart.reduce((total, item) => total + item.quantity, 0)}
               </div>
             )}

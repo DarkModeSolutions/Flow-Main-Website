@@ -271,16 +271,16 @@ const CheckoutMethodModal = () => {
     <div className="mt-4 space-y-4">
       <FlowButton
         onClickHandler={() => setShowGuestForm(true)}
-        className="w-full rounded-[12px] bg-white"
+        className="w-full rounded-xl bg-white"
       >
         Buy as Guest
       </FlowButton>
 
-      <Separator className="my-4 !w-[70%] mx-auto" />
+      <Separator className="my-4 w-[70%]! mx-auto" />
 
       <FlowButton
         redirectTo="/auth/login?redirect=/cart"
-        className="w-full rounded-[12px] bg-white"
+        className="w-full rounded-xl bg-white"
       >
         Buy as User
       </FlowButton>

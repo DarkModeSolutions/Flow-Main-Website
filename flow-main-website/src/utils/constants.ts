@@ -4,7 +4,6 @@ export const images = {
   original: "/assets/images/Still Render Original.png",
 };
 
-// Videos
 export const videos = {
   lemonade: "/assets/videos/Lemonade Individual Sachet Animation.mp4",
   mango: "/assets/videos/Mango Individual Sachet Animation.mp4",

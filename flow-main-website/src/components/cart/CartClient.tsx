@@ -114,7 +114,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                   key={item.productId}
                 >
                   {/* Product Image */}
-                  <div className="md:w-[120px] w-full not-md:mb-10 h-[120px] relative flex-shrink-0">
+                  <div className="md:w-[120px] w-full not-md:mb-10 h-[120px] relative shrink-0">
                     <Image
                       src={images[product.imageUrl as keyof typeof images]}
                       alt={product.name}
@@ -160,7 +160,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
 
                   {/* Quantity Controls */}
                   <div className="flex items-center not-md:justify-center not-md:mb-5 gap-3">
-                    <div className="flex items-center md:w-[20%] order-last">
+                    <div className="flex items-center md:w-[20%] order-first">
                       <FlowButton
                         onClickHandler={() => {
                           decrementCartItem(product.id);
@@ -174,7 +174,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                       {item.quantity}
                     </span>
 
-                    <div className="flex items-center w-[20%] order-first">
+                    <div className="flex items-center w-[20%] order-last">
                       <FlowButton
                         onClickHandler={() => {
                           incrementCartItem(product.id);
@@ -210,7 +210,7 @@ const CartClient = ({ user }: { user: SessionUser | undefined }) => {
                   currency: "INR",
                 })}
               </h2>
-              <div className="w-[100%]">
+              <div className="w-full">
                 <div className="w-[60%] mx-auto flex flex-col gap-4 mt-4">
                   <FlowButton onClickHandler={() => router.push("/shop")}>
                     Continue Shopping

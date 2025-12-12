@@ -41,7 +41,7 @@ const useUpdatePurchaseOrder = () => {
           return data;
         }
       } catch (error) {
-        handleHookCatch(error, setError, "Failed to update product");
+        handleHookCatch(error, setError, "Failed to update purchase order");
         return null;
       } finally {
         setLoading(false);

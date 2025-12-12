@@ -22,7 +22,7 @@ export async function DELETE(req: NextRequest) {
     console.log("Id: ", id);
     console.log("AddressId: ", addressId);
 
-    if (userDetails.id !== id) {
+    if (userDetails.id !== id && !userDetails.isAdmin) {
       await log(
         "Delete_User_Address_Details",
         `User ID mismatch: Authenticated user ID ${userDetails.id} does not match path user ID ${id}.`
