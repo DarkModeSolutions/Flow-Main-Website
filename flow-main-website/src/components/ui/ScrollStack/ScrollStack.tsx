@@ -1,16 +1,16 @@
 "use client";
 
-import React, {
-  useLayoutEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  useState,
-  useEffect,
-} from "react";
-import type { ReactNode } from "react";
 import Lenis from "lenis";
 import { AnimatePresence, motion } from "motion/react";
+import type { ReactNode } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 export interface ScrollStackItemProps {
   itemClassName?: string;
@@ -24,7 +24,7 @@ export const ScrollStackItem: React.FC<ScrollStackItemProps> = ({
   previewColor,
 }) => (
   <div
-    className={`scroll-stack-card relative w-full h-[24rem] md:h-[26rem] xl:h-[28rem] my-0 p-10 md:p-12 rounded-[40px] shadow-[0_0_30px_rgba(0,0,0,0.18)] box-border origin-top will-change-transform ${itemClassName}`.trim()}
+    className={`scroll-stack-card relative w-full h-96 md:h-104 xl:h-112 my-0 p-10 md:p-12 rounded-[40px] shadow-[0_0_30px_rgba(0,0,0,0.18)] box-border origin-top will-change-transform ${itemClassName}`.trim()}
     style={{
       backfaceVisibility: "hidden",
       transformStyle: "preserve-3d",
@@ -53,6 +53,13 @@ interface ScrollStackProps {
   anchorHeight?: number | null;
 }
 
+interface TransformData {
+  translateY: number;
+  scale: number;
+  rotation: number;
+  blur: number;
+}
+
 const ScrollStack: React.FC<ScrollStackProps> = ({
   children,
   className = "",
@@ -76,7 +83,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
-  const lastTransformsRef = useRef(new Map<number, any>());
+  const lastTransformsRef = useRef(new Map<number, TransformData>());
   const isUpdatingRef = useRef(false);
 
   type StackElement = React.ReactElement<ScrollStackItemProps>;
@@ -89,7 +96,9 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
   const wheelDeltaRef = useRef(0);
   const touchStartYRef = useRef<number | null>(null);
-  const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const transitionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const isTransitioningRef = useRef(false);
   const isLocalStack = !useWindowScroll;
 
@@ -210,12 +219,15 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     []
   );
 
-  const parsePercentage = useCallback((value: string | number, containerHeight: number) => {
-    if (typeof value === "string" && value.includes("%")) {
-      return (parseFloat(value) / 100) * containerHeight;
-    }
-    return parseFloat(value as string);
-  }, []);
+  const parsePercentage = useCallback(
+    (value: string | number, containerHeight: number) => {
+      if (typeof value === "string" && value.includes("%")) {
+        return (parseFloat(value) / 100) * containerHeight;
+      }
+      return parseFloat(value as string);
+    },
+    []
+  );
 
   const getScrollData = useCallback(() => {
     if (useWindowScroll) {
@@ -260,11 +272,16 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     const { scrollTop, containerHeight } = scrollData;
     const stackPositionPx = parsePercentage(stackPosition, containerHeight);
-    const scaleEndPositionPx = parsePercentage(scaleEndPosition, containerHeight);
+    const scaleEndPositionPx = parsePercentage(
+      scaleEndPosition,
+      containerHeight
+    );
 
     const endElement = useWindowScroll
       ? (document.querySelector(".scroll-stack-end") as HTMLElement | null)
-      : (scrollerRef.current?.querySelector(".scroll-stack-end") as HTMLElement | null);
+      : (scrollerRef.current?.querySelector(
+          ".scroll-stack-end"
+        ) as HTMLElement | null);
 
     const endElementTop = endElement ? getElementOffset(endElement) : 0;
 
@@ -277,7 +294,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       const pinStart = cardTop - stackPositionPx - itemStackDistance * i;
       const pinEnd = endElementTop - containerHeight / 2;
 
-      const scaleProgress = calculateProgress(scrollTop, triggerStart, triggerEnd);
+      const scaleProgress = calculateProgress(
+        scrollTop,
+        triggerStart,
+        triggerEnd
+      );
       let scale: number;
       if (expandOnScroll) {
         const cardBase = Math.max(0.4, baseScale - i * itemScale); // slightly smaller deeper cards
@@ -293,7 +314,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         let topCardIndex = 0;
         for (let j = 0; j < cardsRef.current.length; j++) {
           const jCardTop = getElementOffset(cardsRef.current[j]);
-          const jTriggerStart = jCardTop - stackPositionPx - itemStackDistance * j;
+          const jTriggerStart =
+            jCardTop - stackPositionPx - itemStackDistance * j;
           if (scrollTop >= jTriggerStart) {
             topCardIndex = j;
           }
@@ -308,7 +330,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
 
       if (isPinned) {
-        translateY = scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
+        translateY =
+          scrollTop - cardTop + stackPositionPx + itemStackDistance * i;
       } else if (scrollTop > pinEnd) {
         translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
       }
@@ -330,7 +353,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
       if (hasChanged) {
         const transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
-        const filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : "";
+        const filter =
+          newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : "";
 
         card.style.transform = transform;
         card.style.filter = filter;
@@ -364,6 +388,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     parsePercentage,
     getScrollData,
     getElementOffset,
+    expandOnScroll,
   ]);
 
   const handleScroll = useCallback(() => {
@@ -432,7 +457,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const cards = Array.from(
       useWindowScroll
         ? document.querySelectorAll(".scroll-stack-card")
-        : (scrollerRef.current?.querySelectorAll(".scroll-stack-card") ?? [])
+        : scrollerRef.current?.querySelectorAll(".scroll-stack-card") ?? []
     ) as HTMLElement[];
     cardsRef.current = cards;
     const transformsCache = lastTransformsRef.current;
@@ -447,9 +472,13 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       card.style.transformOrigin = "top center";
       card.style.backfaceVisibility = "hidden";
       card.style.transform = "translateZ(0)";
-      ;(card.style as any).webkitTransform = "translateZ(0)";
+      (
+        card.style as CSSStyleDeclaration & { webkitTransform?: string }
+      ).webkitTransform = "translateZ(0)";
       card.style.perspective = "1000px";
-      ;(card.style as any).webkitPerspective = "1000px";
+      (
+        card.style as CSSStyleDeclaration & { webkitPerspective?: string }
+      ).webkitPerspective = "1000px";
     });
 
     setupLenis();
@@ -488,34 +517,37 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     ? "scroll-stack-inner pt-[20vh] px-10 pb-[50rem] min-h-screen"
     : "scroll-stack-inner relative w-full h-full px-6 md:px-8 py-8 md:py-4";
 
-  const cardVariants = useMemo(() => ({
-    initial: () => ({
-      y: -96,
-      opacity: 0,
-      scale: 0.94,
-      filter: "blur(14px)",
-    }),
-    animate: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.52,
-        ease: [0.22, 1, 0.36, 1] as const,
+  const cardVariants = useMemo(
+    () => ({
+      initial: () => ({
+        y: -96,
+        opacity: 0,
+        scale: 0.94,
+        filter: "blur(14px)",
+      }),
+      animate: {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        transition: {
+          duration: 0.52,
+          ease: [0.22, 1, 0.36, 1] as const,
+        },
       },
-    },
-    exit: () => ({
-      y: 96,
-      opacity: 0,
-      scale: 0.96,
-      filter: "blur(14px)",
-      transition: {
-        duration: 0.45,
-        ease: [0.22, 1, 0.36, 1] as const,
-      },
+      exit: () => ({
+        y: 96,
+        opacity: 0,
+        scale: 0.96,
+        filter: "blur(14px)",
+        transition: {
+          duration: 0.45,
+          ease: [0.22, 1, 0.36, 1] as const,
+        },
+      }),
     }),
-  }), []);
+    []
+  );
 
   const overflowClass = isLocalStack ? "overflow-hidden" : "overflow-y-auto";
 
@@ -536,7 +568,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   const getPreviewColor = useCallback(
     (element?: StackElement) =>
-      (element?.props?.previewColor as string | undefined) ?? fallbackPreviewColor,
+      (element?.props?.previewColor as string | undefined) ??
+      fallbackPreviewColor,
     []
   );
 
@@ -549,7 +582,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   return (
     <div
-      className={`relative w-full h-full ${overflowClass} overflow-x-visible md:[height:var(--stack-anchor-height)] md:[min-height:var(--stack-anchor-height)] ${className}`.trim()}
+      className={`relative w-full h-full ${overflowClass} overflow-x-visible md:h-(--stack-anchor-height) md:min-h-(--stack-anchor-height) ${className}`.trim()}
       ref={scrollerRef}
       style={{
         overscrollBehavior: "contain",
@@ -570,7 +603,11 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       <div className={innerClassName} ref={innerRef}>
         {isLocalStack ? (
           <div className="relative h-full w-full">
-            <AnimatePresence initial={false} custom={transitionDirection} mode="popLayout">
+            <AnimatePresence
+              initial={false}
+              custom={transitionDirection}
+              mode="popLayout"
+            >
               {itemsArray.length > 0 && (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 md:px-6">
                   <motion.div

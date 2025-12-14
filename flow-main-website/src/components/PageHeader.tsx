@@ -13,10 +13,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Marquee from "react-fast-marquee";
+import { CiSearch } from "react-icons/ci";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
-import { CiSearch } from "react-icons/ci";
 
 type NavigationItem = {
   label: string;
@@ -81,7 +80,7 @@ const PageHeader = () => {
         if (isTyping) {
           setDisplayedText(fullText.slice(0, currentIndex));
           currentIndex++;
-          
+
           if (currentIndex > fullText.length) {
             isTyping = false;
             setTimeout(() => {
@@ -102,35 +101,30 @@ const PageHeader = () => {
 
   const pathname = usePathname();
 
-  const isAuthenticated = Boolean(
-    user && user.email && !user.buyingAsGuest
-  );
+  const isAuthenticated = Boolean(user && user.email && !user.buyingAsGuest);
 
-  const navigationItems = useMemo<NavigationItem[]>(
-    () => {
-      const items: NavigationItem[] = [
-        { label: "Home", href: "/" },
-        { label: "About Us", href: "/about" },
-        { label: "Shop", href: "/shop" },
-        { label: "Cart", href: "/cart" },
-      ];
+  const navigationItems = useMemo<NavigationItem[]>(() => {
+    const items: NavigationItem[] = [
+      { label: "Home", href: "/" },
+      { label: "About Us", href: "/about" },
+      { label: "Shop", href: "/shop" },
+      { label: "Cart", href: "/cart" },
+    ];
 
-      if (isAuthenticated) {
-        items.push({ label: "Profile", href: "/profile" });
-      }
+    if (isAuthenticated) {
+      items.push({ label: "Profile", href: "/profile" });
+    }
 
-      // items.push({ label: "Know your Ingredients", href: "/know-your-ingredients" });
+    // items.push({ label: "Know your Ingredients", href: "/know-your-ingredients" });
 
-      items.push(
-        isAuthenticated
-          ? { label: "Sign Out", href: "#sign-out", action: handleSignOut }
-          : { label: "Sign In", href: "/auth/login" }
-      );
+    items.push(
+      isAuthenticated
+        ? { label: "Sign Out", href: "#sign-out", action: handleSignOut }
+        : { label: "Sign In", href: "/auth/login" }
+    );
 
-      return items;
-    },
-    [handleSignOut, isAuthenticated]
-  );
+    return items;
+  }, [handleSignOut, isAuthenticated]);
 
   const handleNavigation = (href: string) => {
     setIsSheetOpen(false);
@@ -148,22 +142,22 @@ const PageHeader = () => {
         </Marquee>
       </div> */}
       <div className="w-full relative flex items-center gap-4 px-4 md:px-10 py-2">
-        <div className="flex items-center flex-shrink-0">
+        <div className="flex items-center shrink-0">
           <div onClick={() => router.push("/")} className="cursor-pointer">
-            <Image
-              src={logo}
-              alt="Flow Logo"
-              className="w-[50px] h-auto"
-            />
+            <Image src={logo} alt="Flow Logo" className="w-[50px] h-auto" />
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm uppercase tracking-[0.2em] text-white absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {navigationItems.map((item) => {
             const isAction = Boolean(item.action);
-            const isActive = !isAction && item.href !== "#sign-out" && (
-              item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
-            );
-            const baseClasses = "pb-1 border-b-2 border-transparent hover:border-white transition-colors cursor-pointer text-white";
+            const isActive =
+              !isAction &&
+              item.href !== "#sign-out" &&
+              (item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href));
+            const baseClasses =
+              "pb-1 border-b-2 border-transparent hover:border-white transition-colors cursor-pointer text-white";
 
             if (isAction) {
               return (
@@ -191,9 +185,9 @@ const PageHeader = () => {
             );
           })}
         </nav>
-  <div className="flex items-center gap-6 ml-auto text-2xl md:flex-none justify-end">
+        <div className="flex items-center gap-6 ml-auto text-2xl md:flex-none justify-end">
           <div className="relative flex items-center gap-2 group">
-            <CiSearch className="text-white text-lg flex-shrink-0" />
+            <CiSearch className="text-white text-lg shrink-0" />
             <div className="flex flex-col">
               <Input
                 placeholder={displayedText}
@@ -203,7 +197,7 @@ const PageHeader = () => {
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
               />
-              <div className="h-[1px] bg-white/30 group-hover:bg-white group-focus-within:bg-white transition-all ease-in-out"></div>
+              <div className="h-px bg-white/30 group-hover:bg-white group-focus-within:bg-white transition-all ease-in-out"></div>
             </div>
             {searchResult && searchResult?.length > 0 && (
               <div className="w-full min-h-0 absolute top-[110%] -left-2 rounded-md shadow-md max-h-60 overflow-y-auto bg-black/15 backdrop-blur-md p-4 z-50">
