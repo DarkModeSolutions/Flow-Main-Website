@@ -1,0 +1,40 @@
+<!-- public/flow-bg/flow-card-bg-blue.svg -->
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base -->
+  <rect width="800" height="400" fill="#050607"/>
+
+  <defs>
+    <!-- Soft blue glow top-left -->
+    <radialGradient id="blueGlow" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(80 40) rotate(35) scale(260 260)">
+      <stop stop-color="#24bbc7" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#24bbc7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Faint wave gradient -->
+    <linearGradient id="waveStroke" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#93d6de" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#24bbc7" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Glow -->
+  <rect width="800" height="400" fill="url(#blueGlow)" />
+
+  <!-- Flow waves -->
+  <path d="M-60 260 C 60 230, 190 280, 310 250
+           C 430 220, 560 270, 680 240
+           C 800 210, 910 260, 1020 230"
+        fill="none"
+        stroke="url(#waveStroke)"
+        stroke-width="2" />
+
+  <path d="M-40 295 C 80 265, 200 315, 320 285
+           C 440 255, 560 305, 680 275
+           C 800 245, 920 295, 1040 265"
+        fill="none"
+        stroke="url(#waveStroke)"
+        stroke-width="1.5"
+        stroke-opacity="0.7" />
+</svg>

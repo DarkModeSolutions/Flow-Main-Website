@@ -1,0 +1,28 @@
+<!-- public/flow-bg/flow-card-bg-mixed.svg -->
+<svg width="800" height="400" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="#050607"/>
+
+  <defs>
+    <!-- Diagonal band -->
+    <linearGradient id="diagBand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#24bbc7" stop-opacity="0.0"/>
+      <stop offset="0.35" stop-color="#24bbc7" stop-opacity="0.3"/>
+      <stop offset="0.7" stop-color="#93d6de" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#dae249" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <!-- Soft orb highlight -->
+    <radialGradient id="orb" cx="0" cy="0" r="1"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(140 260) rotate(0) scale(160 160)">
+      <stop stop-color="#93d6de" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#93d6de" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Band -->
+  <rect x="-80" y="-40" width="960" height="480" fill="url(#diagBand)" />
+
+  <!-- Orb -->
+  <circle cx="140" cy="260" r="130" fill="url(#orb)" />
+</svg>
