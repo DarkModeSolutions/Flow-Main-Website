@@ -8,7 +8,10 @@ import { ElectrolyteIcon } from "../icons/ElectrolyteIcon";
 import flowCardBgBlue from "../public/flow-card-bg-blue.svg";
 
 export const ElectrolyteCard: React.FC = () => (
-  <ScrollStackItem itemClassName="bg-[#050607] border border-[#24bbc7]/40 overflow-hidden text-[#F5F5F7]">
+  <ScrollStackItem
+    previewColor="#24bbc7"
+    itemClassName="bg-[#050607] border border-[#24bbc7]/40 overflow-hidden text-[#F5F5F7]"
+  >
     {/* Background */}
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
       <Image

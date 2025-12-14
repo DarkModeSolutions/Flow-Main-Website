@@ -8,7 +8,10 @@ import { FlavourIcon } from "../icons/FlavourIcon";
 import flowCardBgLime from "../public/flow-card-bg-lime.svg";
 
 export const FlavourCard: React.FC = () => (
-  <ScrollStackItem itemClassName="bg-[#050607] border border-[#dae249]/35 overflow-hidden text-[#F5F5F7]">
+  <ScrollStackItem
+    previewColor="#dae249"
+    itemClassName="bg-[#050607] border border-[#dae249]/35 overflow-hidden text-[#F5F5F7]"
+  >
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
       <Image
         src={flowCardBgLime}

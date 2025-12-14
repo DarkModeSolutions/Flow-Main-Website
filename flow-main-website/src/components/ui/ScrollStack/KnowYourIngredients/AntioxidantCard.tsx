@@ -8,7 +8,10 @@ import { AntioxidantIcon } from "../icons/AntioxidantIcon";
 import flowCardBgMixed from "../public/flow-card-bg-mixed.svg";
 
 export const AntioxidantCard: React.FC = () => (
-  <ScrollStackItem itemClassName="bg-[#050607] border border-[#24bbc7]/35 overflow-hidden text-[#F5F5F7]">
+  <ScrollStackItem
+    previewColor="#24bbc7"
+    itemClassName="bg-[#050607] border border-[#24bbc7]/35 overflow-hidden text-[#F5F5F7]"
+  >
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
       <Image
         src={flowCardBgMixed}

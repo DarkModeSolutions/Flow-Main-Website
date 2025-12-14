@@ -119,7 +119,7 @@ const PageHeader = () => {
         items.push({ label: "Profile", href: "/profile" });
       }
 
-      items.push({ label: "Know your Ingredients", href: "/know-your-ingredients" });
+      // items.push({ label: "Know your Ingredients", href: "/know-your-ingredients" });
 
       items.push(
         isAuthenticated

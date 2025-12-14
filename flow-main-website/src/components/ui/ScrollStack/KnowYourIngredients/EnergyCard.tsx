@@ -8,7 +8,10 @@ import { EnergyIcon } from "../icons/EnergyIcon";
 import flowCardBgBlue from "../public/flow-card-bg-blue.svg";
 
 export const EnergyCard: React.FC = () => (
-  <ScrollStackItem itemClassName="bg-[#050607] border border-[#93d6de]/40 overflow-hidden text-[#F5F5F7]">
+  <ScrollStackItem
+    previewColor="#93d6de"
+    itemClassName="bg-[#050607] border border-[#93d6de]/40 overflow-hidden text-[#F5F5F7]"
+  >
     <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
       <Image
         src={flowCardBgBlue}

@@ -13,7 +13,7 @@ const manrope = Manrope({
 import KnowYourIngredientsStack from "@/components/ui/ScrollStack/KnowYourIngredients/KnowYourIngredientsStack";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 type RoundedVideoProps = {
   src: string;
@@ -24,14 +24,14 @@ type RoundedVideoProps = {
   sourceType?: string;
 };
 
-const RoundedVideo = ({
+const RoundedVideo = forwardRef<HTMLDivElement, RoundedVideoProps>(({ 
   src,
   fallback,
   containerClassName,
   videoClassName,
   disableDefaultSizing = false,
   sourceType = "video/mp4",
-}: RoundedVideoProps) => {
+}, ref) => {
   const baseContainerClass =
     "rounded-[28px] overflow-hidden bg-black/80 backdrop-blur-sm";
   const defaultSizingClass =
@@ -45,6 +45,7 @@ const RoundedVideo = ({
         disableDefaultSizing ? null : defaultSizingClass,
         containerClassName
       )}
+      ref={ref}
     >
       <video
         className={cn(baseVideoClass, videoClassName)}
@@ -60,10 +61,33 @@ const RoundedVideo = ({
       </video>
     </div>
   );
-};
+});
+RoundedVideo.displayName = "RoundedVideo";
 
 const MainPage = () => {
   const headingContainerRef = useRef<HTMLDivElement | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement | null>(null);
+  const [videoHeight, setVideoHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!videoContainerRef.current) return;
+
+    const node = videoContainerRef.current;
+    const updateSize = () => {
+      setVideoHeight(node.getBoundingClientRect().height);
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
+    });
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div className="w-full">
@@ -72,6 +96,7 @@ const MainPage = () => {
         className="w-full px-4 mt-4 md:mt-6 flex flex-col items-center gap-3 mb-6 md:mb-8"
       >
         <div className="text-center text-white">
+          {/*
           <ScrollFloat
             containerClassName="hidden md:block"
             textClassName="md:text-[6vw] lg:text-[4vw] leading-[0.9]"
@@ -98,6 +123,7 @@ const MainPage = () => {
           <p className="md:hidden text-2xl font-semibold">
             Find your <span className="text-[#24bfcf]">Flow</span>
           </p>
+          */}
         </div>
       </div>
       <div className="w-full px-4 mt-20 md:mt-28">
@@ -107,23 +133,28 @@ const MainPage = () => {
         />
       </div>
       <div className="md:w-[20%] w-[70%] mx-auto mt-6 md:mt-12">
-        <FlowButton label="Buy Now" redirectTo="/shop" />
+        <FlowButton
+          label="Buy Now"
+          redirectTo="/shop"
+          className="!w-56 md:!w-64 mx-auto px-6 py-3 text-xl font-bold flex items-center justify-center"
+        />
       </div>
       <div className="w-full px-4 mt-24 md:mt-32 md:px-0 md:pl-10">
         <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-10 md:-ml-[10px]">
-          <div className="md:w-1/2 w-full md:-ml-[60px] lg:-ml-[80px] xl:-ml-[96px]">
+          <div className="md:w-1/2 w-full md:-ml-[60px] lg:-ml-[80px] xl:-ml-[96px] order-2 md:order-1">
             <RoundedVideo
               src="/assets/videos/carousel animation.mp4"
               disableDefaultSizing
               containerClassName="w-full shadow-lg mx-0 md:max-w-3xl h-[70vh] max-h-[70vh]"
+              ref={videoContainerRef}
               videoClassName="object-cover object-left h-full"
               fallback={
                 <p>Your browser does not support MOV videos. Please convert to MP4.</p>
               }
             />
           </div>
-          <div className="md:w-1/2 w-full md:-ml-4 lg:-ml-6">
-            <KnowYourIngredientsStack />
+          <div className="md:w-1/2 w-full md:-ml-4 lg:-ml-6 order-1 md:order-2">
+            <KnowYourIngredientsStack targetHeight={videoHeight} />
           </div>
         </div>
       </div>

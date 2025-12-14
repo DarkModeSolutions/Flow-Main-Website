@@ -14,12 +14,14 @@ import { AnimatePresence, motion } from "motion/react";
 
 export interface ScrollStackItemProps {
   itemClassName?: string;
+  previewColor?: string;
   children: ReactNode;
 }
 
 export const ScrollStackItem: React.FC<ScrollStackItemProps> = ({
   children,
   itemClassName = "",
+  previewColor,
 }) => (
   <div
     className={`scroll-stack-card relative w-full h-[24rem] md:h-[26rem] xl:h-[28rem] my-0 p-10 md:p-12 rounded-[40px] shadow-[0_0_30px_rgba(0,0,0,0.18)] box-border origin-top will-change-transform ${itemClassName}`.trim()}
@@ -27,6 +29,7 @@ export const ScrollStackItem: React.FC<ScrollStackItemProps> = ({
       backfaceVisibility: "hidden",
       transformStyle: "preserve-3d",
     }}
+    data-preview-color={previewColor ?? undefined}
   >
     {children}
   </div>
@@ -47,6 +50,7 @@ interface ScrollStackProps {
   useWindowScroll?: boolean;
   onStackComplete?: () => void;
   expandOnScroll?: boolean; // new: cards grow instead of shrink
+  anchorHeight?: number | null;
 }
 
 const ScrollStack: React.FC<ScrollStackProps> = ({
@@ -64,6 +68,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   useWindowScroll = false,
   onStackComplete,
   expandOnScroll = false,
+  anchorHeight,
 }) => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -71,12 +76,14 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
-  const activeSlotRef = useRef<HTMLDivElement | null>(null);
-  const [collapsedTop, setCollapsedTop] = useState<number | null>(null);
   const lastTransformsRef = useRef(new Map<number, any>());
   const isUpdatingRef = useRef(false);
 
-  const itemsArray = useMemo(() => React.Children.toArray(children), [children]);
+  type StackElement = React.ReactElement<ScrollStackItemProps>;
+  const itemsArray = useMemo(
+    () => React.Children.toArray(children).filter(Boolean) as StackElement[],
+    [children]
+  );
   const totalItems = itemsArray.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
@@ -449,19 +456,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     updateCardTransforms();
 
-    // ensure collapsedTop is initialized to place previews below the active slot
-    const updateCollapsedTop = () => {
-      const scroller = scrollerRef.current;
-      if (!scroller || !activeSlotRef.current) return;
-      const scrollerRect = scroller.getBoundingClientRect();
-      const slotRect = activeSlotRef.current.getBoundingClientRect();
-      const topPx = slotRect.bottom - scrollerRect.top;
-      setCollapsedTop(Math.max(12, Math.round(topPx)));
-    };
-
-    updateCollapsedTop();
-    window.addEventListener("resize", updateCollapsedTop);
-
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -473,7 +467,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       cardsRef.current = [];
       transformsCache.clear();
       isUpdatingRef.current = false;
-      window.removeEventListener("resize", updateCollapsedTop);
     };
   }, [
     itemDistance,
@@ -491,25 +484,9 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     updateCardTransforms,
   ]);
 
-  // Recalculate collapsedTop whenever activeIndex changes to keep previews anchored
-  useEffect(() => {
-    const recalc = () => {
-      const scroller = scrollerRef.current;
-      if (!scroller || !activeSlotRef.current) return;
-      const scrollerRect = scroller.getBoundingClientRect();
-      const slotRect = activeSlotRef.current.getBoundingClientRect();
-      const topPx = slotRect.bottom - scrollerRect.top;
-      setCollapsedTop(Math.max(12, Math.round(topPx)));
-    };
-
-    // measure on next frame to allow DOM updates
-    const id = requestAnimationFrame(recalc);
-    return () => cancelAnimationFrame(id);
-  }, [activeIndex]);
-
   const innerClassName = useWindowScroll
     ? "scroll-stack-inner pt-[20vh] px-10 pb-[50rem] min-h-screen"
-    : "scroll-stack-inner relative w-full h-full px-6 md:px-8 py-16";
+    : "scroll-stack-inner relative w-full h-full px-6 md:px-8 py-8 md:py-4";
 
   const cardVariants = useMemo(() => ({
     initial: () => ({
@@ -548,9 +525,31 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const touchEndHandler = isLocalStack ? handleTouchEnd : undefined;
   const keyDownHandler = isLocalStack ? handleKeyDown : undefined;
 
+  const fallbackPreviewColor = "#24bbc7";
+  const withAlpha = useCallback((color: string, alphaHex: string) => {
+    if (!color || !color.startsWith("#")) return color;
+    if (color.length === 7) {
+      return `${color}${alphaHex}`;
+    }
+    return color;
+  }, []);
+
+  const getPreviewColor = useCallback(
+    (element?: StackElement) =>
+      (element?.props?.previewColor as string | undefined) ?? fallbackPreviewColor,
+    []
+  );
+
+  const anchorStyle =
+    anchorHeight && anchorHeight > 0
+      ? ({
+          "--stack-anchor-height": `${anchorHeight}px`,
+        } as React.CSSProperties)
+      : undefined;
+
   return (
     <div
-      className={`relative w-full h-full ${overflowClass} overflow-x-visible ${className}`.trim()}
+      className={`relative w-full h-full ${overflowClass} overflow-x-visible md:[height:var(--stack-anchor-height)] md:[min-height:var(--stack-anchor-height)] ${className}`.trim()}
       ref={scrollerRef}
       style={{
         overscrollBehavior: "contain",
@@ -559,6 +558,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         WebkitTransform: "translateZ(0)",
         transform: "translateZ(0)",
         willChange: "scroll-position",
+        ...anchorStyle,
       }}
       onWheel={wheelHandler}
       onTouchStart={touchStartHandler}
@@ -572,54 +572,58 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
           <div className="relative h-full w-full">
             <AnimatePresence initial={false} custom={transitionDirection} mode="popLayout">
               {itemsArray.length > 0 && (
-                <motion.div
-                  ref={(el) => { activeSlotRef.current = el as HTMLDivElement | null; }}
-                  key={activeIndex}
-                  custom={transitionDirection}
-                  variants={cardVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="absolute left-0 right-0 flex justify-center"
-                  style={{ pointerEvents: "none", zIndex: 10, top: '0' }}
-                >
-                  <div className="pointer-events-auto w-full" style={{ marginTop: '6.75rem' }}>
-                    {itemsArray[activeIndex]}
-                  </div>
-                </motion.div>
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 md:px-6">
+                  <motion.div
+                    key={activeIndex}
+                    custom={transitionDirection}
+                    variants={cardVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    className="flex justify-center"
+                    style={{ zIndex: 10 }}
+                  >
+                    <div className="pointer-events-auto w-full">
+                      {itemsArray[activeIndex]}
+                    </div>
+                  </motion.div>
+                </div>
               )}
             </AnimatePresence>
             <div
-              className="pointer-events-none absolute inset-x-0"
-              style={{ zIndex: 1, top: collapsedTop !== null ? `${collapsedTop}px` : undefined }}
+              className="pointer-events-none absolute inset-x-0 bottom-6 md:bottom-8 lg:bottom-10 px-6 md:px-8"
+              style={{ zIndex: 1 }}
             >
-              {itemsArray.map((item, index) => {
-                if (index <= activeIndex) return null;
+              <div className="flex flex-col gap-2" aria-hidden="true">
+                {itemsArray.map((item, index) => {
+                  if (index <= activeIndex) return null;
 
-                const depth = index - activeIndex;
-                const scale = Math.max(0.8, 1 - depth * 0.07);
-                const translateY = depth * 18;
-                const opacity = Math.max(0.2, 0.42 - depth * 0.07);
-                const blur = Math.max(0, depth * 2.5);
+                  const depth = index - activeIndex;
+                  const widthPercent = Math.max(0.58, 1 - depth * 0.08);
+                  const translateX = depth * 6;
+                  const opacity = Math.max(0.25, 0.95 - depth * 0.18);
+                  const barColor = getPreviewColor(item);
+                  const gradient = `linear-gradient(110deg, ${barColor} 0%, ${withAlpha(
+                    barColor,
+                    "E0"
+                  )} 55%, ${withAlpha(barColor, "2a")} 100%)`;
+                  const glow = `0 0 18px ${withAlpha(barColor, "44")}`;
 
-                return (
-                  <div
-                    key={`collapsed-${index}`}
-                    className="absolute inset-x-6 md:inset-x-8 lg:inset-x-10"
-                    style={{
-                      transform: `translateY(${translateY}px) scale(${scale})`,
-                      transformOrigin: "top center",
-                      opacity,
-                      filter: blur ? `blur(${blur}px)` : undefined,
-                      transition: "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease",
-                    }}
-                  >
-                    <div className="pointer-events-none" aria-hidden="true">
-                      {item}
-                    </div>
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={`preview-${index}`}
+                      className="h-1.5 md:h-2 rounded-full transition-all duration-500 ease-out origin-left"
+                      style={{
+                        width: `${widthPercent * 100}%`,
+                        transform: `translateX(${translateX}px)`,
+                        backgroundImage: gradient,
+                        boxShadow: glow,
+                        opacity,
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </div>
         ) : (
