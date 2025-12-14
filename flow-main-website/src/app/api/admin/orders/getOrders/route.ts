@@ -14,7 +14,11 @@ export async function GET(req: NextRequest) {
 
     const orders = await prisma.orders.findMany({
       include: {
-        orderItems: true,
+        orderItems: {
+          include: {
+            product: true,
+          },
+        },
         shadowfaxOrder: true,
       },
     });

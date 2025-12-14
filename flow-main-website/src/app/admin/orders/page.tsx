@@ -4,6 +4,13 @@ import AdminPlaceCancelOrderDialog from "@/components/AdminPlaceOrderAddressDial
 import ErrorComponent from "@/components/ErrorComponent";
 import LoadingComponent from "@/components/LoadingComponent";
 import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
   Table,
   TableBody,
   TableCell,
@@ -85,7 +92,45 @@ const OrdersPage = () => {
                     )
                     .map((order) => (
                       <TableRow key={order.id}>
-                        <TableCell>{order.id}</TableCell>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <TableCell className="cursor-pointer hover:bg-gray-600 transition-all duration-300 ease-in-out">
+                              {order.id}
+                            </TableCell>
+                          </DialogTrigger>
+                          <DialogContent className="max-h-[75vh] p-6 bg-black">
+                            <DialogTitle className="mb-1.5 text-center">
+                              Order Details - Order Number {order.id}
+                              <ScrollArea className="w-full h-full mt-3">
+                                {order.orderItems.map((item) => (
+                                  <div
+                                    key={item.id}
+                                    className="border border-[#24bfcf] rounded-md p-4 mb-4 flex justify-between items-center gap-2 text-xs"
+                                  >
+                                    <p className="flex items-center gap-1 text-gray-300">
+                                      Item Name:{" "}
+                                      <span className="text-[#24bfcf]">
+                                        {item.product.name}
+                                      </span>
+                                    </p>
+                                    <p className="flex items-center gap-1 text-gray-300">
+                                      Item Price:{" "}
+                                      <span className="text-[#24bfcf]">
+                                        {item.product.price}
+                                      </span>
+                                    </p>
+                                    <p className="flex items-center gap-1 text-gray-300">
+                                      Quantity Ordered:{" "}
+                                      <span className="text-[#24bfcf]">
+                                        {item.quantity}
+                                      </span>
+                                    </p>
+                                  </div>
+                                ))}
+                              </ScrollArea>
+                            </DialogTitle>
+                          </DialogContent>
+                        </Dialog>
                         <TableCell>{order.total}</TableCell>
                         <TableCell>{order.status}</TableCell>
                         <TableCell>{order.deliveryStatus}</TableCell>

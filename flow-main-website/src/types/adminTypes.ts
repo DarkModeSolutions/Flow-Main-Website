@@ -4,7 +4,11 @@ import { Prisma } from "@prisma/client";
 
 export type OrderDetailsWithAdminIncludes = Prisma.OrdersGetPayload<{
   include: {
-    orderItems: true;
+    orderItems: {
+      include: {
+        product: true;
+      };
+    };
     shadowfaxOrder: true;
   };
 }>;
