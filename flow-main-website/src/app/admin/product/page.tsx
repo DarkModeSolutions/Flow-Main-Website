@@ -48,6 +48,7 @@ const AdminProductsPage = () => {
               <div
                 key={product.id}
                 onClick={() => router.push(`/admin/product/${product.id}`)}
+                className="mb-4 cursor-pointer hover:opacity-80 transition-opacity"
               >
                 <ProductCard
                   img={product.imageUrl}
