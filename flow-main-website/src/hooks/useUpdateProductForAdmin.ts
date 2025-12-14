@@ -18,7 +18,7 @@ const useUpdateProductForAdmin = () => {
       setError(null); // Clear previous errors
 
       const requestData: RequestType = {
-        url: `/api/admin/product/update${productId}`,
+        url: `/api/admin/product/update/${productId}`,
         method: "PATCH",
         body: updatedData,
       };

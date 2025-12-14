@@ -16,7 +16,7 @@ const AdminHomePage = () => {
     },
     {
       title: "Product Management",
-      url: "/admin/products",
+      url: "/admin/product",
     },
     {
       title: "Order Management",

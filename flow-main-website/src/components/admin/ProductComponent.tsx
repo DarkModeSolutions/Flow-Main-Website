@@ -25,6 +25,8 @@ const ProductComponent = ({ product }: { product: AllProductDetails }) => {
     : "/assets/images/default-product.png"; // Fallback image
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Submitted Product Data: ", productData);
+
     e.preventDefault();
 
     const updatedProductData: Partial<ProductRequest> = {
