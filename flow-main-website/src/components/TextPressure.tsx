@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface TextPressureProps {
   text?: string;
@@ -72,8 +72,12 @@ const TextPressure: React.FC<TextPressureProps> = ({
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     if (containerRef.current) {
-      const { left, top, width: w, height: h } =
-        containerRef.current.getBoundingClientRect();
+      const {
+        left,
+        top,
+        width: w,
+        height: h,
+      } = containerRef.current.getBoundingClientRect();
       mouseRef.current.x = left + w / 2;
       mouseRef.current.y = top + h / 2;
       cursorRef.current.x = mouseRef.current.x;
@@ -86,7 +90,7 @@ const TextPressure: React.FC<TextPressureProps> = ({
     };
   }, []);
 
-  const setSize = () => {
+  const setSize = useCallback(() => {
     if (!containerRef.current || !titleRef.current) return;
 
     const { width: containerW, height: containerH } =
@@ -109,13 +113,13 @@ const TextPressure: React.FC<TextPressureProps> = ({
         setLineHeight(yRatio);
       }
     });
-  };
+  }, [chars.length, minFontSize, scale]);
 
   useEffect(() => {
     setSize();
     window.addEventListener("resize", setSize);
     return () => window.removeEventListener("resize", setSize);
-  }, [scale, text]);
+  }, [scale, setSize, text]);
 
   useEffect(() => {
     let rafId: number;
@@ -138,7 +142,11 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
           const d = dist(mouseRef.current, charCenter);
 
-          const getAttr = (distance: number, minVal: number, maxVal: number) => {
+          const getAttr = (
+            distance: number,
+            minVal: number,
+            maxVal: number
+          ) => {
             const val = maxVal - Math.abs((maxVal * distance) / maxDist);
             return Math.max(minVal, val + minVal);
           };
@@ -191,9 +199,9 @@ const TextPressure: React.FC<TextPressureProps> = ({
 
       <h1
         ref={titleRef}
-        className={`text-pressure-title ${
-          flex ? "flex justify-between" : ""
-        } ${stroke ? "stroke" : ""} text-center ${className}`.trim()}
+        className={`text-pressure-title ${flex ? "flex justify-between" : ""} ${
+          stroke ? "stroke" : ""
+        } text-center ${className}`.trim()}
         style={{
           fontFamily,
           fontSize,

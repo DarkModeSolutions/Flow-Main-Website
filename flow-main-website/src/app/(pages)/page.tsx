@@ -1,15 +1,6 @@
 "use client";
 
 import FlowButton from "@/components/FlowButton";
-import ScrollFloat from "@/components/ui/ScrollFloat";
-import VariableProximity from "@/components/ui/VariableProximity";
-import { Manrope } from "next/font/google";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["300", "600", "800"],
-  display: "swap",
-});
 import KnowYourIngredientsStack from "@/components/ui/ScrollStack/KnowYourIngredients/KnowYourIngredientsStack";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -24,44 +15,47 @@ type RoundedVideoProps = {
   sourceType?: string;
 };
 
-const RoundedVideo = forwardRef<HTMLDivElement, RoundedVideoProps>(({ 
-  src,
-  fallback,
-  containerClassName,
-  videoClassName,
-  disableDefaultSizing = false,
-  sourceType = "video/mp4",
-}, ref) => {
-  const baseContainerClass =
-    "rounded-[28px] overflow-hidden bg-black/80 backdrop-blur-sm";
-  const defaultSizingClass =
-    "w-full max-w-5xl mx-auto shadow-lg h-[240px] md:h-[380px] lg:h-[440px]";
-  const baseVideoClass = "w-full h-full object-cover";
+const RoundedVideo = forwardRef<HTMLDivElement, RoundedVideoProps>(
+  (
+    {
+      src,
+      fallback,
+      containerClassName,
+      videoClassName,
+      disableDefaultSizing = false,
+      sourceType = "video/mp4",
+    },
+    ref
+  ) => {
+    const baseContainerClass =
+      "rounded-[28px] overflow-hidden bg-black/80 backdrop-blur-sm";
+    const defaultSizingClass =
+      "w-full max-w-5xl mx-auto shadow-lg h-[240px] md:h-[380px] lg:h-[440px]";
+    const baseVideoClass = "w-full h-full object-cover";
 
-  return (
-    <div
-      className={cn(
-        baseContainerClass,
-        disableDefaultSizing ? null : defaultSizingClass,
-        containerClassName
-      )}
-      ref={ref}
-    >
-      <video
-        className={cn(baseVideoClass, videoClassName)}
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source src={src} type={sourceType} />
-        {fallback ?? (
-          <p>Your browser does not support the video tag.</p>
+    return (
+      <div
+        className={cn(
+          baseContainerClass,
+          disableDefaultSizing ? null : defaultSizingClass,
+          containerClassName
         )}
-      </video>
-    </div>
-  );
-});
+        ref={ref}
+      >
+        <video
+          className={cn(baseVideoClass, videoClassName)}
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={src} type={sourceType} />
+          {fallback ?? <p>Your browser does not support the video tag.</p>}
+        </video>
+      </div>
+    );
+  }
+);
 RoundedVideo.displayName = "RoundedVideo";
 
 const MainPage = () => {
@@ -136,12 +130,12 @@ const MainPage = () => {
         <FlowButton
           label="Buy Now"
           redirectTo="/shop"
-          className="!w-56 md:!w-64 mx-auto px-6 py-3 text-xl font-bold flex items-center justify-center"
+          className="w-56! md:w-64! mx-auto px-6 py-3 text-xl font-bold flex items-center justify-center"
         />
       </div>
       <div className="w-full px-4 mt-24 md:mt-32 md:px-0 md:pl-10">
-        <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-10 md:-ml-[10px]">
-          <div className="md:w-1/2 w-full md:-ml-[60px] lg:-ml-[80px] xl:-ml-[96px] order-2 md:order-1">
+        <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-10 md:-ml-2.5">
+          <div className="md:w-1/2 w-full md:-ml-[60px] lg:-ml-20 xl:-ml-24 order-2 md:order-1">
             <RoundedVideo
               src="/assets/videos/carousel animation.mp4"
               disableDefaultSizing
@@ -149,7 +143,10 @@ const MainPage = () => {
               ref={videoContainerRef}
               videoClassName="object-cover object-left h-full"
               fallback={
-                <p>Your browser does not support MOV videos. Please convert to MP4.</p>
+                <p>
+                  Your browser does not support MOV videos. Please convert to
+                  MP4.
+                </p>
               }
             />
           </div>
