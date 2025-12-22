@@ -35,6 +35,15 @@ const usePlaceOrderForAdmin = () => {
         const data = await response.json();
         console.log(data);
 
+        if (data?.message === "Failure") {
+          setError(
+            `Shadowfax API returned failure message: ${JSON.stringify(
+              data.errors
+            )}`
+          );
+          alert("Order placement failed: " + JSON.stringify(data.errors));
+        }
+
         return data;
       } catch (error) {
         handleHookCatch(error, setError, "Failed to place order");

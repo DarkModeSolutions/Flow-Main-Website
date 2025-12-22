@@ -49,5 +49,5 @@ full-dump.sql
 
 google-client.json
 
-tempUpdateProducts.ts
+tempUpdateProducts/route.ts
 package-lock.json

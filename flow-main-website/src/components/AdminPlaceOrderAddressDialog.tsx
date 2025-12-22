@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useGlobalCancelOrder from "@/hooks/useGlobalCancelOrder";
 import usePlaceOrderForAdmin from "@/hooks/usePlaceOrderForAdmin";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ImCross } from "react-icons/im";
 import { TiTick } from "react-icons/ti";
@@ -29,6 +30,8 @@ const AdminPlaceCancelOrderDialog = ({
   const [selectedAddressId, setSelectedAddressId] = useState<string>("1");
   const [cancelReason, setCancelReason] = useState("");
   const [open, setOpen] = useState(false);
+
+  const router = useRouter();
 
   const {
     error: placeOrderError,
@@ -45,16 +48,19 @@ const AdminPlaceCancelOrderDialog = ({
   const handleApprove = async () => {
     await placeOrderForAdmin(orderId, Number(selectedAddressId), true);
     setOpen(false); // Close after completion
+    router.refresh();
   };
 
   const handleReject = async () => {
     await placeOrderForAdmin(orderId, Number(selectedAddressId), false);
     setOpen(false); // Close after completion
+    router.refresh();
   };
 
   const handleCancel = async () => {
     await globalCancelOrder(orderId, cancelReason);
     setOpen(false); // Close after completion
+    router.refresh();
   };
 
   if (placeOrderError || globalCancelOrderError) {
