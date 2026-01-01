@@ -18,9 +18,9 @@ const ShopPage = () => {
     return <ErrorComponent error={error} />;
   }
   return (
-    <div className="w-full flex flex-col pt-4 gap-8">
+    <div className="w-full flex flex-col pt-4 gap-8 px-4 sm:px-0">
       <h2 className="manrope manrope-bold text-[#24BFCF] text-2xl mb-5">
-        Shop
+        Shop for our Products
       </h2>
       <div className="grid grid-cols-2 gap-x-4 gap-y-20">
         {loading && (

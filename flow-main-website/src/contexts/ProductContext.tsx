@@ -1,7 +1,7 @@
 "use client";
 
 import useGetAllProducts from "@/hooks/useGetAllProducts";
-import { AllProductDetails, Cart, ProductContextType } from "@/types/types";
+import { AllProductDetails, BundleCartItem, Cart, ProductContextType } from "@/types/types";
 import React, { createContext, useEffect, useState } from "react";
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -13,6 +13,7 @@ export const ProductProvider = ({
 }) => {
   const [products, setProducts] = useState<AllProductDetails[]>([]);
   const [cart, setCart] = useState<Cart[] | []>([]);
+  const [bundleCart, setBundleCart] = useState<BundleCartItem[]>([]);
 
   const { error, getAllProducts, loading } = useGetAllProducts();
 
@@ -29,6 +30,19 @@ export const ProductProvider = ({
         localStorage.removeItem("cart"); // Remove corrupted data
       }
     }
+
+    // Load bundle cart from localStorage
+    const savedBundleCart = localStorage.getItem("bundleCart");
+    if (savedBundleCart) {
+      try {
+        const parsedBundleCart = JSON.parse(savedBundleCart);
+        setBundleCart(parsedBundleCart);
+        console.log("Bundle cart loaded from localStorage:", parsedBundleCart);
+      } catch (error) {
+        console.error("Error parsing bundle cart from localStorage:", error);
+        localStorage.removeItem("bundleCart");
+      }
+    }
   }, []);
 
   // Save cart to localStorage whenever cart changes
@@ -36,6 +50,12 @@ export const ProductProvider = ({
     localStorage.setItem("cart", JSON.stringify(cart));
     console.log("Cart saved to localStorage:", cart);
   }, [cart]);
+
+  // Save bundle cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("bundleCart", JSON.stringify(bundleCart));
+    console.log("Bundle cart saved to localStorage:", bundleCart);
+  }, [bundleCart]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -99,7 +119,23 @@ export const ProductProvider = ({
   // Clear entire cart
   const clearCart = () => {
     setCart([]);
+    setBundleCart([]);
     localStorage.removeItem("cart");
+    localStorage.removeItem("bundleCart");
+  };
+
+  // Bundle cart functions
+  const addBundleToCart = (bundle: BundleCartItem) => {
+    setBundleCart((prev) => [...prev, bundle]);
+  };
+
+  const removeBundleFromCart = (bundleId: string) => {
+    setBundleCart((prev) => prev.filter((item) => item.bundleId !== bundleId));
+  };
+
+  const clearBundleCart = () => {
+    setBundleCart([]);
+    localStorage.removeItem("bundleCart");
   };
 
   return (
@@ -115,6 +151,10 @@ export const ProductProvider = ({
         incrementCartItem,
         decrementCartItem,
         clearCart,
+        bundleCart,
+        addBundleToCart,
+        removeBundleFromCart,
+        clearBundleCart,
       }}
     >
       {children}

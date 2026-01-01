@@ -4,6 +4,14 @@ export const images = {
   original: "/assets/images/Still Render Original.png",
 };
 
+// Still render images for bundle display (using existing still renders)
+// Replace with box packaging images when available: lemonade box transparent.png, etc.
+export const bundleImages = {
+  lemonade: "/assets/images/Still Render Lemonade.png",
+  mango: "/assets/images/Still Render Mango.png",
+  original: "/assets/images/Still Render Original.png",
+};
+
 export const videos = {
   lemonade: "/assets/videos/Lemonade Individual Sachet Animation.mp4",
   mango: "/assets/videos/Mango Individual Sachet Animation.mp4",
