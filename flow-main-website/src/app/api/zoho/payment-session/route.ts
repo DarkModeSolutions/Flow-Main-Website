@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
-import { Cart } from "@/types/types";
+import { BundleCartItem, Cart } from "@/types/types";
 import getUserDetails from "@/utils/getUserDetails";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -38,7 +38,7 @@ export async function getZohoAccessToken() {
 export async function POST(req: NextRequest) {
   try {
     // const body = await req.json();
-    const { cart, amount, description, orderAddressId } = await req.json();
+    const { cart, amount, description, orderAddressId, bundleCart } = await req.json();
 
     const userData = await getUserDetails(req);
 
@@ -73,6 +73,37 @@ export async function POST(req: NextRequest) {
       }${userAddr.city} - ${userAddr.pincode}`;
     }
 
+    // Create order items from regular cart
+    const regularOrderItems = (cart || [])
+      .filter((item: Cart & { isBundle?: boolean }) => !item.isBundle)
+      .map((item: Cart) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+
+    // Create order items from bundle cart (each flavor in bundle is an order item)
+    const bundleOrderItems = (bundleCart || []).flatMap((bundle: BundleCartItem) =>
+      bundle.flavors.map((productId: string) => ({
+        productId,
+        quantity: 1,
+        // Store bundle info in the order notes or we can add a new field later
+      }))
+    );
+
+    // Combine all order items
+    const allOrderItems = [...regularOrderItems, ...bundleOrderItems];
+
+    // Build order notes with bundle info for reference
+    let orderNotes = "";
+    if (bundleCart && bundleCart.length > 0) {
+      orderNotes = bundleCart
+        .map(
+          (bundle: BundleCartItem) =>
+            `Bundle(${bundle.bundleSize}x at ₹${bundle.pricePerPack}/pack): ${bundle.flavors.join(", ")}`
+        )
+        .join(" | ");
+    }
+
     const order = await prisma.orders.create({
       data: {
         userId: userData?.id || "guest-user",
@@ -82,11 +113,9 @@ export async function POST(req: NextRequest) {
         orderEmail: userData?.email,
         orderPhone: userData?.phone,
         orderAddress: address,
+        orderUsername: orderNotes ? `Bundle Order: ${orderNotes}` : userData?.name,
         orderItems: {
-          create: cart.map((item: Cart) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
+          create: allOrderItems,
         },
       },
       include: {

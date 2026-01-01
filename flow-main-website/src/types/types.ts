@@ -66,6 +66,16 @@ export type Cart = {
   quantity: number;
 };
 
+// Bundle item in cart - stores selected flavors for each pack in the bundle
+export type BundleCartItem = {
+  bundleId: string; // unique identifier for this bundle in cart
+  bundleSize: number; // 1, 2, or 3
+  pricePerPack: number; // discounted price per pack
+  originalPricePerPack: number; // original price (600)
+  totalPrice: number; // total for bundle
+  flavors: string[]; // array of product IDs for each pack in bundle
+};
+
 // Custom Context Types
 
 export type ProductContextType = {
@@ -79,6 +89,11 @@ export type ProductContextType = {
   incrementCartItem: (productId: string) => number;
   decrementCartItem: (productId: string) => number;
   clearCart: () => void;
+  // Bundle cart functions
+  bundleCart: BundleCartItem[];
+  addBundleToCart: (bundle: BundleCartItem) => void;
+  removeBundleFromCart: (bundleId: string) => void;
+  clearBundleCart: () => void;
 };
 
 export type UserContextType = {

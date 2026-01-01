@@ -25,6 +25,7 @@ import { images, videos } from "@/utils/constants";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import BundleAndSave from "./BundleAndSave";
 
 const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   // console.log("User in product page: ", user);
@@ -230,7 +231,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
           <p>No Image Available</p>
         )}
       </div>
-      <div className="flex md:flex-col not-md:flex-col md:gap-y-3 mt-5">
+      <div className="flex md:flex-col not-md:flex-col md:gap-y-3 mt-5 px-2 sm:px-0">
         <div className="flex justify-between w-full md:items-start items-center">
           <div className="w-[50%]">
             <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
@@ -370,6 +371,11 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
               <div className="text-red-500 text-center">{`${paymentError}`}</div>
             )}
           </div>
+        </div>
+
+        {/* Bundle and Save Section */}
+        <div className="w-full mt-8">
+          <BundleAndSave />
         </div>
       </div>
     </div>

@@ -21,21 +21,28 @@ export const KnowYourIngredientsStack: React.FC<KnowYourIngredientsStackProps> =
   const resolvedHeight = targetHeight && targetHeight > 0 ? targetHeight : undefined;
   const styleWithVar = resolvedHeight
     ? ({
-        "--stack-target-height": `${resolvedHeight}px`,
-      } as React.CSSProperties)
+      "--stack-target-height": `${resolvedHeight}px`,
+    } as React.CSSProperties)
     : undefined;
 
   return (
     <div
-      className={`relative w-full flex items-center justify-center max-md:flex-col max-md:gap-10 md:min-h-[640px] md:h-[80vh] md:[height:var(--stack-target-height)] md:[min-height:var(--stack-target-height)] ${className}`.trim()}
+      className={`relative w-full flex items-center justify-center max-md:flex-col max-md:gap-0 max-md:touch-pan-y md:min-h-[640px] md:h-[80vh] md:[height:var(--stack-target-height)] md:[min-height:var(--stack-target-height)] ${className}`.trim()}
       style={styleWithVar}
     >
+      {/* Mobile: Simple header */}
+      <div className="md:hidden w-full text-center mb-4 relative z-[30]">
+        <h2 className="tracking-widest uppercase text-white/80 text-xl sm:text-2xl">
+          Know Your Ingredients
+        </h2>
+      </div>
+      {/* Desktop: Original ScrollReveal header */}
       <ScrollReveal
         enableBlur
         baseOpacity={0}
         baseRotation={5}
         blurStrength={10}
-        containerClassName="pointer-events-none md:absolute md:left-1/2 md:top-2 md:-translate-x-1/2 w-full max-w-[540px] text-center text-white z-[25] relative mb-6 md:mb-0"
+        containerClassName="hidden md:block pointer-events-none md:absolute md:left-1/2 md:top-2 md:-translate-x-1/2 w-full max-w-[540px] text-center text-white z-[25]"
         textClassName="tracking-widest uppercase text-white/80 text-3xl md:text-4xl"
         rotationEnd="top center"
         wordAnimationEnd="top center"
@@ -50,7 +57,8 @@ export const KnowYourIngredientsStack: React.FC<KnowYourIngredientsStackProps> =
         blurAmount={0.6}
         expandOnScroll
         anchorHeight={resolvedHeight}
-        className="h-full w-full"
+        className="h-full w-full max-md:h-[75vh] max-md:min-h-[600px] max-md:max-h-[800px]"
+        showMobileIndicator
       >
         <ElectrolyteCard />
         <EnergyCard />

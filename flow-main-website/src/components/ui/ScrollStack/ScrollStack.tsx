@@ -12,6 +12,7 @@ import React, {
   useState,
 } from "react";
 
+
 export interface ScrollStackItemProps {
   itemClassName?: string;
   previewColor?: string;
@@ -24,7 +25,7 @@ export const ScrollStackItem: React.FC<ScrollStackItemProps> = ({
   previewColor,
 }) => (
   <div
-    className={`scroll-stack-card relative w-full h-96 md:h-104 xl:h-112 my-0 p-10 md:p-12 rounded-[40px] shadow-[0_0_30px_rgba(0,0,0,0.18)] box-border origin-top will-change-transform ${itemClassName}`.trim()}
+    className={`scroll-stack-card relative w-full h-[60vh] sm:h-[22rem] md:h-[26rem] xl:h-[28rem] my-0 p-6 sm:p-8 md:p-10 lg:p-12 rounded-[24px] sm:rounded-[32px] md:rounded-[40px] shadow-[0_0_30px_rgba(0,0,0,0.18)] box-border origin-top will-change-transform max-md:touch-pan-y ${itemClassName}`.trim()}
     style={{
       backfaceVisibility: "hidden",
       transformStyle: "preserve-3d",
@@ -51,9 +52,10 @@ interface ScrollStackProps {
   onStackComplete?: () => void;
   expandOnScroll?: boolean; // new: cards grow instead of shrink
   anchorHeight?: number | null;
+  showMobileIndicator?: boolean;
 }
 
-interface TransformData {
+interface _TransformData {
   translateY: number;
   scale: number;
   rotation: number;
@@ -76,6 +78,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   onStackComplete,
   expandOnScroll = false,
   anchorHeight,
+  showMobileIndicator = false,
 }) => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -83,8 +86,19 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   const lenisRef = useRef<Lenis | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
-  const lastTransformsRef = useRef(new Map<number, TransformData>());
+  const lastTransformsRef = useRef(new Map<number, { translateY: number; scale: number; rotation: number; blur: number }>());
   const isUpdatingRef = useRef(false);
+
+  // Detect if we're on mobile (for responsive scroll behavior)
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   type StackElement = React.ReactElement<ScrollStackItemProps>;
   const itemsArray = useMemo(
@@ -145,7 +159,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     [isLocalStack, stepTo]
   );
 
-  const handleTouchStart = useCallback(
+  const _handleTouchStart = useCallback(
     (event: React.TouchEvent<HTMLDivElement>) => {
       if (!isLocalStack) return;
       touchStartYRef.current = event.touches[0]?.clientY ?? null;
@@ -153,25 +167,28 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     [isLocalStack]
   );
 
-  const handleTouchMove = useCallback(
-    (event: React.TouchEvent<HTMLDivElement>) => {
+  const _handleTouchMove = useCallback(
+    (_event: React.TouchEvent<HTMLDivElement>) => {
       if (!isLocalStack) return;
-      if (touchStartYRef.current == null) return;
+      // Step Id: 222 - User requested disabling scroll feature on mobile view
+      // We only allow touch interactions (like simple taps) but disable the swipe-to-navigate logic here
+      // to prevents conflicts with natural page scrolling.
+      // if (touchStartYRef.current == null) return;
 
-      const currentY = event.touches[0]?.clientY ?? touchStartYRef.current;
-      const delta = touchStartYRef.current - currentY;
+      // const currentY = event.touches[0]?.clientY ?? touchStartYRef.current;
+      // const delta = touchStartYRef.current - currentY;
 
-      if (Math.abs(delta) >= 40) {
-        stepTo(delta > 0 ? 1 : -1);
-        touchStartYRef.current = currentY;
-      }
+      // if (Math.abs(delta) >= 40) {
+      //   stepTo(delta > 0 ? 1 : -1);
+      //   touchStartYRef.current = currentY;
+      // }
 
-      event.preventDefault();
+      // event.preventDefault();
     },
-    [isLocalStack, stepTo]
+    [isLocalStack]
   );
 
-  const handleTouchEnd = useCallback(() => {
+  const _handleTouchEnd = useCallback(() => {
     if (!isLocalStack) return;
     touchStartYRef.current = null;
     wheelDeltaRef.current = 0;
@@ -382,13 +399,13 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     baseScale,
     rotationAmount,
     blurAmount,
+    expandOnScroll,
     useWindowScroll,
     onStackComplete,
     calculateProgress,
     parsePercentage,
     getScrollData,
     getElementOffset,
-    expandOnScroll,
   ]);
 
   const handleScroll = useCallback(() => {
@@ -515,7 +532,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   const innerClassName = useWindowScroll
     ? "scroll-stack-inner pt-[20vh] px-10 pb-[50rem] min-h-screen"
-    : "scroll-stack-inner relative w-full h-full px-6 md:px-8 py-8 md:py-4";
+    : "scroll-stack-inner relative w-full h-full px-0 md:px-8 py-0 md:py-4";
 
   const cardVariants = useMemo(
     () => ({
@@ -549,12 +566,16 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     []
   );
 
-  const overflowClass = isLocalStack ? "overflow-hidden" : "overflow-y-auto";
+  // On mobile (localStack), we don't want to block natural page scrolling, so no overflow-hidden
+  // Also don't attach wheel/touch handlers to allow natural scroll.
+  // On desktop, we enable wheel handlers for scroll-through navigation
+  const overflowClass = isLocalStack ? (isMobile ? "overflow-visible" : "overflow-hidden") : "overflow-y-auto";
 
-  const wheelHandler = isLocalStack ? handleWheel : undefined;
-  const touchStartHandler = isLocalStack ? handleTouchStart : undefined;
-  const touchMoveHandler = isLocalStack ? handleTouchMove : undefined;
-  const touchEndHandler = isLocalStack ? handleTouchEnd : undefined;
+  // Enable wheel handlers on desktop only, disable on mobile for natural scrolling
+  const wheelHandler = isLocalStack && !isMobile ? handleWheel : undefined;
+  const touchStartHandler = undefined; // Disabled for natural touch scrolling
+  const touchMoveHandler = undefined;
+  const touchEndHandler = undefined;
   const keyDownHandler = isLocalStack ? handleKeyDown : undefined;
 
   const fallbackPreviewColor = "#24bbc7";
@@ -576,8 +597,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const anchorStyle =
     anchorHeight && anchorHeight > 0
       ? ({
-          "--stack-anchor-height": `${anchorHeight}px`,
-        } as React.CSSProperties)
+        "--stack-anchor-height": `${anchorHeight}px`,
+      } as React.CSSProperties)
       : undefined;
 
   return (
@@ -585,12 +606,12 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       className={`relative w-full h-full ${overflowClass} overflow-x-visible md:h-(--stack-anchor-height) md:min-h-(--stack-anchor-height) ${className}`.trim()}
       ref={scrollerRef}
       style={{
-        overscrollBehavior: "contain",
-        WebkitOverflowScrolling: "touch",
-        scrollBehavior: "smooth",
-        WebkitTransform: "translateZ(0)",
-        transform: "translateZ(0)",
-        willChange: "scroll-position",
+        // Allow natural touch scrolling on mobile, prevent on desktop
+        touchAction: isMobile ? 'pan-y' : 'none',
+        WebkitOverflowScrolling: isMobile ? undefined : 'touch',
+        scrollBehavior: 'smooth',
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
         ...anchorStyle,
       }}
       onWheel={wheelHandler}
@@ -598,18 +619,19 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       onTouchMove={touchMoveHandler}
       onTouchEnd={touchEndHandler}
       onKeyDown={keyDownHandler}
-      tabIndex={isLocalStack ? 0 : undefined}
+      tabIndex={isLocalStack && !isMobile ? 0 : undefined}
     >
-      <div className={innerClassName} ref={innerRef}>
+      <div className={innerClassName} ref={innerRef} style={{ touchAction: isMobile ? 'pan-y' : undefined }}>
         {isLocalStack ? (
-          <div className="relative h-full w-full">
-            <AnimatePresence
+          isMobile ? (
+            // Mobile layout - normal flow, no absolute positioning, allows natural scrolling
+            <div className="relative w-full touch-pan-y">
+              <AnimatePresence
               initial={false}
               custom={transitionDirection}
               mode="popLayout"
             >
-              {itemsArray.length > 0 && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 md:px-6">
+                {itemsArray.length > 0 && (
                   <motion.div
                     key={activeIndex}
                     custom={transitionDirection}
@@ -617,52 +639,159 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    className="flex justify-center"
-                    style={{ zIndex: 10 }}
+                    className="flex justify-center w-full px-1 touch-pan-y"
                   >
-                    <div className="pointer-events-auto w-full">
+                    <div className="w-full touch-pan-y">
                       {itemsArray[activeIndex]}
                     </div>
                   </motion.div>
+                )}
+              </AnimatePresence>
+              {/* Preview bars */}
+              <div className="w-full px-2 mt-2">
+                <div className="flex flex-col gap-1" aria-hidden="true">
+                  {itemsArray.map((item, index) => {
+                    if (index <= activeIndex) return null;
+
+                    const depth = index - activeIndex;
+                    const widthPercent = Math.max(0.58, 1 - depth * 0.08);
+                    const translateX = depth * 6;
+                    const opacity = Math.max(0.25, 0.95 - depth * 0.18);
+                    const barColor = getPreviewColor(item);
+                    const gradient = `linear-gradient(110deg, ${barColor} 0%, ${withAlpha(
+                      barColor,
+                      "E0"
+                    )} 55%, ${withAlpha(barColor, "2a")} 100%)`;
+                    const glow = `0 0 18px ${withAlpha(barColor, "44")}`;
+
+                    return (
+                      <div
+                        key={`preview-${index}`}
+                        className="h-1.5 rounded-full transition-all duration-500 ease-out origin-left"
+                        style={{
+                          width: `${widthPercent * 100}%`,
+                          transform: `translateX(${translateX}px)`,
+                          backgroundImage: gradient,
+                          boxShadow: glow,
+                          opacity,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Mobile navigation arrows */}
+              {showMobileIndicator && (
+                <div className="flex justify-between items-center px-4 mt-4">
+                  {/* Left arrow button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      stepTo(-1);
+                    }}
+                    disabled={activeIndex === 0}
+                    className={`flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white transition-all active:scale-95 ${activeIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/20'}`}
+                    aria-label="Previous card"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                  </button>
+                  {/* Card indicator */}
+                  <span className="text-white/60 text-sm">{activeIndex + 1} / {totalItems}</span>
+                  {/* Right arrow button */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      stepTo(1);
+                    }}
+                    disabled={activeIndex >= totalItems - 1}
+                    className={`flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white transition-all active:scale-95 ${activeIndex >= totalItems - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white/20'}`}
+                    aria-label="Next card"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-6 h-6"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </button>
                 </div>
               )}
-            </AnimatePresence>
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-6 md:bottom-8 lg:bottom-10 px-6 md:px-8"
-              style={{ zIndex: 1 }}
-            >
-              <div className="flex flex-col gap-2" aria-hidden="true">
-                {itemsArray.map((item, index) => {
-                  if (index <= activeIndex) return null;
+            </div>
+          ) : (
+            // Desktop layout - absolute positioning for scroll-through effect
+            <div className="relative h-full w-full">
+              <AnimatePresence initial={false} custom={transitionDirection} mode="popLayout">
+                {itemsArray.length > 0 && (
+                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
+                    <motion.div
+                      key={activeIndex}
+                      custom={transitionDirection}
+                      variants={cardVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      className="flex justify-center"
+                      style={{ zIndex: 10 }}
+                    >
+                      <div className="pointer-events-auto w-full">
+                        {itemsArray[activeIndex]}
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-8 lg:bottom-10 px-8"
+                style={{ zIndex: 1 }}
+              >
+                <div className="flex flex-col gap-2" aria-hidden="true">
+                  {itemsArray.map((item, index) => {
+                    if (index <= activeIndex) return null;
 
-                  const depth = index - activeIndex;
-                  const widthPercent = Math.max(0.58, 1 - depth * 0.08);
-                  const translateX = depth * 6;
-                  const opacity = Math.max(0.25, 0.95 - depth * 0.18);
-                  const barColor = getPreviewColor(item);
-                  const gradient = `linear-gradient(110deg, ${barColor} 0%, ${withAlpha(
-                    barColor,
-                    "E0"
-                  )} 55%, ${withAlpha(barColor, "2a")} 100%)`;
-                  const glow = `0 0 18px ${withAlpha(barColor, "44")}`;
+                    const depth = index - activeIndex;
+                    const widthPercent = Math.max(0.58, 1 - depth * 0.08);
+                    const translateX = depth * 6;
+                    const opacity = Math.max(0.25, 0.95 - depth * 0.18);
+                    const barColor = getPreviewColor(item);
+                    const gradient = `linear-gradient(110deg, ${barColor} 0%, ${withAlpha(
+                      barColor,
+                      "E0"
+                    )} 55%, ${withAlpha(barColor, "2a")} 100%)`;
+                    const glow = `0 0 18px ${withAlpha(barColor, "44")}`;
 
-                  return (
-                    <div
-                      key={`preview-${index}`}
-                      className="h-1.5 md:h-2 rounded-full transition-all duration-500 ease-out origin-left"
-                      style={{
-                        width: `${widthPercent * 100}%`,
-                        transform: `translateX(${translateX}px)`,
-                        backgroundImage: gradient,
-                        boxShadow: glow,
-                        opacity,
-                      }}
-                    />
-                  );
-                })}
+                    return (
+                      <div
+                        key={`preview-${index}`}
+                        className="h-2 rounded-full transition-all duration-500 ease-out origin-left"
+                        style={{
+                          width: `${widthPercent * 100}%`,
+                          transform: `translateX(${translateX}px)`,
+                          backgroundImage: gradient,
+                          boxShadow: glow,
+                          opacity,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
+          )
         ) : (
           children
         )}

@@ -1,15 +1,7 @@
 "use client";
-
 import AdminPlaceCancelOrderDialog from "@/components/AdminPlaceOrderAddressDialog";
 import ErrorComponent from "@/components/ErrorComponent";
 import LoadingComponent from "@/components/LoadingComponent";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -18,6 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import useGetOrdersForAdmin from "@/hooks/useGetOrdersForAdmin";
 import { OrderDetailsWithAdminIncludes } from "@/types/adminTypes";
 import { useEffect, useState } from "react";
@@ -48,6 +47,7 @@ const OrdersPage = () => {
 
   const tableHeaders = [
     "Order Id",
+    "Items",
     "Total",
     "Payment Status",
     "Delivery Status",
@@ -62,13 +62,13 @@ const OrdersPage = () => {
 
   return (
     <div>
-      <h1 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
+      <h1 className="manrope manrope-semibold text-[#24BFCF] text-2xl mb-4">
         Orders Page - Total Orders: {orderDetails.length}
       </h1>
       <div>
         {getOrdersLoading && <LoadingComponent />}
         {!getOrdersLoading && (
-          <div>
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -90,77 +90,132 @@ const OrdersPage = () => {
                         new Date(b.updatedAt).getTime() -
                         new Date(a.updatedAt).getTime()
                     )
-                    .map((order) => (
-                      <TableRow key={order.id}>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <TableCell className="cursor-pointer hover:bg-gray-600 transition-all duration-300 ease-in-out">
-                              {order.id}
-                            </TableCell>
-                          </DialogTrigger>
-                          <DialogContent className="max-h-[75vh] p-6 bg-black">
-                            <DialogTitle className="mb-1.5 text-center">
-                              Order Details - Order Number {order.id}
-                              <ScrollArea className="w-full h-full mt-3">
-                                {order.orderItems.map((item) => (
-                                  <div
-                                    key={item.id}
-                                    className="border border-[#24bfcf] rounded-md p-4 mb-4 flex justify-between items-center gap-2 text-xs"
-                                  >
-                                    <p className="flex items-center gap-1 text-gray-300">
-                                      Item Name:{" "}
-                                      <span className="text-[#24bfcf]">
-                                        {item.product.name}
-                                      </span>
-                                    </p>
-                                    <p className="flex items-center gap-1 text-gray-300">
-                                      Item Price:{" "}
-                                      <span className="text-[#24bfcf]">
-                                        {item.product.price}
-                                      </span>
-                                    </p>
-                                    <p className="flex items-center gap-1 text-gray-300">
-                                      Quantity Ordered:{" "}
-                                      <span className="text-[#24bfcf]">
-                                        {item.quantity}
-                                      </span>
-                                    </p>
+                    .map((order) => {
+                      const isBundleOrder = order.orderUsername?.startsWith("Bundle Order:");
+                      
+                      return (
+                        <TableRow key={order.id} className={isBundleOrder ? "bg-[#BFFF00]/5" : ""}>
+                          <TableCell className="max-w-[150px] truncate" title={order.id}>
+                            {order.id.slice(0, 8)}...
+                            {isBundleOrder && (
+                              <span className="ml-1 px-1.5 py-0.5 bg-[#BFFF00] text-black text-xs rounded font-semibold">
+                                Bundle
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-xs"
+                                >
+                                  View {order.orderItems.length} item(s)
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[500px] bg-black/95 border border-gray-700">
+                                <DialogTitle className="text-[#24BFCF]">
+                                  Order Items
+                                </DialogTitle>
+                                <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                                  {isBundleOrder && (
+                                    <div className="p-3 bg-[#BFFF00]/10 rounded-lg border border-[#BFFF00]/30 mb-4">
+                                      <p className="text-sm text-[#BFFF00] font-semibold">Bundle Order</p>
+                                      <p className="text-xs text-gray-400 mt-1">
+                                        {order.orderUsername?.replace("Bundle Order: ", "")}
+                                      </p>
+                                    </div>
+                                  )}
+                                  {order.orderItems.map((item) => (
+                                    <div
+                                      key={item.id}
+                                      className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg"
+                                    >
+                                      <div>
+                                        <p className="font-medium text-white">
+                                          {item.product?.name || "Unknown Product"}
+                                        </p>
+                                        <p className="text-sm text-gray-400">
+                                          Qty: {item.quantity}
+                                        </p>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="text-sm text-gray-400">
+                                          ₹{item.product?.price?.toLocaleString("en-IN") || "N/A"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="border-t border-gray-700 pt-3 mt-3">
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-semibold text-white">Order Total:</span>
+                                    <span className="font-bold text-[#24BFCF]">
+                                      ₹{order.total.toLocaleString("en-IN")}
+                                    </span>
                                   </div>
-                                ))}
-                              </ScrollArea>
-                            </DialogTitle>
-                          </DialogContent>
-                        </Dialog>
-                        <TableCell>{order.total}</TableCell>
-                        <TableCell>{order.status}</TableCell>
-                        <TableCell>{order.deliveryStatus}</TableCell>
-                        <TableCell>{order.orderEmail}</TableCell>
-                        <TableCell>{order.orderPhone}</TableCell>
-                        <TableCell>
-                          {order.deliveryStatus === "PROCESSING" ? (
-                            <div className="flex justify-between items-center p-2">
+                                  {order.orderAddress && (
+                                    <div className="mt-2 text-sm text-gray-400">
+                                      <span className="font-medium">Address: </span>
+                                      {order.orderAddress}
+                                    </div>
+                                  )}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                          <TableCell>₹{order.total.toLocaleString("en-IN")}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              order.status === "COMPLETED" 
+                                ? "bg-green-500/20 text-green-400"
+                                : order.status === "PENDING"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-red-500/20 text-red-400"
+                            }`}>
+                              {order.status}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              order.deliveryStatus === "INITIATED_BY_ADMIN" || order.deliveryStatus === "INITIATED_BY_USER"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : order.deliveryStatus === "PROCESSING"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-red-500/20 text-red-400"
+                            }`}>
+                              {order.deliveryStatus.replace(/_/g, " ")}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-sm">{order.orderEmail}</TableCell>
+                          <TableCell className="text-sm">{order.orderPhone}</TableCell>
+                          <TableCell>
+                            {order.deliveryStatus === "PROCESSING" ? (
+                              <div className="flex gap-2">
+                                <AdminPlaceCancelOrderDialog
+                                  orderId={order.id}
+                                  action="approve"
+                                />
+                                <AdminPlaceCancelOrderDialog
+                                  orderId={order.id}
+                                  action="reject"
+                                />
+                              </div>
+                            ) : order.deliveryStatus === "INITIATED_BY_ADMIN" ? (
                               <AdminPlaceCancelOrderDialog
                                 orderId={order.id}
-                                action="approve"
+                                action="cancel"
                               />
-                              <AdminPlaceCancelOrderDialog
-                                orderId={order.id}
-                                action="reject"
-                              />
-                            </div>
-                          ) : order.deliveryStatus === "INITIATED_BY_ADMIN" ? (
-                            <AdminPlaceCancelOrderDialog
-                              orderId={order.id}
-                              action="cancel"
-                            />
-                          ) : (
-                            <p className="text-gray-500">
-                              No actions available
-                            </p>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))
+                            ) : (
+                              <p className="text-gray-500 text-sm">
+                                No actions
+                              </p>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                 ) : (
                   <TableRow>
                     <TableCell

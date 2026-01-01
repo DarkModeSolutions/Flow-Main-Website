@@ -1,4 +1,4 @@
-import { Cart, RequestType } from "@/types/types";
+import { BundleCartItem, Cart, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
@@ -14,12 +14,14 @@ const useInitiatePayment = () => {
       description,
       userId,
       orderAddressId,
+      bundleCart,
     }: {
       cart?: Cart[] | [];
       amount: number;
       description: string;
       userId: string | undefined;
       orderAddressId: string | null;
+      bundleCart?: BundleCartItem[];
     }) => {
       try {
         setLoading(true);
@@ -28,7 +30,7 @@ const useInitiatePayment = () => {
         const requestData: RequestType = {
           url: "/api/zoho/payment-session",
           method: "POST",
-          body: { cart, amount, description, userId, orderAddressId },
+          body: { cart, amount, description, userId, orderAddressId, bundleCart },
         };
 
         const response = await getRequestData({ requestData });
