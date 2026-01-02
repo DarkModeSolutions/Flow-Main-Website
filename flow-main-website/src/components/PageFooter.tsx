@@ -1,8 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 
-import { AiOutlineYoutube } from "react-icons/ai";
 import { CiMail } from "react-icons/ci";
-import { FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 
 const PageFooter = () => {
   return (
@@ -29,10 +28,20 @@ const PageFooter = () => {
               <span>Rewards</span>
             </div>
             <div className="flex-1 flex justify-evenly items-center">
-              <FaInstagram size={40} className="text-white" />
-              <AiOutlineYoutube size={40} className="text-white" />
-              <CiMail size={40} className="text-white" />
-              <FaLinkedin size={40} className="text-white" />
+              <a
+                href="https://www.instagram.com/flowhydration.in?igsh=Zzd6cXZxcXRqajc5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <FaInstagram size={40} className="text-white" />
+              </a>
+              <a
+                href="https://mail.google.com/mail/?view=cm&to=contact@flowhydration.in"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <CiMail size={40} className="text-white" />
+              </a>
             </div>
           </div>
         </div>

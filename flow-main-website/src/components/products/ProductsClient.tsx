@@ -196,7 +196,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-row not-md:flex-col items-center space-y-3 p-4">
+    <div className="w-full min-h-screen flex flex-col md:flex-row items-center space-y-3 px-8 md:px-12">
       <div className="h-[30vh] w-full relative md:w-[60%]">
         {showVid &&
         product.imageUrl &&
@@ -231,31 +231,36 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
           <p>No Image Available</p>
         )}
       </div>
-      <div className="flex md:flex-col not-md:flex-col md:gap-y-3 mt-5 px-2 sm:px-0">
-        <div className="flex justify-between w-full md:items-start items-center">
-          <div className="w-[50%]">
+      <div className="flex flex-col items-center justify-center md:items-start md:justify-start md:gap-y-3 mt-5 w-full px-4 md:px-0">
+        <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between w-full text-center md:text-left">
+          <div className="w-full md:w-[70%]">
             <h2 className="manrope manrope-semibold text-[#24BFCF] text-2xl">
               {product.name}
             </h2>
           </div>
-          <div className="w-[20%]">
-            <h2 className="manrope manrope-semibold text-[#24BFCF] text-lg">
-              {product.price.toLocaleString("en-IN", {
-                style: "currency",
-                currency: "INR",
-              })}
-            </h2>
+          <div className="w-full md:w-[20%] mt-2 md:mt-0">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <h2 className="manrope manrope-semibold text-[#24BFCF] text-lg">
+                {product.price.toLocaleString("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                })}
+              </h2>
+              <span className="text-gray-500 text-sm line-through">
+                ₹600
+              </span>
+            </div>
           </div>
         </div>
-        <div className="w-full flex justify-between items-start space-x-4 md:space-x-8 not-md:mt-8">
-          <div className="w-[70%] h-auto not-md:w-[50%] not-md:text-sm md:pr-20">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start md:justify-between space-y-4 md:space-y-0 md:space-x-8 mt-6 md:mt-0">
+          <div className="w-full md:w-[70%] h-auto text-sm md:text-base text-center md:text-left md:pr-20">
             <p>
               {product.description
                 ? product.description
                 : "No description available."}
             </p>
           </div>
-          <div className="flex-1 flex flex-col space-y-2">
+          <div className="flex flex-col items-center md:items-stretch space-y-2 w-full md:w-auto">
             {product.stock > 0 ? (
               quantityInCart > 0 ? (
                 // Show quantity controls when item is in cart
@@ -349,7 +354,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
                       onClick={() => handleClick()}
                       className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer"
                     >
-                      {paymentLoading ? "Processing..." : "Pre Order Now"}
+                      {paymentLoading ? "Processing..." : "Order Now"}
                     </Button>
                   </DialogContent>
                 </Dialog>
@@ -357,7 +362,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button className="bg-[#24bfcf] rounded-4xl p-4 text-black w-full hover:bg-[#24bfcf] hover:opacity-80 transition-opacity duration-200 cursor-pointer">
-                      {"Pre Order Now"}
+                      {"Order Now"}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px] bg-black p-10">

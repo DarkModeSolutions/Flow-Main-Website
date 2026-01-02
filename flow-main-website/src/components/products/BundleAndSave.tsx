@@ -117,7 +117,7 @@ const BundleAndSave: React.FC = () => {
   if (!products || products.length === 0) return null;
 
   return (
-    <div className="w-full mt-8 md:mt-12 px-2 sm:px-0">
+    <div className="w-full mt-8 md:mt-12">
       {/* Section Header */}
       <div className="flex items-center justify-center mb-4 md:mb-6">
         <div className="flex-1 h-px bg-gray-700"></div>
@@ -237,7 +237,7 @@ const BundleAndSave: React.FC = () => {
                         <select
                           value={selectedFlavors[idx] || ""}
                           onChange={(e) => handleFlavorChange(idx, e.target.value)}
-                          className="flex-1 bg-gray-800 border border-gray-600 text-white text-sm md:text-base rounded-lg px-2 md:px-3 py-1.5 md:py-2 focus:outline-none focus:ring-2 focus:ring-[#BFFF00] focus:border-transparent"
+                          className="flex-1 max-w-[200px] md:max-w-none bg-gray-800 border border-gray-600 text-white text-xs md:text-base rounded-lg px-2 md:px-3 py-1.5 md:py-2 focus:outline-none focus:ring-2 focus:ring-[#BFFF00] focus:border-transparent truncate"
                         >
                           <option value="" disabled>
                             Select flavor
