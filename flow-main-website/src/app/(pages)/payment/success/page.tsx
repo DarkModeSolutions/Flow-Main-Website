@@ -8,7 +8,7 @@ import { getSessionUserClient } from "@/utils/getUserDetailsClient";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
@@ -23,11 +23,16 @@ function PaymentSuccessContent() {
 
   const { userSignOut } = useUserSignOut();
 
+  const hasRunRef = useRef(false);
+
   useEffect(() => {
     if (!orderId) {
       // console.log("No order ID right now");
       redirect("/");
     } // wait until it's available
+
+    if (hasRunRef.current) return; // 🚫 stop repeat calls
+    hasRunRef.current = true;
 
     async function updateOrderStatus() {
       if (
@@ -54,7 +59,7 @@ function PaymentSuccessContent() {
 
         if (userDetails && userDetails.buyingAsGuest) {
           await userSignOut();
-          signOut({ callbackUrl: window.location.hostname });
+          signOut({ redirect: false });
         }
 
         clearCart();
