@@ -21,12 +21,15 @@ import useGetUserAddressDetails from "@/hooks/useGetUserAddressDetails";
 import useGetUserDetails from "@/hooks/useGetUserDetails";
 import useUpdateUserAddress from "@/hooks/useUpdateUserAddress";
 import useUpdateUserDetails from "@/hooks/useUpdateUserDetails";
+import useUpdateUserPassword from "@/hooks/useUpdateUserPassword";
+import useUserSignOut from "@/hooks/useUserSignOut";
 import {
   AddressAllDetails,
   OrderDetailsWiithIncludes,
   SessionUser,
   UserDetails,
 } from "@/types/types";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -51,6 +54,11 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     phone: "",
     age: undefined,
   });
+  const [updateUserPasswordDetails, setUpdateUserPasswordDetails] = useState({
+    newUserPassword: "",
+    reEnteredNewUserPassword: "",
+  });
+  const [passwordMatching, setPasswordMatching] = useState(false);
   const [updatedUserAddressDetails, setUpdatedUserAddressDetails] = useState<
     AddressAllDetails[] | null
   >(null);
@@ -70,6 +78,12 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     loading: updateUserLoading,
     updateUserDetails,
   } = useUpdateUserDetails();
+
+  const {
+    error: updateUserPasswordError,
+    loading: updateUserPasswordLoading,
+    updateUserPassword,
+  } = useUpdateUserPassword();
 
   const {
     error: orderDetailsError,
@@ -100,6 +114,8 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     loading: deleteUserAddressLoading,
     deleteUserAddress,
   } = useDeleteUserAddress();
+
+  const { loading: userSignOutLoading, userSignOut } = useUserSignOut();
 
   const fetched = useRef(false);
 
@@ -158,6 +174,25 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     });
 
     // console.log("Updated user details response: ", updateDetails);
+  };
+
+  const passwordUpdateHandler = async () => {
+    const newPassword = updateUserPasswordDetails.newUserPassword;
+
+    if (passwordMatching) {
+      const updatedPassword = newPassword.trim();
+
+      const data = await updateUserPassword(updatedPassword, user!.id);
+
+      console.log("This is updated pwd data: ", data);
+
+      if (data.message === "Password Updated Successfully!") {
+        await userSignOut();
+        signOut({ callbackUrl: "/auth/login" });
+      } else {
+        alert("Password not Updated!");
+      }
+    }
   };
 
   const addressOnChangeHandler = (
@@ -251,7 +286,12 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     }
   };
 
-  if (getUserLoading || orderDetailsLoading || getUserAddressDetailsLoading) {
+  if (
+    getUserLoading ||
+    orderDetailsLoading ||
+    getUserAddressDetailsLoading ||
+    userSignOutLoading
+  ) {
     return (
       <>
         <Skeleton className="w-32 h-32 rounded-full mx-auto mb-4" />
@@ -265,7 +305,8 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     updateUserAddressError ||
     createNewAddressError ||
     deleteUserAddressError ||
-    getUserAddressDetailsError
+    getUserAddressDetailsError ||
+    updateUserPasswordError
   ) {
     return (
       <ErrorComponent
@@ -350,15 +391,87 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
               <Label htmlFor="passwword" className="text-lg font-medium">
                 Password:
               </Label>
-              <Input
-                className="w-[50%]"
-                name="passwword"
-                type="password"
-                placeholder="Enter Password"
-                value={myUserDetails?.user?.password || ""}
-                // className="pr-6"
-                disabled
-              />
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="bg-white w-[50%] text-black text-xs cursor-pointer hover:scale-[1.1]">
+                    Change Password
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-black">
+                  <DialogTitle>Type your new password here:</DialogTitle>
+                  <div className="flex flex-col gap-2">
+                    <Label
+                      htmlFor="newPassword"
+                      className="text-lg font-medium"
+                    >
+                      New Password
+                    </Label>
+                    <Input
+                      placeholder="Password"
+                      type="password"
+                      name="newPassword"
+                      className="mb-3"
+                      value={updateUserPasswordDetails.newUserPassword}
+                      onChange={(e) =>
+                        setUpdateUserPasswordDetails({
+                          ...updateUserPasswordDetails,
+                          newUserPassword: e.target.value,
+                        })
+                      }
+                    />
+                    <Label
+                      htmlFor="newPassword"
+                      className="text-lg font-medium flex justify-between items-center"
+                    >
+                      <span>Re-enter your New Password</span>
+                      {!passwordMatching && (
+                        <span className="text-red-500 text-sm">
+                          Incorrect password.
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      placeholder="Re-enter"
+                      type="password"
+                      name="newPassword"
+                      className={`mb-3 ${
+                        !passwordMatching &&
+                        "border-red-500 focus-visible:ring-red-500"
+                      }`}
+                      value={updateUserPasswordDetails.reEnteredNewUserPassword}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+
+                        setUpdateUserPasswordDetails({
+                          ...updateUserPasswordDetails,
+                          reEnteredNewUserPassword: newValue,
+                        });
+
+                        // Compare with the NEW value
+                        setPasswordMatching(
+                          newValue === updateUserPasswordDetails.newUserPassword
+                        );
+                      }}
+                    />
+                    <div className="flex justify-end">
+                      <FlowButton
+                        onClickHandler={passwordUpdateHandler}
+                        isDisabled={updateUserPasswordLoading}
+                        className="w-[50%] flex justify-center items-center"
+                      >
+                        {updateUserPasswordLoading ? (
+                          <>
+                            <Spinner />
+                            <span>Updating</span>
+                          </>
+                        ) : (
+                          "Update Password"
+                        )}
+                      </FlowButton>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="flex justify-between gap-5 items-center border border-white rounded-lg p-6">
               <Label htmlFor="phone" className="text-lg font-medium">

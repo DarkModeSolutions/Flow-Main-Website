@@ -12,10 +12,10 @@ const SearchResult = ({
   return (
     <Link
       href={`/product/${id}`}
-      className="flex justify-between items-center p-4 rounded-lg hover:bg-black w-full text-white"
+      className="flex justify-between items-center p-4 rounded-lg  w-full text-white hover:bg-gray-500 transition-all ease-in-out duration-300"
     >
       {/* <Image src={img!} alt={`Product ${name} Image`} /> */}
-      <span>{name}</span>
+      <span className="text-sm">{name}</span>
     </Link>
   );
 };
