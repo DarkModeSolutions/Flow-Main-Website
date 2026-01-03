@@ -37,6 +37,7 @@ model User {
     address                 Address[]
     isAdmin                 Boolean   @default(false)
     buyingAsGuest           Boolean   @default(false)
+    loginProviders          String[]  @default([])
     favourites              String[]  @default([])
     zohoAccessToken         String?
     zohoRefreshToken        String?

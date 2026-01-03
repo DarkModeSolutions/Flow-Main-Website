@@ -1,13 +1,18 @@
 import { prisma } from "@/lib/db/prisma";
 import { AddressAllDetails } from "@/types/types";
+import { log } from "@/utils/log";
 import bcrypt from "bcryptjs";
 import { AuthOptions } from "next-auth";
-// import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-// import GoogleProvider from "next-auth/providers/google";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions: AuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true, // Links accounts with same email
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -17,6 +22,8 @@ export const authOptions: AuthOptions = {
         signInType: { label: "Sign In Type", type: "text" },
       },
       async authorize(credentials) {
+        console.log("Normal signin");
+
         try {
           if (!credentials?.email) {
             throw new Error("Email and password required");
@@ -170,7 +177,28 @@ export const authOptions: AuthOptions = {
     signIn: "/auth/login",
   },
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger, account }) {
+      if (account?.provider === "google") {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email as string },
+          include: { address: true },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.email = dbUser.email;
+          token.name = dbUser.name;
+          token.phone = dbUser.phone;
+          token.isAdmin = dbUser.isAdmin;
+          token.age = dbUser.age;
+          token.address = dbUser.address;
+          token.buyingAsGuest = dbUser.buyingAsGuest;
+          token.favourites = dbUser.favourites;
+        }
+
+        return token;
+      }
+
       // Add user info to JWT token
       if (user) {
         token.id = user.id;
@@ -188,13 +216,7 @@ export const authOptions: AuthOptions = {
       if (trigger === "update" && token.id) {
         const freshUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            phone: true,
-            isAdmin: true,
-          },
+          include: { address: true },
         });
 
         if (freshUser) {
@@ -203,10 +225,10 @@ export const authOptions: AuthOptions = {
           token.name = freshUser.name;
           token.phone = freshUser.phone;
           token.isAdmin = freshUser.isAdmin; // Default to false
-          token.age = user.age ?? null;
-          token.address = user.address ?? null;
-          token.buyingAsGuest = user.buyingAsGuest ?? false;
-          token.favourites = user.favourites ?? [];
+          token.age = freshUser.age ?? null;
+          token.address = freshUser.address ?? null;
+          token.buyingAsGuest = freshUser.buyingAsGuest ?? false;
+          token.favourites = freshUser.favourites ?? [];
         }
       }
 
@@ -226,6 +248,58 @@ export const authOptions: AuthOptions = {
         session.user.favourites = token.favourites as string[];
       }
       return session;
+    },
+    async signIn({ user, account, profile }) {
+      console.log("In Next Auth SignIn method: ", user, account, profile);
+
+      if (!profile || !profile.email) {
+        return false;
+      }
+
+      if (account?.provider === "google") {
+        await log("Google_Sign_In", "User Attempting Google Sign In");
+
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: profile?.email },
+          });
+
+          if (existingUser) {
+            const isGoogleUser = existingUser.loginProviders.includes("google");
+            if (isGoogleUser) {
+              console.log("is google user");
+              return true;
+            } else {
+              await log("Google_Sign_In", "User not signed in using google");
+              return false;
+            }
+          } else {
+            const user = await prisma.user.create({
+              data: {
+                email: profile.email,
+                name: profile.name,
+                loginProviders: ["google"],
+              },
+            });
+
+            await log(
+              "Google_Sign_In",
+              `New Google user created with id: ${user.id}`
+            );
+
+            console.log(user);
+
+            return true;
+          }
+        } catch (error) {
+          await log("Google_Sign_In", "User failed google sign in");
+
+          console.error("Google sign-in error:", error);
+          return false;
+        }
+      }
+
+      return true;
     },
   },
 };
