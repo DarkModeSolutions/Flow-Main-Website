@@ -76,6 +76,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
   useEffect(() => {
     async function fetchProduct(productId: string) {
       const prod = await getProductById(productId);
+      console.log("Product: ", prod);
 
       if (prod === null) {
         setProduct(null);
@@ -246,9 +247,7 @@ const ProductsClient = ({ user }: { user: SessionUser | undefined }) => {
                   currency: "INR",
                 })}
               </h2>
-              <span className="text-gray-500 text-sm line-through">
-                ₹600
-              </span>
+              <span className="text-gray-500 text-sm line-through">₹600</span>
             </div>
           </div>
         </div>

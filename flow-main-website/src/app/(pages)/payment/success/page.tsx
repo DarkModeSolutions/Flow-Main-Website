@@ -75,6 +75,8 @@ function PaymentSuccessContent() {
     <div className="flex flex-col items-center justify-center h-[80vh] text-center">
       <h1 className="text-3xl font-semibold text-green-600 mb-4">
         Payment Successful 🎉
+        <br />
+        Please check the below message
       </h1>
       <p className="text-gray-700">{`${
         error || success

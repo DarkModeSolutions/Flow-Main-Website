@@ -152,7 +152,7 @@ const AuthComponent = ({
                 id="email"
                 placeholder="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value.toLowerCase())}
               />
             </div>
             <div className="flex flex-col gap-4 mb-4">
