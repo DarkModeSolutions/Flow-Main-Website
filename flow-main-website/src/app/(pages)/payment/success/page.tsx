@@ -54,7 +54,7 @@ function PaymentSuccessContent() {
 
         if (userDetails && userDetails.buyingAsGuest) {
           await userSignOut();
-          signOut({ callbackUrl: window.location.href });
+          signOut({ callbackUrl: window.location.hostname });
         }
 
         clearCart();
