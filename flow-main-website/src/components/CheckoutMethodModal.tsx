@@ -103,7 +103,10 @@ const CheckoutMethodModal = () => {
                 placeholder="Email"
                 value={formData.email}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({
+                    ...formData,
+                    email: e.target.value.toLowerCase(),
+                  })
                 }
               />
             </div>

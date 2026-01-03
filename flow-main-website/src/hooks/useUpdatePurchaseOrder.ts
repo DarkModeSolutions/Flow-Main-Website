@@ -33,6 +33,8 @@ const useUpdatePurchaseOrder = () => {
 
         const data = await response.json();
 
+        console.log("Update Purchase Order Details: ", data);
+
         if (data?.orderFullfillmentStatus === "PENDING") {
           setError(data?.message);
           return data;
