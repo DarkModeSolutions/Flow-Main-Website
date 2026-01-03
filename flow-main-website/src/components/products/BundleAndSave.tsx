@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import Image from "next/image";
-import { useProductContext } from "@/contexts/ProductContext";
-import { bundleImages } from "@/utils/constants";
-import { BundleCartItem } from "@/types/types";
 import { Button } from "@/components/ui/button";
+import { useProductContext } from "@/contexts/ProductContext";
+import { BundleCartItem } from "@/types/types";
+import { bundleImages } from "@/utils/constants";
+import Image from "next/image";
+import React, { useMemo, useState } from "react";
 
 interface BundleOption {
   size: number;
@@ -71,7 +71,9 @@ const BundleAndSave: React.FC = () => {
     }
   }, [selectedBundle, availableFlavors]);
 
-  const currentOption = bundleOptions.find((opt) => opt.size === selectedBundle);
+  const currentOption = bundleOptions.find(
+    (opt) => opt.size === selectedBundle
+  );
 
   const handleFlavorChange = (index: number, flavorId: string) => {
     setSelectedFlavors((prev) => {
@@ -87,7 +89,9 @@ const BundleAndSave: React.FC = () => {
     setIsAdding(true);
 
     const bundleItem: BundleCartItem = {
-      bundleId: `bundle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      bundleId: `bundle-${Date.now()}-${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
       bundleSize: selectedBundle,
       pricePerPack: currentOption.pricePerPack,
       originalPricePerPack: currentOption.originalPrice,
@@ -108,7 +112,10 @@ const BundleAndSave: React.FC = () => {
 
   const getFlavorImage = (productId: string) => {
     const flavor = availableFlavors.find((f) => f.id === productId);
-    if (flavor?.imageUrl && bundleImages[flavor.imageUrl as keyof typeof bundleImages]) {
+    if (
+      flavor?.imageUrl &&
+      bundleImages[flavor.imageUrl as keyof typeof bundleImages]
+    ) {
       return bundleImages[flavor.imageUrl as keyof typeof bundleImages];
     }
     return null;
@@ -127,7 +134,9 @@ const BundleAndSave: React.FC = () => {
         <div className="flex-1 h-px bg-gray-700"></div>
       </div>
 
-      <p className="text-center text-gray-400 text-xs md:text-sm mb-4 md:mb-6">Buy more, get more</p>
+      <p className="text-center text-gray-400 text-xs md:text-sm mb-4 md:mb-6">
+        Buy more, get more
+      </p>
 
       {/* Bundle Options */}
       <div className="space-y-4">
@@ -187,10 +196,10 @@ const BundleAndSave: React.FC = () => {
                             className="object-contain"
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-b from-[#24BFCF] to-[#1a8a96] rounded-md"></div>
+                          <div className="w-full h-full bg-linear-to-b from-[#24BFCF] to-[#1a8a96] rounded-md"></div>
                         )
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-b from-[#24BFCF] to-[#1a8a96] rounded-md"></div>
+                        <div className="w-full h-full bg-linear-to-b from-[#24BFCF] to-[#1a8a96] rounded-md"></div>
                       )}
                     </div>
                   ))}
@@ -203,7 +212,9 @@ const BundleAndSave: React.FC = () => {
                 {/* Bundle info */}
                 <div className="flex-1 min-w-0 overflow-hidden">
                   <div className="flex items-center gap-1 md:gap-2 flex-wrap">
-                    <span className="font-semibold text-white text-sm md:text-base">{option.label}</span>
+                    <span className="font-semibold text-white text-sm md:text-base">
+                      {option.label}
+                    </span>
                     {option.size > 1 && (
                       <span className="text-[10px] md:text-xs bg-gray-800 text-gray-300 px-1.5 md:px-2 py-0.5 rounded">
                         -{option.discount}
@@ -229,14 +240,23 @@ const BundleAndSave: React.FC = () => {
               {/* Flavor selection - shown only when selected and size > 1 */}
               {isSelected && option.size >= 1 && (
                 <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-700">
-                  <p className="text-xs md:text-sm text-gray-400 mb-2 md:mb-3">Select your flavors:</p>
+                  <p className="text-xs md:text-sm text-gray-400 mb-2 md:mb-3">
+                    Select your flavors:
+                  </p>
                   <div className="space-y-2">
                     {Array.from({ length: option.size }).map((_, idx) => (
-                      <div key={idx} className="flex items-center gap-2 md:gap-3">
-                        <span className="text-xs md:text-sm text-gray-500 w-5 md:w-6">#{idx + 1}</span>
+                      <div
+                        key={idx}
+                        className="flex items-center gap-2 md:gap-3"
+                      >
+                        <span className="text-xs md:text-sm text-gray-500 w-5 md:w-6">
+                          #{idx + 1}
+                        </span>
                         <select
                           value={selectedFlavors[idx] || ""}
-                          onChange={(e) => handleFlavorChange(idx, e.target.value)}
+                          onChange={(e) =>
+                            handleFlavorChange(idx, e.target.value)
+                          }
                           className="flex-1 max-w-[200px] md:max-w-none bg-gray-800 border border-gray-600 text-white text-xs md:text-base rounded-lg px-2 md:px-3 py-1.5 md:py-2 focus:outline-none focus:ring-2 focus:ring-[#BFFF00] focus:border-transparent truncate"
                         >
                           <option value="" disabled>
