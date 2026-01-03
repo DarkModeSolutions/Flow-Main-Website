@@ -46,7 +46,11 @@ function PaymentSuccessContent() {
           console.log("Order completed successfully.");
         }
 
+        console.log("Order Completed with or without failure");
+
         const userDetails = await getSessionUserClient();
+
+        console.log("User Signed out");
 
         if (userDetails && userDetails.buyingAsGuest) {
           await userSignOut();
