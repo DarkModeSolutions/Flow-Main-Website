@@ -12,10 +12,11 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
+import { MdOutlineClear } from "react-icons/md";
 
 type NavigationItem = {
   label: string;
@@ -28,24 +29,34 @@ const PageHeader = () => {
 
   const { cart, products } = useProductContext();
   const { user } = useUserContext();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchResult, setSearchResult] = useState<
     AllProductDetails[] | undefined
   >(undefined);
+  const [searchInputValue, setSearchInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [displayedText, setDisplayedText] = useState("");
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showSignOutToast, setShowSignOutToast] = useState(false);
   const [showSignInHint, setShowSignInHint] = useState(false);
 
-  const findHandler = (searchString: string) => {
-    // console.log("Search string: ", searchString);
-    let results: AllProductDetails[] | undefined = undefined;
-    if (searchString.length <= 2) {
-      results = [];
-    } else {
+  const clearInputHandler = () => {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+      setSearchInputValue("");
+      setSearchResult([]);
+    }
+  };
+
+  const findHandler = useCallback(
+    (searchString: string) => {
+      if (searchString.length <= 2) {
+        setSearchResult([]);
+        return;
+      }
       const lowerCaseSearchString = searchString.toLowerCase();
       const searchResults = products?.filter(
         (product) =>
@@ -54,13 +65,17 @@ const PageHeader = () => {
             tag.toLowerCase().includes(lowerCaseSearchString)
           )
       );
-      // console.log("Search Results: ", searchResults);
-      results = searchResults;
-    }
-    setSearchResult(results);
-  };
+      setSearchResult(searchResults);
+    },
+    [products]
+  );
 
   const { userSignOut } = useUserSignOut();
+
+  const cartItemCount = useMemo(
+    () => cart?.reduce((total, item) => total + item.quantity, 0) ?? 0,
+    [cart]
+  );
 
   const handleSignOut = useCallback(async () => {
     await userSignOut();
@@ -107,7 +122,6 @@ const PageHeader = () => {
           setDisplayedText(fullText.slice(0, currentIndex));
           currentIndex++;
 
-
           if (currentIndex > fullText.length) {
             isTyping = false;
             setTimeout(() => {
@@ -130,16 +144,15 @@ const PageHeader = () => {
 
   const _isAuthenticated = Boolean(user && user.email && !user.buyingAsGuest);
 
-  const navigationItems = useMemo<NavigationItem[]>(
-    () => {
-      const items: NavigationItem[] = [
-        { label: "Home", href: "/" },
-        { label: "Products", href: "/shop" },
-        { label: "Cart", href: "/cart" },
-        { label: "About Us", href: "/about" },
-      ];
+  const navigationItems = useMemo<NavigationItem[]>(() => {
+    const items: NavigationItem[] = [
+      { label: "Home", href: "/" },
+      { label: "Products", href: "/shop" },
+      { label: "Cart", href: "/cart" },
+      { label: "About Us", href: "/about" },
+    ];
 
-      // Profile and Sign Out are now in the profile dropdown, not in main nav
+    // Profile and Sign Out are now in the profile dropdown, not in main nav
 
     return items;
   }, []);
@@ -162,7 +175,11 @@ const PageHeader = () => {
       <div className="w-full relative flex flex-wrap items-center gap-1 md:gap-4 px-2 md:px-10 py-0 md:py-2">
         <div className="flex items-center shrink-0 order-1">
           <div onClick={() => router.push("/")} className="cursor-pointer">
-            <Image src={logo} alt="Flow Logo" className="w-[35px] md:w-[50px] h-auto" />
+            <Image
+              src={logo}
+              alt="Flow Logo"
+              className="w-[35px] md:w-[50px] h-auto"
+            />
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm uppercase tracking-[0.2em] text-white absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -203,19 +220,32 @@ const PageHeader = () => {
             );
           })}
         </nav>
-              <div className="flex items-center gap-4 md:gap-6 ml-auto text-2xl md:flex-none justify-end order-2">
+        <div className="flex items-center gap-4 md:gap-6 ml-auto text-2xl md:flex-none justify-end order-2">
           <div className="relative flex items-center gap-2 group max-md:hidden">
             <CiSearch className="text-white text-lg shrink-0" />
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <Input
+                ref={inputRef}
                 placeholder={displayedText}
                 type="text"
-                className="border-0 bg-transparent text-white placeholder:text-white/50 placeholder:text-xs focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 transition-all ease-in-out w-32 md:w-40"
+                className="border-0 bg-transparent text-white placeholder:text-white/50 placeholder:text-xs focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 transition-all ease-in-out w-32 md:w-40 pr-7"
                 onChange={(e) => findHandler(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
+                onInput={() => {
+                  const value = inputRef.current?.value ?? "";
+                  setSearchInputValue(value);
+                }}
               />
               <div className="h-px bg-white/30 group-hover:bg-white group-focus-within:bg-white transition-all ease-in-out"></div>
+              {searchInputValue.length > 0 ? (
+                <div
+                  onClick={clearInputHandler}
+                  className="absolute right-0 top-1 cursor-pointer p-1 hover:bg-gray-500 transition-all ease-in-out duration-300 rounded-full"
+                >
+                  <MdOutlineClear className="size-5" />
+                </div>
+              ) : null}
             </div>
             {searchResult && searchResult?.length > 0 && (
               <div className="w-full min-h-0 absolute top-[110%] -left-2 rounded-md shadow-md max-h-60 overflow-y-auto bg-black/15 backdrop-blur-md p-4 z-50">
@@ -236,9 +266,9 @@ const PageHeader = () => {
               <Link href={"/cart"}>
                 <IoCartOutline className="text-white" />
               </Link>
-              {cart && cart.length > 0 && (
+              {cartItemCount > 0 && (
                 <div className="absolute rounded-full bg-red-300 w-[18px] h-[18px] top-[-5px] -right-2.5 flex items-center justify-center text-black text-xs">
-                  {cart.reduce((total, item) => total + item.quantity, 0)}
+                  {cartItemCount}
                 </div>
               )}
             </div>
@@ -247,7 +277,9 @@ const PageHeader = () => {
               <div className="relative">
                 <button
                   type="button"
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  onClick={() =>
+                    setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                  }
                   className="focus:outline-none"
                 >
                   <IoPersonSharp className="text-[#24bfcf] cursor-pointer" />
@@ -284,7 +316,10 @@ const PageHeader = () => {
               </div>
             ) : (
               <div className="relative">
-                <Link href={"/auth/login"} onClick={() => setShowSignInHint(false)}>
+                <Link
+                  href={"/auth/login"}
+                  onClick={() => setShowSignInHint(false)}
+                >
                   <IoPersonSharp className="text-white" />
                 </Link>
                 {/* Sign-in hint indicator */}
@@ -292,7 +327,7 @@ const PageHeader = () => {
                   <div className="absolute right-0 top-full mt-2 z-50 animate-fade-in-bounce">
                     {/* Arrow pointing up */}
                     <div className="flex flex-col items-end">
-                      <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] border-b-[#24bfcf] mr-2 animate-bounce" />
+                      <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-8 border-b-[#24bfcf] mr-2 animate-bounce" />
                       <div className="bg-[#24bfcf]/90 backdrop-blur-sm text-black text-[10px] md:text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap font-medium">
                         Click here to sign in ✨
                       </div>
@@ -348,7 +383,7 @@ const PageHeader = () => {
         {/* Mobile search bar - centered below logo */}
         <div className="w-full md:hidden order-3 flex justify-center mt-0 px-1">
           <div className="relative flex items-center gap-0.5 group w-full max-w-xs mx-auto">
-            <CiSearch className="text-white text-xs flex-shrink-0" />
+            <CiSearch className="text-white text-xs shrink-0" />
             <div className="flex flex-col flex-1">
               <Input
                 placeholder={displayedText}
@@ -358,7 +393,7 @@ const PageHeader = () => {
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
               />
-              <div className="h-[1px] bg-white/30 group-hover:bg-white group-focus-within:bg-white transition-all ease-in-out"></div>
+              <div className="h-px bg-white/30 group-hover:bg-white group-focus-within:bg-white transition-all ease-in-out"></div>
             </div>
             {searchResult && searchResult?.length > 0 && (
               <div className="w-full min-h-0 absolute top-[110%] left-0 rounded-md shadow-md max-h-60 overflow-y-auto bg-black/15 backdrop-blur-md p-4 z-50">
@@ -378,7 +413,7 @@ const PageHeader = () => {
 
       {/* Sign Out Success Toast */}
       {showSignOutToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] animate-slide-up-fade-in">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-100 animate-slide-up-fade-in">
           <div className="bg-green-500/90 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2">
             <svg
               className="w-5 h-5"
