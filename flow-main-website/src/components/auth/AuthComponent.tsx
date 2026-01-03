@@ -10,6 +10,7 @@ import { getSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const AuthComponent = ({
   isAdmin = false,
@@ -24,6 +25,7 @@ const AuthComponent = ({
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [address, setAddress] = useState({
     addressLine1: "",
@@ -123,6 +125,10 @@ const AuthComponent = ({
     }
   };
 
+  const showPasswordHandler = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent py-36 pt-6">
       <div className="rounded-2xl shadow-lg bg-[#121212] max-w-[80vw] p-12">
@@ -155,16 +161,24 @@ const AuthComponent = ({
                 onChange={(e) => setEmail(e.target.value.toLowerCase())}
               />
             </div>
-            <div className="flex flex-col gap-4 mb-4">
+            <div className="flex flex-col gap-4 mb-4 relative">
               <Label htmlFor="password">Password</Label>
               <Input
                 required
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {password && password.length > 0 && (
+                <div
+                  className="absolute right-3 top-9 cursor-pointer hover:bg-gray-500 transition-all ease-in-out duration-300 rounded-full p-1 flex justify-center items-center"
+                  onClick={showPasswordHandler}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </div>
+              )}
             </div>
             {isSignUp && (
               <div className="flex flex-col gap-4 mb-4">

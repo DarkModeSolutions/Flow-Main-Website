@@ -32,6 +32,7 @@ import {
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
   // console.log("Entering Profile client");
@@ -59,6 +60,10 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
     reEnteredNewUserPassword: "",
   });
   const [passwordMatching, setPasswordMatching] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    newPassword: false,
+    reEnteredPassword: false,
+  });
   const [updatedUserAddressDetails, setUpdatedUserAddressDetails] = useState<
     AddressAllDetails[] | null
   >(null);
@@ -193,6 +198,15 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
         alert("Password not Updated!");
       }
     }
+  };
+
+  const showPasswordHandler = (
+    password: "newPassword" | "reEnteredPassword"
+  ) => {
+    setShowPassword((prev) => ({
+      ...prev,
+      [password]: !prev[password],
+    }));
   };
 
   const addressOnChangeHandler = (
@@ -399,60 +413,98 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
                 </DialogTrigger>
                 <DialogContent className="bg-black">
                   <DialogTitle>Type your new password here:</DialogTitle>
-                  <div className="flex flex-col gap-2">
-                    <Label
-                      htmlFor="newPassword"
-                      className="text-lg font-medium"
-                    >
-                      New Password
-                    </Label>
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      name="newPassword"
-                      className="mb-3"
-                      value={updateUserPasswordDetails.newUserPassword}
-                      onChange={(e) =>
-                        setUpdateUserPasswordDetails({
-                          ...updateUserPasswordDetails,
-                          newUserPassword: e.target.value,
-                        })
-                      }
-                    />
-                    <Label
-                      htmlFor="newPassword"
-                      className="text-lg font-medium flex justify-between items-center"
-                    >
-                      <span>Re-enter your New Password</span>
-                      {!passwordMatching && (
-                        <span className="text-red-500 text-sm">
-                          Incorrect password.
-                        </span>
-                      )}
-                    </Label>
-                    <Input
-                      placeholder="Re-enter"
-                      type="password"
-                      name="newPassword"
-                      className={`mb-3 ${
-                        !passwordMatching &&
-                        "border-red-500 focus-visible:ring-red-500"
-                      }`}
-                      value={updateUserPasswordDetails.reEnteredNewUserPassword}
-                      onChange={(e) => {
-                        const newValue = e.target.value;
+                  <div className="flex flex-col gap-6 mt-4">
+                    <div className="flex flex-col gap-4 relative">
+                      <Label
+                        htmlFor="newPassword"
+                        className="text-lg font-medium"
+                      >
+                        New Password
+                      </Label>
+                      <Input
+                        placeholder="Password"
+                        type={showPassword.newPassword ? "text" : "password"}
+                        name="newPassword"
+                        value={updateUserPasswordDetails.newUserPassword}
+                        onChange={(e) =>
+                          setUpdateUserPasswordDetails({
+                            ...updateUserPasswordDetails,
+                            newUserPassword: e.target.value,
+                          })
+                        }
+                      />
+                      {updateUserPasswordDetails.newUserPassword &&
+                        updateUserPasswordDetails.newUserPassword.length >
+                          0 && (
+                          <div
+                            className="absolute right-3 bottom-1.5 cursor-pointer hover:bg-gray-500 transition-all ease-in-out duration-300 rounded-full p-1 flex justify-center items-center"
+                            onClick={() => showPasswordHandler("newPassword")}
+                          >
+                            {showPassword.newPassword ? (
+                              <FaEyeSlash />
+                            ) : (
+                              <FaEye />
+                            )}
+                          </div>
+                        )}
+                    </div>
+                    <div className="flex flex-col gap-4 relative">
+                      <Label
+                        htmlFor="newPassword"
+                        className="text-lg font-medium flex justify-between items-center"
+                      >
+                        <span>Re-enter your New Password</span>
+                        {!passwordMatching && (
+                          <span className="text-red-500 text-sm">
+                            Incorrect password.
+                          </span>
+                        )}
+                      </Label>
+                      <Input
+                        placeholder="Re-enter"
+                        type={
+                          showPassword.reEnteredPassword ? "text" : "password"
+                        }
+                        name="newPassword"
+                        className={`mb-3 ${
+                          !passwordMatching &&
+                          "border-red-500 focus-visible:ring-red-500"
+                        }`}
+                        value={
+                          updateUserPasswordDetails.reEnteredNewUserPassword
+                        }
+                        onChange={(e) => {
+                          const newValue = e.target.value;
 
-                        setUpdateUserPasswordDetails({
-                          ...updateUserPasswordDetails,
-                          reEnteredNewUserPassword: newValue,
-                        });
+                          setUpdateUserPasswordDetails({
+                            ...updateUserPasswordDetails,
+                            reEnteredNewUserPassword: newValue,
+                          });
 
-                        // Compare with the NEW value
-                        setPasswordMatching(
-                          newValue === updateUserPasswordDetails.newUserPassword
-                        );
-                      }}
-                    />
+                          // Compare with the NEW value
+                          setPasswordMatching(
+                            newValue ===
+                              updateUserPasswordDetails.newUserPassword
+                          );
+                        }}
+                      />
+                      {updateUserPasswordDetails.reEnteredNewUserPassword &&
+                        updateUserPasswordDetails.reEnteredNewUserPassword
+                          .length > 0 && (
+                          <div
+                            className="absolute right-3 bottom-4 cursor-pointer hover:bg-gray-500 transition-all ease-in-out duration-300 rounded-full p-1 flex justify-center items-center"
+                            onClick={() =>
+                              showPasswordHandler("reEnteredPassword")
+                            }
+                          >
+                            {showPassword.reEnteredPassword ? (
+                              <FaEyeSlash />
+                            ) : (
+                              <FaEye />
+                            )}
+                          </div>
+                        )}
+                    </div>
                     <div className="flex justify-end">
                       <FlowButton
                         onClickHandler={passwordUpdateHandler}
