@@ -297,13 +297,13 @@ const AuthComponent = ({
                 </div>
               </div>
             )}
-            <div>
+            <div className="flex justify-between items-center">
               {/* <Button>Sign In</Button> */}
               <Button
                 size="sm"
                 disabled={loading || registerLoading}
                 type="submit"
-                className="bg-[#24bfcf] rounded-md p-4 text-black hover:bg-[#24bfcf] hover:opacity-90 transform transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-[0_8px_30px_rgba(36,191,207,0.18)] cursor-pointer disabled:cursor-not-allowed w-[30%]"
+                className="bg-[#24bfcf] rounded-md p-4 px-6 text-black hover:bg-[#24bfcf] hover:opacity-90 transform transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-[0_8px_30px_rgba(36,191,207,0.18)] cursor-pointer disabled:cursor-not-allowed w-[30%]"
               >
                 {loading || registerLoading ? (
                   <>
@@ -314,7 +314,10 @@ const AuthComponent = ({
                   "Sign In"
                 )}
               </Button>
-              {error || (registerError && <div>{error || registerError}</div>)}
+              {error ||
+                (registerError && (
+                  <div className="text-red-500">{error || registerError}</div>
+                ))}
             </div>
           </form>
           <div className="my-4">
