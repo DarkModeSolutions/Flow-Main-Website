@@ -252,12 +252,12 @@ export const authOptions: AuthOptions = {
     async signIn({ user, account, profile }) {
       console.log("In Next Auth SignIn method: ", user, account, profile);
 
-      if (!profile || !profile.email) {
-        return false;
-      }
-
       if (account?.provider === "google") {
         await log("Google_Sign_In", "User Attempting Google Sign In");
+
+        if (!profile || !profile.email) {
+          return false;
+        }
 
         try {
           const existingUser = await prisma.user.findUnique({
