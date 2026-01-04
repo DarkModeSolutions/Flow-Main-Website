@@ -57,7 +57,9 @@ const useCreateNewAddress = () => {
 
         const data = await response.json();
 
-        toast.success("New User Address Created Successfuly!");
+        toast.success("New User Address Created Successfuly!", {
+          autoClose: 1500,
+        });
 
         return { data: data.address as AddressAllDetails, success: true };
       } catch (error) {

@@ -72,7 +72,7 @@ const CheckoutMethodModal = () => {
         return;
       }
 
-      toast.success("Guest Login Successful!");
+      toast.success("Guest Login Successful!", { autoClose: 1500 });
 
       router.refresh();
     } catch (error) {

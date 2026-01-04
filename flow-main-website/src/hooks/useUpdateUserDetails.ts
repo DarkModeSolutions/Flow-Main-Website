@@ -47,7 +47,9 @@ const useUpdateUserDetails = () => {
           );
         }
 
-        toast.success("User Details Updated Successfully!");
+        toast.success("User Details Updated Successfully!", {
+          autoClose: 1500,
+        });
         return await response.json();
       } catch (error) {
         setError(error);

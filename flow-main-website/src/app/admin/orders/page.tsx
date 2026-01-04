@@ -127,7 +127,7 @@ const OrdersPage = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="text-xs"
+                                  className="text-xs cursor-pointer hover:bg-white hover:text-black transition-all ease-in-out duration-300"
                                 >
                                   View {order.orderItems.length} item(s)
                                 </Button>

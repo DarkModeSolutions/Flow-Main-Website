@@ -43,7 +43,7 @@ const ProductComponent = ({ product }: { product: AllProductDetails }) => {
     );
 
     if (updatedProduct !== null) {
-      toast.success("Product Updated Successfuly!");
+      toast.success("Product Updated Successfuly!", { autoClose: 1500 });
       router.push("/admin/");
     }
 

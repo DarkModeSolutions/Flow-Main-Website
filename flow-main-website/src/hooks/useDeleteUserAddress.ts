@@ -32,7 +32,9 @@ const useDeleteUserAddress = () => {
 
         const data = await response.json();
 
-        toast.success("Deleted User Address Successfully!");
+        toast.success("Deleted User Address Successfully!", {
+          autoClose: 1500,
+        });
 
         return { data, success: true };
       } catch (error) {

@@ -74,7 +74,7 @@ const AuthComponent = ({
           const session = await getSession();
           if (session?.user?.isAdmin) {
             router.push("/admin");
-            toast.success("User Successfully Logged In!");
+            toast.success("User Successfully Logged In!", { autoClose: 1500 });
           } else {
             await signOut({ redirect: false });
             setError("Access denied. Admin privileges required.");
@@ -83,7 +83,7 @@ const AuthComponent = ({
           }
         } else {
           router.push(redirect);
-          toast.success("User Successfully Logged In!");
+          toast.success("User Successfully Logged In!", { autoClose: 1500 });
         }
         router.refresh();
       }
@@ -98,7 +98,7 @@ const AuthComponent = ({
       console.log("Redirect in google: ", redirect);
 
       await signIn("google", { callbackUrl: redirect });
-      toast.success("User Successfully Logged In!");
+      toast.success("User Successfully Logged In!", { autoClose: 1500 });
     } catch (error) {
       setError(`Login failed. Please try again. ${error}`);
       setLoading(false);
