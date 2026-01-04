@@ -5,6 +5,7 @@ import getRequestData from "@/utils/getRequestData";
 import handleHookCatch from "@/utils/handleHookCatch";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 const usePlaceOrderForAdmin = () => {
   const [loading, setLoading] = useState(false);
@@ -44,9 +45,12 @@ const usePlaceOrderForAdmin = () => {
           alert("Order placement failed: " + JSON.stringify(data.errors));
         }
 
+        toast.success("Order Placed Successfully!");
+
         return data;
       } catch (error) {
         handleHookCatch(error, setError, "Failed to place order");
+        toast.error("Failed to place order");
         return null;
       } finally {
         setLoading(false);

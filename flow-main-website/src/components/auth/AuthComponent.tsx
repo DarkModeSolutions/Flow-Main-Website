@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const AuthComponent = ({
   isAdmin = false,
@@ -73,6 +74,7 @@ const AuthComponent = ({
           const session = await getSession();
           if (session?.user?.isAdmin) {
             router.push("/admin");
+            toast.success("User Successfully Logged In!");
           } else {
             await signOut({ redirect: false });
             setError("Access denied. Admin privileges required.");
@@ -81,6 +83,7 @@ const AuthComponent = ({
           }
         } else {
           router.push(redirect);
+          toast.success("User Successfully Logged In!");
         }
         router.refresh();
       }
@@ -95,6 +98,7 @@ const AuthComponent = ({
       console.log("Redirect in google: ", redirect);
 
       await signIn("google", { callbackUrl: redirect });
+      toast.success("User Successfully Logged In!");
     } catch (error) {
       setError(`Login failed. Please try again. ${error}`);
       setLoading(false);
@@ -303,38 +307,39 @@ const AuthComponent = ({
                 size="sm"
                 disabled={loading || registerLoading}
                 type="submit"
-                className="bg-[#24bfcf] rounded-md p-4 px-6 text-black hover:bg-[#24bfcf] hover:opacity-90 transform transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-[0_8px_30px_rgba(36,191,207,0.18)] cursor-pointer disabled:cursor-not-allowed w-[30%]"
+                className="bg-[#24bfcf] rounded-md p-4 px-6 text-black hover:bg-[#24bfcf] hover:opacity-90 transform transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-[0_8px_30px_rgba(36,191,207,0.18)] cursor-pointer disabled:cursor-not-allowed w-[40%]"
               >
                 {loading || registerLoading ? (
-                  <>
-                    <Loader2Icon className="animate-spin" />
-                    Please wait
-                  </>
+                  <div className="flex items-center justify-between gap-3">
+                    <Loader2Icon color="black" className="animate-spin" />
+                    <span className="text-black">Please wait</span>
+                  </div>
+                ) : isSignUp ? (
+                  "Sign Up"
                 ) : (
-                  "Sign In"
+                  "Sign  In"
                 )}
               </Button>
-              {error ||
-                (registerError && (
-                  <div className="text-red-500">{error || registerError}</div>
-                ))}
+              {error || (registerError && toast.error(error || registerError))}
             </div>
           </form>
-          <div className="my-4">
-            <div className="flex justify-between items-center gap-3.5 mb-3 w-full">
-              <Separator className="flex-1" />
-              <span className="">OR</span>
-              <Separator className="flex-1" />
-            </div>
-            <div className="flex justify-center items-center">
-              <div
-                onClick={handleGoogleAuth}
-                className="w-[30%] flex justify-center items-center border-2 border-white hover:border-[#24bfcf] group transition-all ease-in-out duration-300 cursor-pointer p-3 rounded-xl"
-              >
-                <FaGoogle className="fill-white group-hover:fill-[#24bfcf]! transition-all ease-in-out duration-300 text-2xl" />
+          {!isAdmin && (
+            <div className="my-4">
+              <div className="flex justify-between items-center gap-3.5 mb-3 w-full">
+                <Separator className="flex-1" />
+                <span className="">OR</span>
+                <Separator className="flex-1" />
+              </div>
+              <div className="flex justify-center items-center">
+                <div
+                  onClick={handleGoogleAuth}
+                  className="w-[30%] flex justify-center items-center border-2 border-white hover:border-[#24bfcf] group transition-all ease-in-out duration-300 cursor-pointer p-3 rounded-xl"
+                >
+                  <FaGoogle className="fill-white group-hover:fill-[#24bfcf]! transition-all ease-in-out duration-300 text-2xl" />
+                </div>
               </div>
             </div>
-          </div>
+          )}
           {!isAdmin && (
             <div>
               <Separator className="my-4" />

@@ -2,6 +2,7 @@ import { RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 const useDeleteUserAddress = () => {
   const [loading, setLoading] = useState(false);
@@ -31,10 +32,13 @@ const useDeleteUserAddress = () => {
 
         const data = await response.json();
 
+        toast.success("Deleted User Address Successfully!");
+
         return { data, success: true };
       } catch (error) {
         setError(error);
         console.error("Error deleting user address details:", error);
+        toast.error("Error deleting user address details");
       } finally {
         setLoading(false);
       }

@@ -2,6 +2,7 @@ import { RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 const useUpdateUserDetails = () => {
   const [loading, setLoading] = useState(false);
@@ -46,10 +47,12 @@ const useUpdateUserDetails = () => {
           );
         }
 
+        toast.success("User Details Updated Successfully!");
         return await response.json();
       } catch (error) {
         setError(error);
         console.error("Error updating user details:", error);
+        toast.error("Error updating user details");
       } finally {
         setLoading(false);
       }

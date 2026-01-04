@@ -1,6 +1,21 @@
-import React from "react";
+import Link from "next/link";
+import { toast } from "react-toastify";
 
 const ErrorComponent = ({ error }: { error: unknown }) => {
+  toast.warning(
+    <>
+      <p>
+        Please go through the error <br /> If you have any queries please{" "}
+      </p>
+      <Link
+        className="hover:underline"
+        href={"mailto:support@flowhydration.in"}
+      >
+        write to us here
+      </Link>
+    </>
+  );
+
   return (
     <div className="w-full flex items-center justify-center min-h-screen">
       <div className="text-center">
