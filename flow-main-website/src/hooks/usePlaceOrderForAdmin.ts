@@ -45,7 +45,7 @@ const usePlaceOrderForAdmin = () => {
           alert("Order placement failed: " + JSON.stringify(data.errors));
         }
 
-        toast.success("Order Placed Successfully!");
+        toast.success("Order Placed Successfully!", { autoClose: 1500 });
 
         return data;
       } catch (error) {

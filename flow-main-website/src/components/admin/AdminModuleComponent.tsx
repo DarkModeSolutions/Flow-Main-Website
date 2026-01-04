@@ -20,7 +20,7 @@ const AdminModuleComponent = ({
       }`}
     >
       {!isDisabled && (
-        <div className="absolute top-0 left-0 h-full w-0 group-hover:w-full flow-bg-color transition-all duration-300 -z-10"></div>
+        <div className="absolute top-0 left-0 h-full w-0 group-hover:w-full flow-bg-color transition-all duration-300 -z-10 rounded-lg"></div>
       )}
       <h2
         className={`relative z-10 ${

@@ -28,7 +28,7 @@ const useGlobalCancelOrder = () => {
           return null;
         }
 
-        toast.success("Order Cancelled Successfuly!");
+        toast.success("Order Cancelled Successfuly!", { autoClose: 1500 });
 
         const data = await response.json();
         return data;

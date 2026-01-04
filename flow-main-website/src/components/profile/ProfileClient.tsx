@@ -195,7 +195,7 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
       if (data.message === "Password Updated Successfully!") {
         await userSignOut();
         signOut({ callbackUrl: "/auth/login" });
-        toast.success("Password Updated Successfully!");
+        toast.success("Password Updated Successfully!", { autoClose: 1500 });
       } else {
         toast.error("Password not Updated!");
       }

@@ -413,7 +413,8 @@ const PageHeader = () => {
       </div>
 
       {/* Sign Out Success Toast */}
-      {showSignOutToast && toast.success("User Signed Out Successfully!")}
+      {showSignOutToast &&
+        toast.success("User Signed Out Successfully!", { autoClose: 1500 })}
 
       {/* Custom animation styles */}
       <style jsx>{`
