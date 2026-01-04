@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 
 // const geistSans = Geist({
@@ -34,6 +35,7 @@ export default function RootLayout({
         className={`${manRope.variable} ${manRope.className} manrope antialiased bg-[#000000]`}
       >
         {children}
+        <ToastContainer position="top-center" />
       </body>
     </html>
   );

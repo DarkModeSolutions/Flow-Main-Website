@@ -12,6 +12,7 @@ import { Loader2Icon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const ProductComponent = ({ product }: { product: AllProductDetails }) => {
   const router = useRouter();
@@ -42,8 +43,11 @@ const ProductComponent = ({ product }: { product: AllProductDetails }) => {
     );
 
     if (updatedProduct !== null) {
+      toast.success("Product Updated Successfuly!");
       router.push("/admin/");
     }
+
+    toast.warning("Product not updated!");
   };
 
   return (

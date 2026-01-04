@@ -15,20 +15,24 @@ type RoundedVideoProps = {
   sourceType?: string;
 };
 
-const RoundedVideo = forwardRef<HTMLDivElement, RoundedVideoProps>(({
-  src,
-  portraitSrc,
-  fallback,
-  containerClassName,
-  videoClassName,
-  disableDefaultSizing = false,
-  sourceType = "video/mp4",
-}, ref) => {
-  const baseContainerClass =
-    "rounded-[28px] overflow-hidden bg-black/80 backdrop-blur-sm";
-  const defaultSizingClass =
-    "w-full max-w-5xl mx-auto shadow-lg h-[240px] md:h-[380px] lg:h-[440px]";
-  const baseVideoClass = "w-full h-full object-cover";
+const RoundedVideo = forwardRef<HTMLDivElement, RoundedVideoProps>(
+  (
+    {
+      src,
+      portraitSrc,
+      fallback,
+      containerClassName,
+      videoClassName,
+      disableDefaultSizing = false,
+      sourceType = "video/mp4",
+    },
+    ref
+  ) => {
+    const baseContainerClass =
+      "rounded-[28px] overflow-hidden bg-black/80 backdrop-blur-sm";
+    const defaultSizingClass =
+      "w-full max-w-5xl mx-auto shadow-lg h-[240px] md:h-[380px] lg:h-[440px]";
+    const baseVideoClass = "w-full h-full object-cover";
 
     return (
       <div
@@ -40,23 +44,25 @@ const RoundedVideo = forwardRef<HTMLDivElement, RoundedVideoProps>(({
         ref={ref}
       >
         {/* Portrait video for mobile */}
-      {portraitSrc && (
+        {portraitSrc && (
+          <video
+            className={cn(baseVideoClass, "md:hidden", videoClassName)}
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src={portraitSrc} type={sourceType} />
+            {fallback ?? <p>Your browser does not support the video tag.</p>}
+          </video>
+        )}
+        {/* Landscape video for desktop (or only video if no portrait) */}
         <video
-          className={cn(baseVideoClass, "md:hidden", videoClassName)}
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src={portraitSrc} type={sourceType} />
-          {fallback ?? (
-            <p>Your browser does not support the video tag.</p>
+          className={cn(
+            baseVideoClass,
+            portraitSrc ? "hidden md:block" : "",
+            videoClassName
           )}
-        </video>
-      )}
-      {/* Landscape video for desktop (or only video if no portrait) */}
-      <video
-          className={cn(baseVideoClass, portraitSrc ? "hidden md:block" : "", videoClassName)}
           autoPlay
           loop
           muted
@@ -161,7 +167,10 @@ const MainPage = () => {
               containerClassName="w-full shadow-lg max-w-sm h-[50vh] rounded-[28px]"
               videoClassName="object-cover object-center h-full"
               fallback={
-                <p>Your browser does not support MOV videos. Please convert to MP4.</p>
+                <p>
+                  Your browser does not support MOV videos. Please convert to
+                  MP4.
+                </p>
               }
             />
           </div>

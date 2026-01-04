@@ -17,6 +17,7 @@ import { CiSearch } from "react-icons/ci";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoCartOutline, IoPersonSharp } from "react-icons/io5";
 import { MdOutlineClear } from "react-icons/md";
+import { toast } from "react-toastify";
 
 type NavigationItem = {
   label: string;
@@ -412,26 +413,7 @@ const PageHeader = () => {
       </div>
 
       {/* Sign Out Success Toast */}
-      {showSignOutToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-100 animate-slide-up-fade-in">
-          <div className="bg-green-500/90 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-2">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            <span className="font-medium text-sm">Signed Out Successfully</span>
-          </div>
-        </div>
-      )}
+      {showSignOutToast && toast.success("User Signed Out Successfully!")}
 
       {/* Custom animation styles */}
       <style jsx>{`

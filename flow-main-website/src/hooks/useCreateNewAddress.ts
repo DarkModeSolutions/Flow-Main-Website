@@ -2,6 +2,7 @@ import { AddressAllDetails, RequestType } from "@/types/types";
 import getRequestData from "@/utils/getRequestData";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 const useCreateNewAddress = () => {
   const [loading, setLoading] = useState(false);
@@ -56,10 +57,13 @@ const useCreateNewAddress = () => {
 
         const data = await response.json();
 
+        toast.success("New User Address Created Successfuly!");
+
         return { data: data.address as AddressAllDetails, success: true };
       } catch (error) {
         setError(error);
         console.error("Error creating user address details:", error);
+        toast.error("Error creating user address details");
       } finally {
         setLoading(false);
       }

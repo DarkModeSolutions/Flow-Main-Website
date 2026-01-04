@@ -33,6 +33,7 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
   // console.log("Entering Profile client");
@@ -194,8 +195,9 @@ const ProfileClient = ({ user }: { user: SessionUser | undefined }) => {
       if (data.message === "Password Updated Successfully!") {
         await userSignOut();
         signOut({ callbackUrl: "/auth/login" });
+        toast.success("Password Updated Successfully!");
       } else {
-        alert("Password not Updated!");
+        toast.error("Password not Updated!");
       }
     }
   };

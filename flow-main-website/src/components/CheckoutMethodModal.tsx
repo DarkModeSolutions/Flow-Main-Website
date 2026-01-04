@@ -11,6 +11,7 @@ import { Loader2Icon } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const CheckoutMethodModal = () => {
   const {
@@ -70,6 +71,8 @@ const CheckoutMethodModal = () => {
         setLoading(false);
         return;
       }
+
+      toast.success("Guest Login Successful!");
 
       router.refresh();
     } catch (error) {
@@ -262,7 +265,7 @@ const CheckoutMethodModal = () => {
                   "Continue as Guest"
                 )}
               </Button>
-              {error || (registerError && <div>{error || registerError}</div>)}
+              {error || (registerError && toast.error(error || registerError))}
             </div>
           </form>
         </div>

@@ -33,10 +33,6 @@ const useUpdateProductForAdmin = () => {
 
       return data.product as AllProductDetails | null;
     } catch (error) {
-      //   const errorMessage =
-      //     error instanceof Error ? error.message : "Failed to update product";
-      //   setError(errorMessage);
-      //   console.error("Error updating product:", error);
       handleHookCatch(error, setError, "Failed to update product");
       return null;
     } finally {

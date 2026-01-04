@@ -3,6 +3,7 @@ import getRequestData from "@/utils/getRequestData";
 import handleHookCatch from "@/utils/handleHookCatch";
 import handleResponseNotOk from "@/utils/handleResponseNotOk";
 import { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 const useGlobalCancelOrder = () => {
   const [loading, setLoading] = useState(false);
@@ -27,10 +28,13 @@ const useGlobalCancelOrder = () => {
           return null;
         }
 
+        toast.success("Order Cancelled Successfuly!");
+
         const data = await response.json();
         return data;
       } catch (error) {
         handleHookCatch(error, setError, "Failed to cancel order");
+        toast.error("Failed to cancel order");
         return null;
       } finally {
         setLoading(false);
