@@ -20,7 +20,7 @@ interface BundleOption {
 const bundleOptions: BundleOption[] = [
   {
     size: 1,
-    label: "Pack of 1",
+    label: "Pack of 10",
     pricePerPack: 550,
     originalPrice: 600,
     discount: "8% Off",
@@ -29,7 +29,7 @@ const bundleOptions: BundleOption[] = [
   },
   {
     size: 2,
-    label: "Pack of 2",
+    label: "Pack of 20",
     pricePerPack: 500,
     originalPrice: 600,
     discount: "17% Off",
@@ -38,7 +38,7 @@ const bundleOptions: BundleOption[] = [
   },
   {
     size: 3,
-    label: "Pack of 3",
+    label: "Pack of 30",
     pricePerPack: 450,
     originalPrice: 600,
     discount: "25% Off",
