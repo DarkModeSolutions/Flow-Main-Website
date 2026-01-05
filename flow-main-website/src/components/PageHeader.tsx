@@ -43,6 +43,7 @@ const PageHeader = () => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [showSignOutToast, setShowSignOutToast] = useState(false);
   const [showSignInHint, setShowSignInHint] = useState(false);
+  const [showPhoneHint, setShowPhoneHint] = useState(false);
 
   const clearInputHandler = () => {
     if (inputRef.current) {
@@ -104,6 +105,19 @@ const PageHeader = () => {
           setTimeout(() => {
             setShowSignInHint(false);
             localStorage.setItem("hasSeenSignInHint", "true");
+          }, 5000);
+        }, 2000); // Show after 2 seconds of page load
+        return () => clearTimeout(timer);
+      }
+    } else if (!user?.phone) {
+      const hasSeenHint = localStorage.getItem("hasSeenPhoneHint");
+      if (!hasSeenHint) {
+        const timer = setTimeout(() => {
+          setShowPhoneHint(true);
+          // Auto-hide after 5 seconds
+          setTimeout(() => {
+            setShowPhoneHint(false);
+            localStorage.setItem("hasSeenPhoneHint", "true");
           }, 5000);
         }, 2000); // Show after 2 seconds of page load
         return () => clearTimeout(timer);
@@ -319,18 +333,26 @@ const PageHeader = () => {
               <div className="relative">
                 <Link
                   href={"/auth/login"}
-                  onClick={() => setShowSignInHint(false)}
+                  onClick={() => {
+                    if (!user || !user.email || user.buyingAsGuest) {
+                      setShowSignInHint(false);
+                    } else if (!user.phone) {
+                      setShowPhoneHint(false);
+                    }
+                  }}
                 >
                   <IoPersonSharp className="text-white" />
                 </Link>
                 {/* Sign-in hint indicator */}
-                {showSignInHint && (
+                {(showSignInHint || showPhoneHint) && (
                   <div className="absolute right-0 top-full mt-2 z-50 animate-fade-in-bounce">
                     {/* Arrow pointing up */}
                     <div className="flex flex-col items-end">
                       <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-8 border-b-[#24bfcf] mr-2 animate-bounce" />
                       <div className="bg-[#24bfcf]/90 backdrop-blur-sm text-black text-[10px] md:text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap font-medium">
-                        Click here to sign in ✨
+                        {showSignInHint
+                          ? "Click here to sign in ✨"
+                          : "Please add your phone number"}
                       </div>
                     </div>
                   </div>
